@@ -1,0 +1,61 @@
+package cep;
+import com.ftn.sbnz.model.events.FlightArrivalEvent
+import com.ftn.sbnz.model.events.TransactionEvent
+import com.ftn.sbnz.model.models.Customer
+declare window Arrival
+    @doc("arrivals in last 3 min")
+    FlightArrivalEvent() over window:time(180s)
+end
+
+//U fajlu letovi.drl Implementirati pravilo koje će izvršiti redirekciju leta1 ukoliko postoji let2, pri čemu je
+//sletanje leta1 počelo u intervalu između 0-3 minuta posle sletanja let2 (let2 nije stigao da se skloni sa
+//piste).
+
+rule "arrivals in window"
+enabled false
+    when
+        $f2: FlightArrivalEvent(flightId==2L, at2: arrivalTime)
+        $f1: FlightArrivalEvent(flightId==1L, at1: arrivalTime, this after[0s, 180s] $f2)
+
+//        accumulate(
+//            FlightArrivalEvent() from window Arrival,
+//            $cnt:count(1)
+//        )
+    then
+        System.out.println("Redirected to another gate ");
+        System.out.println(at2);
+        System.out.println(at1);
+end
+
+
+//1. Ukoliko postoje dve transakcije istog custumer-a, sa identičnim totalAmount-om, a koje su
+//se desile u periodu od 15 sekundi razmaka, označiti drugu transakciju kao duplikat.
+
+rule "zad 2"
+enabled false
+no-loop true
+    when
+        $t1: TransactionEvent(id: customerId, ta:totalAmount, et:executionTime)
+        $t2: TransactionEvent(customerId == id, totalAmount == ta , dupl:duplicate,this after[0s, 15s] $t1, $t1!=this)
+    then
+        modify($t2){setDuplicate(true)}
+
+end
+
+
+//2. Označi transakcije da su sumnjive ako su se desile pod sledećim okolnostima:
+//Postoje dve velike transakcije od istog custumera
+//Desile u vremenskom periodu od 90 sekundi
+//Nakon njih customer će ostati sa manje od 10% raspoloživih sredstava na računu
+//(implementirati odgovarajući model)
+rule "zad 2b1"
+enabled true
+no-loop true
+    when
+        $t1: TransactionEvent(cId: customerId,ta1:totalAmount, totalAmount>200.0, et:executionTime)
+        $t2: TransactionEvent(customerId == cId, ta2:totalAmount, totalAmount>200.0, dupl:duplicate,this after[0s, 15s] $t1, $t1!=this)
+        $customer: Customer(id==cId, accState*0.9<ta1+ta2)
+    then
+        modify($t2){setDuplicate(true)}
+        modify($t1){setDuplicate(true)}
+end

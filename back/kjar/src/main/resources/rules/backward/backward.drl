@@ -1,0 +1,63 @@
+package backward;
+import com.ftn.sbnz.model.models.Person;
+import com.ftn.sbnz.model.models.Man;
+import com.ftn.sbnz.model.models.Woman;
+import com.ftn.sbnz.model.models.Parent;
+
+query isFullSiblings( String A, String B )
+  Parent( P1, A; ) and Parent(P1, B;) and
+  Parent( P2, A; ) and Parent(P2, B;) and
+   Man(P1;) and Woman(P2;)
+//    Person(A;) and Person(B;)
+end
+
+query isSiblings( String A, String B )
+  Parent( P1, A; ) and Parent(P1, B;) and not isFullSiblings(A,B;)
+//    Person(A;) and Person(B;)
+end
+
+query isUncle( String A, String B )
+  Man(A;) and Parent( P1, B; )  and eval(P1!=A) and (isFullSiblings(P1, A;) or isSiblings(P1,A;))
+//    Person(A;) and Person(B;)
+end
+
+query isGrandParent( String A, String B )
+  Parent( P1, B; )   and Parent(A,P1;)
+end
+
+rule "siblings" salience 10
+enabled false
+when
+    $p1: Person(n1:name)
+    $p2: Person(n2:name, this!=$p1, n2>n1)
+    isSiblings(n1, n2; )
+then
+    System.out.println( n1 );
+    System.out.println( n2 );
+
+    System.out.println( "\n" );
+end
+
+rule "uncle" salience 10
+when
+    $p1: Person(n1:name)
+    $p2: Person(n2:name)
+    isUncle(n1, n2; )
+then
+    System.out.println( n1 );
+    System.out.println( n2 );
+
+    System.out.println( "\n" );
+end
+
+rule "grand" salience 10
+when
+    $p1: Person(n1:name)
+    $p2: Person(n2:name)
+    isGrandParent(n1, n2; )
+then
+    System.out.println( n1 );
+    System.out.println( n2 );
+
+    System.out.println( "\n" );
+end
