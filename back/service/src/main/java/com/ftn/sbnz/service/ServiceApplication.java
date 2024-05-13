@@ -27,7 +27,7 @@ public class ServiceApplication  {
 		for (String beanName : beanNames) {
 			sb.append(beanName + "\n");
 		}
-		log.info(sb.toString());
+//		log.info(sb.toString());
 	}
 
 	@Bean
@@ -35,6 +35,7 @@ public class ServiceApplication  {
 		KieServices ks = KieServices.Factory.get();
 		KieContainer kContainer = ks
 				.newKieContainer(ks.newReleaseId("com.ftn.sbnz", "kjar", "0.0.1-SNAPSHOT"));
+//		KieContainer kContainer = ks.getKieClasspathContainer();
 		KieScanner kScanner = ks.newKieScanner(kContainer);
 		kScanner.start(1000);
 		return kContainer;

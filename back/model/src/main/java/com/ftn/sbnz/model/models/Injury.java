@@ -19,6 +19,7 @@ public class Injury {
 
     private String name;
     private String description;
+    private boolean isRecovered;
     private Integer recoveryTimeInDays;
     private Integer estimatedRecoveryTimeInDays;
     private Date timestamp;

@@ -1,0 +1,28 @@
+package forward;
+import com.ftn.sbnz.model.models.Injury;
+import com.ftn.sbnz.model.models.Player;
+import com.ftn.sbnz.model.models.PlayerStatus;
+import java.util.Date;
+
+rule "new_injury"
+    when
+        $i: Injury(recoveryTimeInDays == null, playerId:player.getId())
+        $p: Player(id==playerId, status==PlayerStatus.HEALTHY)
+    then
+        modify($p){setStatus(PlayerStatus.OUT)};
+        System.out.println($p.getStatus());
+end
+
+rule "recovery"
+    when
+        $i: Injury(recoveryTimeInDays == null, recovered == true, playerId:player.getId(), startDate:timestamp)
+        $p: Player(id==playerId, status==PlayerStatus.OUT)
+    then
+        modify($p){setStatus(PlayerStatus.HEALTHY)};
+        Date currentDate = new Date();
+        long difference = currentDate.getTime() - startDate.getTime();
+        long differenceInDays = difference / (24 * 60 * 60 * 1000);
+        modify($i){setRecoveryTimeInDays((int) differenceInDays)};
+        System.out.println($i.getRecoveryTimeInDays());
+        System.out.println($p.getStatus());
+end
