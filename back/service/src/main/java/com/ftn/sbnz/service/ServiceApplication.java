@@ -56,6 +56,12 @@ public class ServiceApplication  {
 		kScanner.start(1000);
 		return kContainer;
 	}
+	@Bean
+	public KieSession kieSession(){
+		KieContainer kieContainer= this.kieContainer();
+		KieSession kieSession = kieContainer.newKieSession("fwKsession");
+		return kieSession;
+	}
 	
 	/*
 	 * KieServices ks = KieServices.Factory.get(); KieContainer kContainer =
@@ -66,15 +72,12 @@ public class ServiceApplication  {
 	 */
 
 	private void readInjuryData(){
-		KieContainer kieContainer= this.kieContainer();
-		KieSession kieSession = kieContainer.newKieSession("fwKsession");
-//		Player p = new Player();
-//		p.setId(1L);
-//		p.setStatus(PlayerStatus.HEALTHY);
-//		Injury i = new Injury(1L,"name", "desc", false, null, null, new Date(), p);
-//		kieSession.insert(i);
-//		kieSession.insert(p);
+//		KieContainer kieContainer= this.kieContainer();
+//		KieSession kieSession = kieContainer.newKieSession("fwKsession");
+		KieSession kieSession= this.kieSession();
 
+		System.out.println("readdata");
+		System.out.println(kieSession);
 
 		String csvFile = "../data/injuries.csv"; // Path to your CSV file
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -143,7 +146,7 @@ public class ServiceApplication  {
 				kieSession.insert(injury);
 			}
 			kieSession.fireAllRules();
-			kieSession.dispose();
+//			kieSession.dispose();
 
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
