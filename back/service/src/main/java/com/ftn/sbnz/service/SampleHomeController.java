@@ -93,4 +93,54 @@ public class SampleHomeController {
 		kieSession.dispose();
 		return filter;
 	}
+
+	@RequestMapping(value = "/recommend", method = RequestMethod.GET, produces = "application/json")
+	public RecommendationList recommendationList() {
+
+		KieSession kieSession = kieContainer.newKieSession("fwKsession");
+
+		CategoryScores categoryScores = new CategoryScores();
+		categoryScores.setPointScore(1);
+		categoryScores.setAssistScore(2);
+		categoryScores.setBlockScore(3);
+		categoryScores.setReboundScore(1);
+		categoryScores.setStealScore(3);
+		categoryScores.setTurnoverScore(-1);
+
+		StatisticalColumns stats1 = new StatisticalColumns();
+		stats1.setPpg(10);
+		stats1.setApg(2);
+		stats1.setRpg(5);
+		stats1.setSpg(1);
+		stats1.setTpg(2);
+		stats1.setBpg(1);
+		stats1.setGp(1);
+
+		StatisticalColumns stats2 = new StatisticalColumns();
+		stats2.setPpg(0);
+		stats2.setApg(5);
+		stats2.setRpg(10);
+		stats2.setSpg(0);
+		stats2.setTpg(5);
+		stats2.setBpg(0);
+		stats2.setGp(2);
+
+		Player p1 = new Player();
+		p1.setName("Jamal");
+		p1.setStatisticalColumns(stats1);
+
+		Player p2 = new Player();
+		p2.setName("Anthony");
+		p2.setStatisticalColumns(stats2);
+
+		RecommendationList rl = new RecommendationList();
+
+		kieSession.insert(categoryScores);
+		kieSession.insert(p1);
+		kieSession.insert(p2);
+		kieSession.insert(rl);
+		kieSession.fireAllRules();
+		kieSession.dispose();
+		return rl;
+	}
 }

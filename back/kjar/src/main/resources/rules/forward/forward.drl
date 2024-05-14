@@ -4,6 +4,14 @@ import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 import java.util.Date;
 
+import com.ftn.sbnz.model.models.CategoryScores;
+import com.ftn.sbnz.model.models.RecommendationList
+import java.util.ArrayList
+import java.util.List
+import java.util.Collections
+import java.util.stream.Collectors
+import java.util.Comparator;
+
 rule "new_injury"
     when
         $i: Injury(recoveryTimeInDays == null, playerId:player.getId())
@@ -26,3 +34,46 @@ rule "recovery"
         System.out.println($i.getRecoveryTimeInDays());
         System.out.println($p.getStatus());
 end
+
+
+rule "Update Player Scores"
+salience 100
+when
+    $categoryScores : CategoryScores($pointScore : pointScore,
+                                      $reboundScore : reboundScore,
+                                      $assistScore : assistScore,
+                                      $stealScore : stealScore,
+                                      $turnoverScore : turnoverScore,
+                                      $blockScore : blockScore)
+
+    $player : Player()
+
+then
+    System.out.println("player");
+    Integer gamesPlayed = $player.getStatisticalColumns().getGp();
+    Integer newTotalFantasyPoints =(int) ($player.getStatisticalColumns().getPpg() * gamesPlayed * $pointScore) +
+                                   (int) ($player.getStatisticalColumns().getRpg() * gamesPlayed * $reboundScore) +
+                                   (int) ($player.getStatisticalColumns().getApg() * gamesPlayed * $assistScore) +
+                                   (int) ($player.getStatisticalColumns().getSpg() * gamesPlayed * $stealScore) +
+                                   (int) ($player.getStatisticalColumns().getTpg() * gamesPlayed * $turnoverScore) +
+                                   (int) ($player.getStatisticalColumns().getBpg() * gamesPlayed * $blockScore);
+
+    $player.setTotalFantasyPoints(newTotalFantasyPoints);
+
+end
+
+rule "Recommendation list"
+salience 1
+    when
+        $r: RecommendationList()
+        $list: List() from collect(Player())
+    then
+        System.out.println("list");
+        RecommendationList recommendationList = $r;
+        recommendationList.setPlayers(new ArrayList<>());
+        recommendationList.getPlayers().addAll($list);
+
+        Collections.sort(recommendationList.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
+        recommendationList.getPlayers().forEach(player -> System.out.println(player.getName() + " - Fantasy points: " + player.getTotalFantasyPoints()));
+end
+
