@@ -12,6 +12,7 @@ import java.util.Collections
 import java.util.stream.Collectors
 import java.util.Comparator;
 
+
 rule "new_injury"
     when
         $i: Injury(recoveryTimeInDays == null, playerId:player.getId())
@@ -77,3 +78,30 @@ salience 1
         recommendationList.getPlayers().forEach(player -> System.out.println(player.getName() + " - Fantasy points: " + player.getTotalFantasyPoints()));
 end
 
+//rule "injury_history"
+//    when
+//        $i: Injury(recoveryTimeInDays != null)
+//    then
+//        System.out.println($i.getRecoveryTimeInDays());
+//end
+
+rule "calc_injury_estimated_time"
+    when
+        $i: Injury(recoveryTimeInDays == null, desc: description, playerId:player.getId())
+        $p: Player(id==playerId, status==PlayerStatus.OUT)
+        Number( $avg: intValue ) from accumulate(
+               Injury($r: recoveryTimeInDays, recoveryTimeInDays != null, description==desc),
+              average($r)
+            )
+    then
+        System.out.println("fff");
+        System.out.println($avg);
+        modify($i){setEstimatedRecoveryTimeInDays((int) $avg)};
+end
+
+//rule "players"
+//    when
+//        $p: Player()
+//    then
+//        System.out.println($p.getName());
+//end
