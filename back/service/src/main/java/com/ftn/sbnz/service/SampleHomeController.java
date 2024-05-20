@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import com.ftn.sbnz.model.models.Injury;
 import com.ftn.sbnz.model.models.Player;
@@ -38,8 +39,8 @@ public class SampleHomeController {
 		this.kieSession = kieSession;
 	}
 
-    @RequestMapping("/injury")
-	public String injury() {
+    @RequestMapping("/injury_1")
+	public String injury_1() {
 //		KieServices ks = KieServices.Factory.get();
 //		KieContainer kContainer = ks.getKieClasspathContainer();
 //		KieSession kieSession = kContainer.newKieSession("fwKsession");
@@ -52,6 +53,76 @@ public class SampleHomeController {
 		Injury i = new Injury(1L,"name", "placed on IL with strained right hip flexor", false, null, null, new Date(), p);
 		this.kieSession.insert(i);
 		this.kieSession.insert(p);
+		this.kieSession.fireAllRules();
+//		this.kieSession.dispose();
+		return i.getEstimatedRecoveryTimeInDays().toString();
+	}
+	@RequestMapping("/injury")
+	public String injury() {
+		NBATeam denver=new NBATeam();
+		NBATeam minnesota=new NBATeam();
+
+		Player jokic = new Player();
+		Player murray = new Player();
+		Player gordon = new Player();
+		Player edwards = new Player();
+		{
+			denver.setName("Denver");
+			denver.setPlayers(new ArrayList<>());
+			minnesota.setName("Minnesota");
+			minnesota.setPlayers(new ArrayList<>());
+
+			jokic.setId(1L);
+			jokic.setName("Nikola Jokic");
+			jokic.setStatus(PlayerStatus.HEALTHY);
+			jokic.setTotalBonusPoints(0);
+			StatisticalColumns jokiceveKolone = new StatisticalColumns();
+			jokiceveKolone.setGp(40);
+			jokic.setStatisticalColumns(jokiceveKolone);
+			jokic.setNbaTeam(denver);
+
+
+			murray.setId(2L);
+			murray.setName("Jamal Murray");
+			murray.setStatus(PlayerStatus.HEALTHY);
+			murray.setTotalBonusPoints(0);
+			StatisticalColumns marijeveKolone = new StatisticalColumns();
+			marijeveKolone.setGp(30);
+			murray.setStatisticalColumns(marijeveKolone);
+			murray.setNbaTeam(denver);
+
+			gordon.setId(3L);
+			gordon.setName("Aaron Gordon");
+			gordon.setStatus(PlayerStatus.HEALTHY);
+			gordon.setTotalBonusPoints(0);
+			StatisticalColumns gordonoveKolone = new StatisticalColumns();
+			gordonoveKolone.setGp(25);
+			gordon.setStatisticalColumns(gordonoveKolone);
+			gordon.setNbaTeam(denver);
+
+			edwards.setId(4L);
+			edwards.setName("Anthony Edwards");
+			edwards.setStatus(PlayerStatus.HEALTHY);
+			edwards.setTotalBonusPoints(0);
+			StatisticalColumns edvardsoveKolone = new StatisticalColumns();
+			edvardsoveKolone.setGp(50);
+			edwards.setStatisticalColumns(edvardsoveKolone);
+			edwards.setNbaTeam(minnesota);
+		}
+		minnesota.getPlayers().add(edwards);
+		denver.getPlayers().add(jokic);
+		denver.getPlayers().add(murray);
+		denver.getPlayers().add(gordon);
+		Injury i = new Injury(1L,"name", "placed on IL with strained right hip flexor", false, null, null, new Date(), gordon);
+		this.kieSession.insert(i);
+
+		this.kieSession.insert(jokic);
+		this.kieSession.insert(murray);
+		this.kieSession.insert(gordon);
+		this.kieSession.insert(edwards);
+		this.kieSession.insert(denver);
+		this.kieSession.insert(minnesota);
+
 		this.kieSession.fireAllRules();
 //		this.kieSession.dispose();
 		return i.getEstimatedRecoveryTimeInDays().toString();

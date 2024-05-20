@@ -25,4 +25,5 @@ public class CategoryScores {
     private Integer stealScore;
     private Integer turnoverScore;
     private Integer blockScore;
+    private Integer bonusMargin;
 }

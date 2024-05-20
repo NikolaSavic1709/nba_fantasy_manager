@@ -22,6 +22,35 @@ rule "new_injury"
         System.out.println($p.getStatus());
 end
 
+// bounus += igrac_ou - prosek tima - broj dana koji propusta
+rule "Change bonus points because of injury"
+salience 1
+    when
+        $i: Injury(recoveryTimeInDays == null, $estDays: estimatedRecoveryTimeInDays, desc: description, playerId:player.getId())
+        $p: Player(id==playerId, status==PlayerStatus.OUT, $gp: statisticalColumns.gp, team: nbaTeam.getName(), $bonus: totalBonusPoints)
+        Number( $gpAvg: intValue ) from accumulate(
+            Player(nbaTeam.name==team, id!=playerId, gp: statisticalColumns.gp),
+                      average(gp)
+                    )
+    then
+        System.out.println("bonus_points_injury_update");
+        modify($p){setTotalBonusPoints(((int)  -$gpAvg) + $bonus + $gp - $estDays )};
+
+end
+
+rule "Remove from recommendation list when under bonus margin"
+    when
+        CategoryScores($bm: bonusMargin)
+        $p: Player(totalBonusPoints<$bm)
+        $rl: RecommendationList(players contains $p, $players: players)
+    then
+        System.out.println("Remove from recommendation list when under bonus margin");
+        $players.remove($p);
+//        $rl.setPlayers($players);
+        update($rl);
+
+end
+
 rule "recovery"
     when
         $i: Injury(recoveryTimeInDays == null, recovered == true, playerId:player.getId(), startDate:timestamp)
@@ -86,6 +115,7 @@ end
 //end
 
 rule "calc_injury_estimated_time"
+salience 2
     when
         $i: Injury(recoveryTimeInDays == null, desc: description, playerId:player.getId())
         $p: Player(id==playerId, status==PlayerStatus.OUT)
@@ -94,8 +124,7 @@ rule "calc_injury_estimated_time"
               average($r)
             )
     then
-        System.out.println("fff");
-        System.out.println($avg);
+        System.out.println("calc_injury_estimated_time");
         modify($i){setEstimatedRecoveryTimeInDays((int) $avg)};
 end
 
