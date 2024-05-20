@@ -9,7 +9,12 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.repository.INBATeamRepository;
+import com.ftn.sbnz.repository.players.IInjuryRepository;
+import com.ftn.sbnz.repository.players.IPlayerRepository;
+import com.ftn.sbnz.repository.players.IStatisticalColumnsRepository;
 import org.kie.api.runtime.KieSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +38,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class ServiceApplication  {
 	
 	private static Logger log = LoggerFactory.getLogger(ServiceApplication.class);
+	@Autowired
+	private IPlayerRepository playerRepository;
+	@Autowired
+	private IInjuryRepository injuryRepository;
+	@Autowired
+	private INBATeamRepository nbaTeamRepository;
+	@Autowired
+	private IStatisticalColumnsRepository statisticalColumnsRepository;
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(ServiceApplication.class, args);
 
@@ -119,6 +132,7 @@ public class ServiceApplication  {
 					player.setNationality(nationality);
 					player.setStatus(PlayerStatus.HEALTHY);
 					player.setTotalBonusPoints(0);
+					player.setPrice(Integer.parseInt(price));
 
 					Optional<NBATeam> result = teams.stream()
 							.filter(team -> teamName.equals(team.getName()))
@@ -192,16 +206,21 @@ public class ServiceApplication  {
 			}
 			for (NBATeam team : teams){
 				kieSession.insert(team);
+				nbaTeamRepository.save(team);
 			}
+
 			for (Player player : players) {
 				kieSession.insert(player);
 				StatisticalColumns gordonoveKolone = new StatisticalColumns();
 				gordonoveKolone.setGp(0);
+				statisticalColumnsRepository.save(gordonoveKolone);
 				player.setStatisticalColumns(gordonoveKolone);
 				player.setTotalBonusPoints(0);
+				playerRepository.save(player);
 			}
 			for (Injury injury : injuries){
 				kieSession.insert(injury);
+				injuryRepository.save(injury);
 			}
 			kieSession.fireAllRules();
 //			kieSession.dispose();
