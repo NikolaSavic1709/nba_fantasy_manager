@@ -2,7 +2,7 @@ package com.ftn.sbnz.model.models;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -11,7 +11,8 @@ import javax.validation.constraints.*;
 @Table(name = "authority")
 @Getter
 @Setter
-public class Authority implements GrantedAuthority {
+public class Authority {
+//public class Authority implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +32,8 @@ public class Authority implements GrantedAuthority {
         this.setName(name);
     }
 
-    @Override
-    public String getAuthority() {
-        return this.name;
-    }
+//    @Override
+//    public String getAuthority() {
+//        return this.name;
+//    }
 }

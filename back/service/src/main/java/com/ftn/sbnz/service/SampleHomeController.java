@@ -59,6 +59,15 @@ public class SampleHomeController {
 	}
 	@RequestMapping("/injury")
 	public String injury() {
+		CategoryScores categoryScores=new CategoryScores();
+		categoryScores.setBonusMargin(-10);
+		categoryScores.setAssistScore(1);
+		categoryScores.setBlockScore(1);
+		categoryScores.setReboundScore(1);
+		categoryScores.setPointScore(1);
+		categoryScores.setStealScore(1);
+		categoryScores.setTurnoverScore(1);
+
 		NBATeam denver=new NBATeam();
 		NBATeam minnesota=new NBATeam();
 
@@ -122,6 +131,7 @@ public class SampleHomeController {
 		this.kieSession.insert(edwards);
 		this.kieSession.insert(denver);
 		this.kieSession.insert(minnesota);
+		this.kieSession.insert(categoryScores);
 
 		this.kieSession.fireAllRules();
 //		this.kieSession.dispose();

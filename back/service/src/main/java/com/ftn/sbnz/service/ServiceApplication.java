@@ -8,9 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import com.ftn.sbnz.model.models.Injury;
-import com.ftn.sbnz.model.models.Player;
-import com.ftn.sbnz.model.models.PlayerStatus;
+import com.ftn.sbnz.model.models.*;
 import org.kie.api.runtime.KieSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +40,7 @@ public class ServiceApplication  {
 			sb.append(beanName + "\n");
 		}
 		ServiceApplication app = ctx.getBean(ServiceApplication.class);
-		app.readInjuryData();
+		app.readData();
 //		log.info(sb.toString());
 	}
 
@@ -71,27 +69,80 @@ public class ServiceApplication  {
 	 * kContainer.newKieSession();
 	 */
 
-	private void readInjuryData(){
-//		KieContainer kieContainer= this.kieContainer();
-//		KieSession kieSession = kieContainer.newKieSession("fwKsession");
+	private void readData(){
 		KieSession kieSession= this.kieSession();
 
-		System.out.println("readdata");
-		System.out.println(kieSession);
+		String teamsCsvFile="../data/teams.csv";
+		String injuriesCsvFile = "../data/Injury_History.csv";
+		SimpleDateFormat injuriesDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		String playersCsvFile="../data/nba2k-full.csv";
+		SimpleDateFormat playersDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
-		String csvFile = "../data/injuries.csv"; // Path to your CSV file
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		List<Player> players=new ArrayList<>();
+		List<NBATeam> teams=new ArrayList<>();
+		try (Reader reader = new FileReader(teamsCsvFile);
+			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+			for (CSVRecord csvRecord : csvParser) {
+				String name = csvRecord.get("team_name");
+				NBATeam team=new NBATeam();
+				team.setName(name);
+				team.setPlayers(new ArrayList<>());
+				teams.add(team);
+
+			}
+		}
+		catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		try (Reader reader = new FileReader(playersCsvFile);
+			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+			for (CSVRecord csvRecord : csvParser) {
+				// Extract fields from each record
+				String name = csvRecord.get("full_name");
+				String price = csvRecord.get("rating");
+				String teamName= csvRecord.get("team");
+
+				// pozicija
+				String birthday = csvRecord.get("b_day");
+				String nationality= csvRecord.get("country");
+				String nba2kVersion=csvRecord.get("version");
+				if(Objects.equals(nba2kVersion, "NBA2k20") && !Objects.equals(teamName, ""))
+				{
+					Player player=new Player();
+					player.setName(name);
+					player.setBirthDate(playersDateFormat.parse(birthday));
+					player.setNationality(nationality);
+					player.setStatus(PlayerStatus.HEALTHY);
+					player.setTotalBonusPoints(0);
+
+					Optional<NBATeam> result = teams.stream()
+							.filter(team -> teamName.equals(team.getName()))
+							.findFirst();
+
+                    result.ifPresent(player::setNbaTeam);
+                    result.ifPresent(nbaTeam -> nbaTeam.getPlayers().add(player));
+					players.add(player);
+				}
+			}
+
+		}
+		catch (IOException | ParseException e) {
+			e.printStackTrace();
+		}
 
 
-		try (Reader reader = new FileReader(csvFile);
+//		NBATeam phoenix=new NBATeam();
+//		phoenix.setName("Phoenix");
+//		phoenix.setPlayers(new ArrayList<>());
+		try (Reader reader = new FileReader(injuriesCsvFile);
 			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
-			List<CsvRecord> records = new ArrayList<>();
 //			String lastReadName="";
 			Player lastReadPlayer=new Player();
 			lastReadPlayer.setName("");
 			List<Injury> injuries=new ArrayList<>();
-			List<Player> players=new ArrayList<>();
+			Player current_player=players.get(0);
 			for (CSVRecord csvRecord : csvParser) {
 				// Extract fields from each record
 				String name = csvRecord.get("Name");
@@ -102,22 +153,26 @@ public class ServiceApplication  {
 
 				if(!Objects.equals(name, lastReadPlayer.getName())) {
 					lastReadPlayer.setName(name);
-					Player player=new Player();
-					player.setName(name);
-					player.setStatus(PlayerStatus.HEALTHY);
-					players.add(player);
+					Optional<Player> result = players.stream()
+							.filter(player -> name.equals(player.getName()))
+							.findFirst();
+
+					if(result.isPresent())
+						current_player=result.get();
+					else
+						continue;
 
 				}
 				if(!isRecovery(notes)){
-					Date injuryTimestamp = dateFormat.parse(date);
-					Injury injury=new Injury((long) injuries.size(),"",notes,false,null, null, injuryTimestamp, players.get(players.size()-1));
+					Date injuryTimestamp = injuriesDateFormat.parse(date);
+					Injury injury=new Injury((long) injuries.size(),"",notes,false,null, null, injuryTimestamp, current_player);
 					if(injuries.size()==0 || injuries.get(injuries.size()-1).isRecovered())
 						injuries.add(injury);
 					else
 						injuries.set(injuries.size() - 1, injury);
 				}
 				else{
-					Date recoveryTimestamp = dateFormat.parse(date);
+					Date recoveryTimestamp = injuriesDateFormat.parse(date);
 					Injury injury= injuries.get(injuries.size()-1);
 					injury.setRecovered(true);
 					long differenceInMilliseconds = recoveryTimestamp.getTime() - injury.getTimestamp().getTime();
@@ -130,17 +185,16 @@ public class ServiceApplication  {
 
 				}
 
-				// Create a CsvRecord object to hold the extracted fields
-//				CsvRecord record = new CsvRecord(name, team, position, date, notes);
-//				records.add(record);
 			}
-
-			// Process the extracted records as needed
-//			for (CsvRecord record : records) {
-//				System.out.println(record);
-//			}
+			for (NBATeam team : teams){
+				kieSession.insert(team);
+			}
 			for (Player player : players) {
 				kieSession.insert(player);
+				StatisticalColumns gordonoveKolone = new StatisticalColumns();
+				gordonoveKolone.setGp(0);
+				player.setStatisticalColumns(gordonoveKolone);
+				player.setTotalBonusPoints(0);
 			}
 			for (Injury injury : injuries){
 				kieSession.insert(injury);
@@ -165,30 +219,5 @@ public class ServiceApplication  {
 		}
 		return found;
 	}
-	static class CsvRecord {
-		String name;
-		String team;
-		String position;
-		String date;
-		String notes;
 
-		public CsvRecord(String name, String team, String position, String date, String notes) {
-			this.name = name;
-			this.team = team;
-			this.position = position;
-			this.date = date;
-			this.notes = notes;
-		}
-
-		@Override
-		public String toString() {
-			return "CsvRecord{" +
-					"name='" + name + '\'' +
-					", team='" + team + '\'' +
-					", position='" + position + '\'' +
-					", date='" + date + '\'' +
-					", notes='" + notes + '\'' +
-					'}';
-		}
-	}
 }

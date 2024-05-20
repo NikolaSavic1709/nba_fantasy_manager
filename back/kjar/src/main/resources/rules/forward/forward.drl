@@ -25,17 +25,19 @@ end
 // bounus += igrac_ou - prosek tima - broj dana koji propusta
 rule "Change bonus points because of injury"
 salience 1
+no-loop true
     when
+
         $i: Injury(recoveryTimeInDays == null, $estDays: estimatedRecoveryTimeInDays, desc: description, playerId:player.getId())
-        $p: Player(id==playerId, status==PlayerStatus.OUT, $gp: statisticalColumns.gp, team: nbaTeam.getName(), $bonus: totalBonusPoints)
+        $p: Player(id==playerId, status==PlayerStatus.OUT, $gp: statisticalColumns.getGp(), team: nbaTeam.getName(), $bonus: totalBonusPoints)
         Number( $gpAvg: intValue ) from accumulate(
             Player(nbaTeam.name==team, id!=playerId, gp: statisticalColumns.gp),
                       average(gp)
                     )
     then
-        System.out.println("bonus_points_injury_update");
+        System.out.println($p.getName());
         modify($p){setTotalBonusPoints(((int)  -$gpAvg) + $bonus + $gp - $estDays )};
-
+        System.out.println($p.getTotalBonusPoints());
 end
 
 rule "Remove from recommendation list when under bonus margin"

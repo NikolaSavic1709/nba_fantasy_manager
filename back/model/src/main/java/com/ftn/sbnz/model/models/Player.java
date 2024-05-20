@@ -24,7 +24,6 @@ public class Player {
     Long id;
 
     private String name;
-    private String surname;
     private String nationality;
 
     @ElementCollection
