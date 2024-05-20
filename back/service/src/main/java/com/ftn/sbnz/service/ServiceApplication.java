@@ -12,6 +12,7 @@ import com.ftn.sbnz.model.models.Injury;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 import org.kie.api.runtime.KieSession;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.kie.api.KieServices;
@@ -26,8 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
+@EnableJpaRepositories(basePackages = "com.ftn.sbnz.repository")
+@EntityScan(basePackages = "com.ftn.sbnz.model.models")
 public class ServiceApplication  {
 	
 	private static Logger log = LoggerFactory.getLogger(ServiceApplication.class);
