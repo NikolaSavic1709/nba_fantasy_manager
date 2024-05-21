@@ -74,7 +74,7 @@ public class ServiceApplication  {
 	@Bean
 	public KieSession kieSession(){
 		KieContainer kieContainer= this.kieContainer();
-		KieSession kieSession = kieContainer.newKieSession("fwKsession");
+		KieSession kieSession = kieContainer.newKieSession("bwKsession");
 		return kieSession;
 	}
 	
@@ -119,6 +119,7 @@ public class ServiceApplication  {
 				String name = csvRecord.get("full_name");
 				String price = csvRecord.get("rating");
 				String teamName= csvRecord.get("team");
+				String style = csvRecord.get("style");
 
 				// pozicija
 				String birthday = csvRecord.get("b_day");
@@ -137,6 +138,10 @@ public class ServiceApplication  {
 					Optional<NBATeam> result = teams.stream()
 							.filter(team -> teamName.equals(team.getName()))
 							.findFirst();
+
+					if(!Objects.equals(style, "")){
+						player.setPlayerStyle(getPlayerByName(players, style));
+					}
 
                     result.ifPresent(player::setNbaTeam);
                     result.ifPresent(nbaTeam -> nbaTeam.getPlayers().add(player));
@@ -241,6 +246,13 @@ public class ServiceApplication  {
 			}
 		}
 		return found;
+	}
+
+	private Player getPlayerByName(List<Player> players, String name) {
+		Optional<Player> playerOptional = players.stream()
+				.filter(player -> player.getName().equals(name))
+				.findFirst();
+		return playerOptional.orElse(null); // or throw an exception if the player is not found
 	}
 
 }

@@ -2,6 +2,7 @@ package com.ftn.sbnz.service;
 
 import com.ftn.sbnz.model.events.Item;
 import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.repository.players.IPlayerRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -33,11 +34,14 @@ public class SampleHomeController {
 
 	private final KieSession kieSession;
 
+	private final IPlayerRepository playerRepository;
+
 	@Autowired
-    public SampleHomeController(KieContainer kieContainer, KieSession kieSession) {
+    public SampleHomeController(KieContainer kieContainer, KieSession kieSession, IPlayerRepository playerRepository) {
         this.kieContainer = kieContainer;
 		this.kieSession = kieSession;
-	}
+        this.playerRepository = playerRepository;
+    }
 
     @RequestMapping("/injury_1")
 	public String injury_1() {
@@ -238,6 +242,21 @@ public class SampleHomeController {
 		kieSession.fireAllRules();
 		kieSession.dispose();
 		return rl;
+	}
+
+	@RequestMapping("/style")
+	public String style() {
+		KieSession kieSession = kieContainer.newKieSession("bwKsession");
+		Player p = new Player();
+		p.setName("Miki");
+		p.setStatus(PlayerStatus.OUT);
+
+		Player p2 = playerRepository.findByName("Kevin Durant").orElse(null);
+		//Player p2 = playerRepository.findByName("Denzel Valentine").orElse(null);
+		p.setPlayerStyle(p2);
+		kieSession.insert(p);
+		kieSession.fireAllRules();
+		return "style";
 	}
 
 	

@@ -1,0 +1,35 @@
+package backward;
+import com.ftn.sbnz.model.models.Player;
+import com.ftn.sbnz.model.models.PlayerStatus;
+
+query hasStyle( String player, String playerWithThatStyle )
+  Player( player==name, playerWithThatStyle==playerStyle.name )
+  or
+  ( Player( z:name, playerWithThatStyle==playerStyle.name ) and hasStyle( player, z; ) )
+end
+
+rule "Find players with similar style on the same team"
+when
+    $player : Player(status == PlayerStatus.OUT)
+    hasStyle( thing, $player.name; )
+then
+    System.out.println("Found player with similar style: " + thing);
+end
+
+//rule "Find players with similar style on the same team"
+//when
+//    $player : Player(status == PlayerStatus.OUT)
+//    $similarPlayer : Player(
+//        nbaTeam == $player.nbaTeam,
+//        playerStyle == $player.playerStyle.name || (playerStyle == $style && eval(findPlayerStyle($player.playerStyle, $style))),
+//        status != PlayerStatus.OUT
+//    )
+//then
+//    System.out.println("Found player with similar style: " + $similarPlayer.getName());
+//end
+//
+//function boolean findPlayerStyle(PlayerStyle root, PlayerStyle target) {
+//    if (root == null) return false;
+//    if (root.equals(target)) return true;
+//    return findPlayerStyle(root.getPlayerStyle(), target);
+//}
