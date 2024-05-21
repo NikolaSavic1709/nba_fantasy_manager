@@ -49,7 +49,7 @@ public class Player {
     @ManyToOne(fetch = FetchType.EAGER)
     private Player playerStyle;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
     private StatisticalColumns statisticalColumns;
 
     @OneToOne(fetch = FetchType.EAGER)
