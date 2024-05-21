@@ -14,6 +14,7 @@ import java.util.Comparator;
 
 
 rule "new_injury"
+//agenda-group "injury-group"
     when
         $i: Injury(recoveryTimeInDays == null, playerId:player.getId())
         $p: Player(id==playerId, status==PlayerStatus.HEALTHY)
@@ -24,6 +25,7 @@ end
 
 // bounus += igrac_ou - prosek tima - broj dana koji propusta
 rule "Change bonus points because of injury"
+//agenda-group "injury-group"
 salience 1
 no-loop true
     when
@@ -42,6 +44,7 @@ no-loop true
 end
 
 rule "Remove from recommendation list when under bonus margin"
+//agenda-group "injury-group"
     when
         CategoryScores($bm: bonusMargin)
         $p: Player(totalBonusPoints<$bm)
@@ -54,7 +57,9 @@ rule "Remove from recommendation list when under bonus margin"
 
 end
 
+
 rule "recovery"
+//agenda-group "injury-group"
     when
         $i: Injury(recoveryTimeInDays == null, recovered == true, playerId:player.getId(), startDate:timestamp)
         $p: Player(id==playerId, status==PlayerStatus.OUT)
@@ -71,6 +76,7 @@ end
 
 rule "Update Player Scores"
 salience 100
+//agenda-group "recommendation-group"
 when
     $categoryScores : CategoryScores($pointScore : pointScore,
                                       $reboundScore : reboundScore,
@@ -79,35 +85,38 @@ when
                                       $turnoverScore : turnoverScore,
                                       $blockScore : blockScore)
 
-    $player : Player()
+    $player : Player(
+        $gamesPlayed : statisticalColumns.gp,
+        $ppg : statisticalColumns.ppg,
+        $rpg : statisticalColumns.rpg,
+        $apg : statisticalColumns.apg,
+        $spg : statisticalColumns.spg,
+        $tpg : statisticalColumns.tpg,
+        $bpg : statisticalColumns.bpg
+    )
 
+    $newTotalFantasyPoints : Integer() from
+            new Integer(
+                (int) ($ppg * $gamesPlayed * $pointScore) +
+                (int) ($rpg * $gamesPlayed * $reboundScore) +
+                (int) ($apg * $gamesPlayed * $assistScore) +
+                (int) ($spg * $gamesPlayed * $stealScore) +
+                (int) ($tpg * $gamesPlayed * $turnoverScore) +
+                (int) ($bpg * $gamesPlayed * $blockScore)
+            )
 then
-    System.out.println("player");
-    Integer gamesPlayed = $player.getStatisticalColumns().getGp();
-    Integer newTotalFantasyPoints =(int) ($player.getStatisticalColumns().getPpg() * gamesPlayed * $pointScore) +
-                                   (int) ($player.getStatisticalColumns().getRpg() * gamesPlayed * $reboundScore) +
-                                   (int) ($player.getStatisticalColumns().getApg() * gamesPlayed * $assistScore) +
-                                   (int) ($player.getStatisticalColumns().getSpg() * gamesPlayed * $stealScore) +
-                                   (int) ($player.getStatisticalColumns().getTpg() * gamesPlayed * $turnoverScore) +
-                                   (int) ($player.getStatisticalColumns().getBpg() * gamesPlayed * $blockScore);
-
-    $player.setTotalFantasyPoints(newTotalFantasyPoints);
-
+    $player.setTotalFantasyPoints($newTotalFantasyPoints);
 end
 
 rule "Recommendation list"
+//agenda-group "recommendation-group"
 salience 1
     when
-        $r: RecommendationList()
+        $r: RecommendationList(players == null)
         $list: List() from collect(Player())
     then
-        System.out.println("list");
-        RecommendationList recommendationList = $r;
-        recommendationList.setPlayers(new ArrayList<>());
-        recommendationList.getPlayers().addAll($list);
-
-        Collections.sort(recommendationList.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
-        recommendationList.getPlayers().forEach(player -> System.out.println(player.getName() + " - Fantasy points: " + player.getTotalFantasyPoints()));
+        $r.setPlayers(new ArrayList<>($list));
+        Collections.sort($r.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
 end
 
 //rule "injury_history"
@@ -118,6 +127,7 @@ end
 //end
 
 rule "calc_injury_estimated_time"
+//agenda-group "injury-group"
 salience 2
     when
         $i: Injury(recoveryTimeInDays == null, desc: description, playerId:player.getId())
