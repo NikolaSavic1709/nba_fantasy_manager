@@ -5,20 +5,18 @@ import com.ftn.sbnz.repository.players.IPlayerRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.ObjectFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
+
 import com.ftn.sbnz.model.models.Injury;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
-
-import java.util.Calendar;
-import java.util.Date;
 
 @RestController
 public class SampleHomeController {
@@ -35,23 +33,25 @@ public class SampleHomeController {
         this.playerRepository = playerRepository;
     }
 
-    @RequestMapping("/injury_1")
-	public String injury_1() {
+    @RequestMapping("/injury")
+	public String injury() {
 
-		Player p = playerRepository.getReferenceById(1);
+		Player p = playerRepository.getReferenceById(1); //Lebron 1, Curry 5
 
 		Injury i = new Injury();
 		i.setDescription("placed on IL with strained right hip flexor");
 		i.setRecovered(false);
 		i.setTimestamp(new Date());
 		i.setPlayer(p);
+
+		//kieSession.getAgenda().getAgendaGroup("injury-group").setFocus();
 		this.kieSession.insert(i);
 		this.kieSession.fireAllRules();
 //		this.kieSession.dispose();
 		return i.getEstimatedRecoveryTimeInDays().toString();
 	}
-	@RequestMapping("/injury")
-	public String injury() {
+	@RequestMapping("/injury_1")
+	public String injury_1() {
 		CategoryScores categoryScores=new CategoryScores();
 		categoryScores.setBonusMargin(-10);
 		categoryScores.setAssistScore(1);
@@ -116,6 +116,8 @@ public class SampleHomeController {
 		denver.getPlayers().add(murray);
 		denver.getPlayers().add(gordon);
 		Injury i = new Injury(1L,"name", "placed on IL with strained right hip flexor", false, null, null, new Date(), gordon);
+
+		//kieSession.getAgenda().getAgendaGroup("injury-group").setFocus();
 		this.kieSession.insert(i);
 
 		this.kieSession.insert(jokic);
@@ -136,7 +138,6 @@ public class SampleHomeController {
 //		KieServices ks = KieServices.Factory.get();
 //		KieContainer kContainer = ks.getKieClasspathContainer();
 //		KieSession kieSession = kContainer.newKieSession("fwKsession");
-		KieSession kieSession = kieContainer.newKieSession("fwKsession");
 		Player p = new Player();
 		p.setId(1L);
 		p.setStatus(PlayerStatus.OUT);
@@ -144,10 +145,11 @@ public class SampleHomeController {
 		myCal.set(2024,Calendar.APRIL,20);
 		Date date = myCal.getTime();
 		Injury i = new Injury(1L,"name", "desc", true, null, null, date, p);
+
+		//kieSession.getAgenda().getAgendaGroup("injury-group").setFocus();
 		kieSession.insert(i);
 		kieSession.insert(p);
 		kieSession.fireAllRules();
-		kieSession.dispose();
 		return "rec";
 	}
 
@@ -156,7 +158,7 @@ public class SampleHomeController {
 	public Filter filter(@RequestParam(required = true) Integer minPrice, @RequestParam(required = true) Integer maxPrice,
 						 @RequestParam(required = true) String team, @RequestParam(required = true) Integer position) {
 
-		KieSession kieSession = kieContainer.newKieSession("bwKsession");
+		//kieSession.getAgenda().getAgendaGroup("recommendation-group").setFocus();
 		Filter filter = new Filter(minPrice, maxPrice, team, position, null);
 		NBATeam team1 = new NBATeam(1L, null, "Denver");
 		NBATeam team2 = new NBATeam(1L, null, "Lakers");
@@ -179,16 +181,15 @@ public class SampleHomeController {
 		kieSession.insert(p1);
 		kieSession.insert(p2);
 		kieSession.fireAllRules();
-		kieSession.dispose();
 		return filter;
 	}
 
 	@RequestMapping(value = "/recommend", method = RequestMethod.GET, produces = "application/json")
 	public RecommendationList recommendationList() {
 
-		KieSession kieSession = kieContainer.newKieSession("fwKsession");
 
 		CategoryScores categoryScores = new CategoryScores();
+		categoryScores.setBonusMargin(-10);
 		categoryScores.setPointScore(1);
 		categoryScores.setAssistScore(2);
 		categoryScores.setBlockScore(3);
@@ -196,40 +197,26 @@ public class SampleHomeController {
 		categoryScores.setStealScore(3);
 		categoryScores.setTurnoverScore(-1);
 
-		StatisticalColumns stats1 = new StatisticalColumns();
-		stats1.setPpg(10);
-		stats1.setApg(2);
-		stats1.setRpg(5);
-		stats1.setSpg(1);
-		stats1.setTpg(2);
-		stats1.setBpg(1);
-		stats1.setGp(1);
-
-		StatisticalColumns stats2 = new StatisticalColumns();
-		stats2.setPpg(0);
-		stats2.setApg(5);
-		stats2.setRpg(10);
-		stats2.setSpg(0);
-		stats2.setTpg(5);
-		stats2.setBpg(0);
-		stats2.setGp(2);
-
-		Player p1 = new Player();
-		p1.setName("Jamal");
-		p1.setStatisticalColumns(stats1);
-
-		Player p2 = new Player();
-		p2.setName("Anthony");
-		p2.setStatisticalColumns(stats2);
 
 		RecommendationList rl = new RecommendationList();
+		KieServices ks = KieServices.Factory.get();
+		//kieSession.getAgenda().getAgendaGroup("recommendation-group").setFocus();
+		Collection<?> recommendationLists = kieSession.getObjects(new ObjectFilter() {
+			@Override
+			public boolean accept(Object object) {
+				return object instanceof RecommendationList;
+			}
+		});
 
-		kieSession.insert(categoryScores);
-		kieSession.insert(p1);
-		kieSession.insert(p2);
-		kieSession.insert(rl);
-		kieSession.fireAllRules();
-		kieSession.dispose();
+		if (recommendationLists.isEmpty()) {
+			kieSession.insert(categoryScores);
+			kieSession.insert(rl);
+
+			kieSession.fireAllRules();
+		} else {
+			rl = (RecommendationList) recommendationLists.iterator().next();
+
+		}
 		return rl;
 	}
 

@@ -14,6 +14,7 @@ import java.util.Comparator;
 
 
 rule "new_injury"
+//agenda-group "injury-group"
     when
         $i: Injury(recoveryTimeInDays == null, playerId:player.getId())
         $p: Player(id==playerId, status==PlayerStatus.HEALTHY)
@@ -24,6 +25,7 @@ end
 
 // bounus += igrac_ou - prosek tima - broj dana koji propusta
 rule "Change bonus points because of injury"
+//agenda-group "injury-group"
 salience 1
 no-loop true
     when
@@ -42,6 +44,7 @@ no-loop true
 end
 
 rule "Remove from recommendation list when under bonus margin"
+//agenda-group "injury-group"
     when
         CategoryScores($bm: bonusMargin)
         $p: Player(totalBonusPoints<$bm)
@@ -54,7 +57,9 @@ rule "Remove from recommendation list when under bonus margin"
 
 end
 
+
 rule "recovery"
+//agenda-group "injury-group"
     when
         $i: Injury(recoveryTimeInDays == null, recovered == true, playerId:player.getId(), startDate:timestamp)
         $p: Player(id==playerId, status==PlayerStatus.OUT)
@@ -71,6 +76,7 @@ end
 
 rule "Update Player Scores"
 salience 100
+//agenda-group "recommendation-group"
 when
     $categoryScores : CategoryScores($pointScore : pointScore,
                                       $reboundScore : reboundScore,
@@ -96,9 +102,10 @@ then
 end
 
 rule "Recommendation list"
+//agenda-group "recommendation-group"
 salience 1
     when
-        $r: RecommendationList()
+        $r: RecommendationList(players == null)
         $list: List() from collect(Player())
     then
         System.out.println("list");
@@ -118,6 +125,7 @@ end
 //end
 
 rule "calc_injury_estimated_time"
+//agenda-group "injury-group"
 salience 2
     when
         $i: Injury(recoveryTimeInDays == null, desc: description, playerId:player.getId())

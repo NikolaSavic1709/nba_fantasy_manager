@@ -16,6 +16,7 @@ query hasStyle( String player, String playerWithThatStyle )
 end
 
 rule "Find players with similar style on the same team"
+enabled false
 when
     $player : Player(status == PlayerStatus.OUT)
     hasStyle( thing, $player.name; )
