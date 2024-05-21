@@ -1,13 +1,11 @@
 package com.ftn.sbnz.service;
 
-import com.ftn.sbnz.model.events.Item;
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,11 +16,6 @@ import java.util.Arrays;
 import com.ftn.sbnz.model.models.Injury;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,7 +26,6 @@ public class SampleHomeController {
 	private final KieContainer kieContainer;
 
 	private final KieSession kieSession;
-
 	private final IPlayerRepository playerRepository;
 
 	@Autowired
@@ -45,18 +37,15 @@ public class SampleHomeController {
 
     @RequestMapping("/injury_1")
 	public String injury_1() {
-//		KieServices ks = KieServices.Factory.get();
-//		KieContainer kContainer = ks.getKieClasspathContainer();
-//		KieSession kieSession = kContainer.newKieSession("fwKsession");
-//		KieSession kieSession = kieContainer.newKieSession("fwKsession");
-		System.out.println("controller");
-		System.out.println(this.kieSession);
-		Player p = new Player();
-		p.setId(1L);
-		p.setStatus(PlayerStatus.HEALTHY);
-		Injury i = new Injury(1L,"name", "placed on IL with strained right hip flexor", false, null, null, new Date(), p);
+
+		Player p = playerRepository.getReferenceById(1);
+
+		Injury i = new Injury();
+		i.setDescription("placed on IL with strained right hip flexor");
+		i.setRecovered(false);
+		i.setTimestamp(new Date());
+		i.setPlayer(p);
 		this.kieSession.insert(i);
-		this.kieSession.insert(p);
 		this.kieSession.fireAllRules();
 //		this.kieSession.dispose();
 		return i.getEstimatedRecoveryTimeInDays().toString();
