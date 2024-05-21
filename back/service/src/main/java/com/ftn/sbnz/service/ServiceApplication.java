@@ -220,6 +220,9 @@ public class ServiceApplication  {
 						.filter(player -> name.equals(player.getName()))
 						.findFirst();
 
+				if(result.isEmpty())
+					System.out.println(name);
+
                 result.ifPresent(player -> player.setStatisticalColumns(statisticalColumns));
 				result.ifPresent(player -> player.setPosition(positionMap.get(position)));
 
