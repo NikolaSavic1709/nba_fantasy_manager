@@ -235,16 +235,17 @@ public class SampleHomeController {
 
 	@RequestMapping("/style")
 	public String style() {
-		KieSession kieSession = kieContainer.newKieSession("bwKsession");
 		Player p = new Player();
 		p.setName("Miki");
-		p.setStatus(PlayerStatus.OUT);
+//		p.setStatus(PlayerStatus.OUT);
 
-		Player p2 = playerRepository.findByName("Kevin Durant").orElse(null);
+		Player p2 = playerRepository.findByName("Jayson Tatum").orElse(null);
+		p2.setStatus(PlayerStatus.OUT);
 		//Player p2 = playerRepository.findByName("Denzel Valentine").orElse(null);
 		p.setPlayerStyle(p2);
-		kieSession.insert(p);
-		kieSession.fireAllRules();
+		this.kieSession.insert(p2);
+		this.kieSession.insert(p);
+		this.kieSession.fireAllRules();
 		return "style";
 	}
 

@@ -1,11 +1,18 @@
-package backward;
+package forward;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 
+query isNotNull(String playerName)
+    Player(name==playerName, playerStyle!=null )
+end
+
+
 query hasStyle( String player, String playerWithThatStyle )
-  Player( player==name, playerWithThatStyle==playerStyle.name )
-  or
-  ( Player( z:name, playerWithThatStyle==playerStyle.name ) and hasStyle( player, z; ) )
+  (isNotNull(player;)
+  and
+  Player(player==name, playerWithThatStyle==playerStyle.name ))
+//  or
+//  ( Player( z:name, playerStyle != null, playerWithThatStyle==playerStyle.name ) and hasStyle( player, z; ) )
 end
 
 rule "Find players with similar style on the same team"

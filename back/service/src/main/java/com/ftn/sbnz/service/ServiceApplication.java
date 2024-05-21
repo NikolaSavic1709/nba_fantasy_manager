@@ -76,7 +76,7 @@ public class ServiceApplication  {
 	@Bean
 	public KieSession kieSession(){
 		KieContainer kieContainer= this.kieContainer();
-		KieSession kieSession = kieContainer.newKieSession("bwKsession");
+		KieSession kieSession = kieContainer.newKieSession("fwKsession");
 		return kieSession;
 	}
 	
@@ -92,7 +92,7 @@ public class ServiceApplication  {
 		KieSession kieSession= this.kieSession();
 
 		String teamsCsvFile="../data/teams.csv";
-		String injuriesCsvFile = "../data/Injury_History.csv";
+		String injuriesCsvFile = "../data/injuries.csv";
 		SimpleDateFormat injuriesDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String playersCsvFile="../data/nba2k-full.csv";
 		SimpleDateFormat playersDateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -105,15 +105,16 @@ public class ServiceApplication  {
 		List<Injury> injuries=readInjuries(injuriesCsvFile, players, injuriesDateFormat);
 
 
-
-		for (Player player : players) {
-			kieSession.insert(player.getStatisticalColumns());
-			statisticalColumnsRepository.save(player.getStatisticalColumns());
-		}
 		for (NBATeam team : teams){
 			kieSession.insert(team);
 			nbaTeamRepository.save(team);
 		}
+		for (Player player : players) {
+			kieSession.insert(player.getStatisticalColumns());
+			statisticalColumnsRepository.save(player.getStatisticalColumns());
+			playerRepository.save(player);
+		}
+
 		for (Player player : players) {
 			kieSession.insert(player);
 //			playerRepository.save(player);
@@ -225,13 +226,13 @@ public class ServiceApplication  {
 						.filter(player -> name.equals(player.getName()))
 						.findFirst();
 
-				if(result.isEmpty())
-					System.out.println(name);
+//				if(result.isEmpty())
+//					System.out.println(name);
 
                 result.ifPresent(player -> player.setStatisticalColumns(statisticalColumns));
 				result.ifPresent(player -> player.setPosition(positionMap.get(position)));
-
-				result.ifPresent(player -> player.getNbaTeam().getPlayers().add(player));
+//				result.ifPresent(statisticalColumns::setPlayer);
+//				result.ifPresent(player -> player.getNbaTeam().getPlayers().add(player));
 
 
 			}
@@ -240,9 +241,17 @@ public class ServiceApplication  {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+
+
+
 		return players.stream()
 				.filter(player -> player.getStatisticalColumns() != null)
 				.collect(Collectors.toList());
+//				.filter(player -> player.getStatisticalColumns() != null)
+//				.filter(player -> player.getPlayerStyle() != null)
+//				.filter(player -> player.getPlayerStyle().getStatisticalColumns() == null)
+//				.peek(player -> player.setPlayerStyle(null))
+//				.collect(Collectors.toList());
 	}
 	private List<Injury> readInjuries(String injuriesCsvFile, List<Player> players, SimpleDateFormat injuriesDateFormat){
 		List<Injury> injuries=new ArrayList<>();
