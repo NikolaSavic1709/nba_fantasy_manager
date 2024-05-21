@@ -2,41 +2,19 @@ package forward;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 
-query isNotNull(String playerName)
-    Player(name==playerName, playerStyle!=null )
-end
 
-
-query hasStyle( String player, String playerWithThatStyle )
-  (isNotNull(player;)
-  and
-  Player(player==name, playerWithThatStyle==playerStyle.name ))
-//  or
-//  ( Player( z:name, playerStyle != null, playerWithThatStyle==playerStyle.name ) and hasStyle( player, z; ) )
+query hasStyle( String player, String playerWithThatStyle, String team )
+  Player(player==name,playerStyle != null, playerWithThatStyle==playerStyle.name, nbaTeam.getName()== team)
+  or
+  ( Player( z:name, playerStyle != null, playerWithThatStyle==playerStyle.name ) and hasStyle( player, z, team; ) )
 end
 
 rule "Find players with similar style on the same team"
 when
     $player : Player(status == PlayerStatus.OUT)
-    hasStyle( thing, $player.name; )
+    hasStyle( similarPlayer, $player.name, $player.nbaTeam.name; )
 then
-    System.out.println("Found player with similar style: " + thing);
+    System.out.println("Found player with similar style: " + similarPlayer);
 end
 
-//rule "Find players with similar style on the same team"
-//when
-//    $player : Player(status == PlayerStatus.OUT)
-//    $similarPlayer : Player(
-//        nbaTeam == $player.nbaTeam,
-//        playerStyle == $player.playerStyle.name || (playerStyle == $style && eval(findPlayerStyle($player.playerStyle, $style))),
-//        status != PlayerStatus.OUT
-//    )
-//then
-//    System.out.println("Found player with similar style: " + $similarPlayer.getName());
-//end
-//
-//function boolean findPlayerStyle(PlayerStyle root, PlayerStyle target) {
-//    if (root == null) return false;
-//    if (root.equals(target)) return true;
-//    return findPlayerStyle(root.getPlayerStyle(), target);
-//}
+

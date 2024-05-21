@@ -5,6 +5,7 @@ import com.ftn.sbnz.repository.players.IPlayerRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -235,16 +236,20 @@ public class SampleHomeController {
 
 	@RequestMapping("/style")
 	public String style() {
-		Player p = new Player();
-		p.setName("Miki");
-//		p.setStatus(PlayerStatus.OUT);
+		Player p = playerRepository.findByName("Jayson Tatum").orElse(null);
 
-		Player p2 = playerRepository.findByName("Jayson Tatum").orElse(null);
-		p2.setStatus(PlayerStatus.OUT);
-		//Player p2 = playerRepository.findByName("Denzel Valentine").orElse(null);
-		p.setPlayerStyle(p2);
-		this.kieSession.insert(p2);
-		this.kieSession.insert(p);
+		for (Object obj : this.kieSession.getObjects()) {
+			if (obj instanceof Player) {
+				p = (Player) obj;
+				if (p.getName().equals("Nikola Jokic")) {
+					break;
+				}
+			}
+		}
+		FactHandle handle = this.kieSession.getFactHandle(p);
+
+		p.setStatus(PlayerStatus.OUT);
+		this.kieSession.update(handle,p);
 		this.kieSession.fireAllRules();
 		return "style";
 	}
