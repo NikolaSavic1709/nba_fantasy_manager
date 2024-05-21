@@ -7,12 +7,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.repository.INBATeamRepository;
 import com.ftn.sbnz.repository.players.IInjuryRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.repository.players.IStatisticalColumnsRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -94,8 +96,36 @@ public class ServiceApplication  {
 		SimpleDateFormat injuriesDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String playersCsvFile="../data/nba2k-full.csv";
 		SimpleDateFormat playersDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+		String playersStatisticCsvFile="../data/players_percentage.csv";
 
-		List<Player> players=new ArrayList<>();
+
+		List<NBATeam> teams=readTeams(teamsCsvFile);
+		List<Player> players=readPlayers(playersCsvFile, playersStatisticCsvFile, teams, playersDateFormat);
+
+		List<Injury> injuries=readInjuries(injuriesCsvFile, players, injuriesDateFormat);
+
+
+
+		for (Player player : players) {
+			kieSession.insert(player.getStatisticalColumns());
+			statisticalColumnsRepository.save(player.getStatisticalColumns());
+		}
+		for (NBATeam team : teams){
+			kieSession.insert(team);
+			nbaTeamRepository.save(team);
+		}
+		for (Player player : players) {
+			kieSession.insert(player);
+//			playerRepository.save(player);
+		}
+		for (Injury injury : injuries){
+			kieSession.insert(injury);
+			injuryRepository.save(injury);
+		}
+		kieSession.fireAllRules();
+		System.out.println("gotovo");
+    }
+	private List<NBATeam> readTeams(String teamsCsvFile){
 		List<NBATeam> teams=new ArrayList<>();
 		try (Reader reader = new FileReader(teamsCsvFile);
 			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
@@ -109,9 +139,24 @@ public class ServiceApplication  {
 			}
 		}
 		catch (IOException e) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
+		}
+		return teams;
+	}
+	private List<Player> readPlayers(String playersCsvFile, String playersStatisticCsvFile, List<NBATeam> teams, SimpleDateFormat playersDateFormat){
+		List<Player> players=new ArrayList<>();
+		Map<String, List<Integer>> positionMap = new HashMap<>();
 
+		// Initialize the map with keys and corresponding lists of integers
+		positionMap.put("PG", Arrays.asList(1, 2));
+		positionMap.put("SG", Arrays.asList(2, 3, 1));
+		positionMap.put("SF", Arrays.asList(3, 4, 2));
+		positionMap.put("PF", Arrays.asList(4, 5, 3));
+		positionMap.put("C", Arrays.asList(5, 4));
+		positionMap.put("SF-PF", Arrays.asList(3, 4));
+		positionMap.put("PF-SF", Arrays.asList(4, 3));
+		positionMap.put("SF-SG", Arrays.asList(3, 2));
+		positionMap.put("PF-C", Arrays.asList(4, 5));
 		try (Reader reader = new FileReader(playersCsvFile);
 			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 			for (CSVRecord csvRecord : csvParser) {
@@ -138,8 +183,7 @@ public class ServiceApplication  {
 							.filter(team -> teamName.equals(team.getName()))
 							.findFirst();
 
-                    result.ifPresent(player::setNbaTeam);
-                    result.ifPresent(nbaTeam -> nbaTeam.getPlayers().add(player));
+					result.ifPresent(player::setNbaTeam);
 					players.add(player);
 				}
 			}
@@ -148,18 +192,58 @@ public class ServiceApplication  {
 		catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
+		try (Reader reader = new FileReader(playersStatisticCsvFile);
+			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+			for (CSVRecord csvRecord : csvParser) {
+				// Extract fields from each record
+				String name = csvRecord.get("Player");
+				String position= csvRecord.get("Pos");
 
 
-//		NBATeam phoenix=new NBATeam();
-//		phoenix.setName("Phoenix");
-//		phoenix.setPlayers(new ArrayList<>());
+
+				StatisticalColumns statisticalColumns=new StatisticalColumns();
+				statisticalColumns.setGp(Integer.parseInt(csvRecord.get("G")));
+				statisticalColumns.setPpg(Double.parseDouble(csvRecord.get("PTS")));
+				statisticalColumns.setApg(Double.parseDouble(csvRecord.get("AST")));
+				statisticalColumns.setRpg(Double.parseDouble(csvRecord.get("TRB")));
+				statisticalColumns.setTpg(Double.parseDouble(csvRecord.get("TOV")));
+				statisticalColumns.setSpg(Double.parseDouble(csvRecord.get("STL")));
+				statisticalColumns.setBpg(Double.parseDouble(csvRecord.get("BLK")));
+				statisticalColumns.setPfpg(Double.parseDouble(csvRecord.get("PF")));
+				statisticalColumns.setMpg(Double.parseDouble(csvRecord.get("MP")));
+				statisticalColumns.setFgPercentage(Double.parseDouble(csvRecord.get("FG%")));
+				statisticalColumns.setTwoPointPercentage(Double.parseDouble(csvRecord.get("2P%")));
+				statisticalColumns.setThreePointPercentage(Double.parseDouble(csvRecord.get("3P%")));
+
+
+				Optional<Player> result = players.stream()
+						.filter(player -> name.equals(player.getName()))
+						.findFirst();
+
+                result.ifPresent(player -> player.setStatisticalColumns(statisticalColumns));
+				result.ifPresent(player -> player.setPosition(positionMap.get(position)));
+
+				result.ifPresent(player -> player.getNbaTeam().getPlayers().add(player));
+
+
+			}
+
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return players.stream()
+				.filter(player -> player.getStatisticalColumns() != null)
+				.collect(Collectors.toList());
+	}
+	private List<Injury> readInjuries(String injuriesCsvFile, List<Player> players, SimpleDateFormat injuriesDateFormat){
+		List<Injury> injuries=new ArrayList<>();
 		try (Reader reader = new FileReader(injuriesCsvFile);
 			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 
 //			String lastReadName="";
 			Player lastReadPlayer=new Player();
 			lastReadPlayer.setName("");
-			List<Injury> injuries=new ArrayList<>();
 			Player current_player=players.get(0);
 			for (CSVRecord csvRecord : csvParser) {
 				// Extract fields from each record
@@ -204,31 +288,13 @@ public class ServiceApplication  {
 				}
 
 			}
-			for (NBATeam team : teams){
-				kieSession.insert(team);
-				nbaTeamRepository.save(team);
-			}
 
-			for (Player player : players) {
-				kieSession.insert(player);
-				StatisticalColumns gordonoveKolone = new StatisticalColumns();
-				gordonoveKolone.setGp(0);
-				statisticalColumnsRepository.save(gordonoveKolone);
-				player.setStatisticalColumns(gordonoveKolone);
-				player.setTotalBonusPoints(0);
-				playerRepository.save(player);
-			}
-			for (Injury injury : injuries){
-				kieSession.insert(injury);
-				injuryRepository.save(injury);
-			}
-			kieSession.fireAllRules();
-//			kieSession.dispose();
 
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
-    }
+		return injuries;
+	}
 	private boolean isRecovery(String target){
 		List<String> recoveryStrings=new ArrayList<>();
 		recoveryStrings.add("returned to lineup");

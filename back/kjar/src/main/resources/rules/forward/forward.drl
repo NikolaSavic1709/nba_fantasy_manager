@@ -35,7 +35,8 @@ no-loop true
                       average(gp)
                     )
     then
-        System.out.println($p.getName());
+        System.out.println($gpAvg);
+        System.out.println($estDays);
         modify($p){setTotalBonusPoints(((int)  -$gpAvg) + $bonus + $gp - $estDays )};
         System.out.println($p.getTotalBonusPoints());
 end
