@@ -14,8 +14,10 @@ import com.ftn.sbnz.repository.INBATeamRepository;
 import com.ftn.sbnz.repository.players.IInjuryRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.repository.players.IStatisticalColumnsRepository;
+import com.ftn.sbnz.utils.TemplateLoader;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
@@ -75,8 +77,14 @@ public class ServiceApplication  {
 	}
 	@Bean
 	public KieSession kieSession(){
-		KieContainer kieContainer= this.kieContainer();
-		KieSession kieSession = kieContainer.newKieSession("fwKsession");
+//		KieContainer kieContainer= this.kieContainer();
+//		KieSession kieSession = kieContainer.newKieSession("fwKsession");
+//		return kieSession;
+
+		//KieHelper kieHelper = TemplateLoader.loadFromObjects();
+		KieHelper kieHelper = TemplateLoader.loadFromSpreadsheet();
+		KieSession kieSession = kieHelper.build().newKieSession();
+		TemplateLoader.getNumberOfRules(kieSession);
 		return kieSession;
 	}
 	
