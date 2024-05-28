@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ftn.sbnz.model.events.Item;
+import com.ftn.sbnz.model.events.unused.Item;
 
 
 @Service

@@ -1,6 +1,8 @@
 package com.ftn.sbnz.service;
 
 import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.model.models.stats.CategoryScores;
+import com.ftn.sbnz.model.models.stats.StatisticalColumns;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;

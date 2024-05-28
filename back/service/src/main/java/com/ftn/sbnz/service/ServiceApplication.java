@@ -10,12 +10,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.model.models.stats.StatisticalColumns;
 import com.ftn.sbnz.repository.INBATeamRepository;
 import com.ftn.sbnz.repository.players.IInjuryRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.repository.players.IStatisticalColumnsRepository;
 import com.ftn.sbnz.utils.TemplateLoader;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
