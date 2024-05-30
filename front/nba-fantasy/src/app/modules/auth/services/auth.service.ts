@@ -30,7 +30,7 @@ export class AuthService {
   constructor(private http: HttpClient,private router:Router) {}
 
   logout(): Observable<string> {
-    return this.http.get(environment.apiHost + "user/logout", {responseType: 'text'});
+    return this.http.get(environment.apiHost + "logout", {responseType: 'text'});
   }
 
   setUser(): void {
@@ -87,7 +87,7 @@ export class AuthService {
         localStorage.setItem('user', JSON.stringify(result.accessToken));
         this.setUser();
 
-        if (this.getRole() == "ADMINISTRATOR") {
+        if (this.getRole() == "ADMIN") {
           this.router.navigate(['/administrator']);
         } else if (this.getRole() == "MANAGER") {
           this.router.navigate(['/manager']);
@@ -104,7 +104,7 @@ export class AuthService {
 
   
   login(auth: Credentials): Observable<Token> {
-    return this.http.post<Token>(environment.apiHost + "user/login",
+    return this.http.post<Token>(environment.apiHost + "login",
       {
         email: auth.email,
         password: auth.password

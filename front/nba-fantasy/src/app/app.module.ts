@@ -8,6 +8,8 @@ import { LayoutModule } from './modules/layout/layout.module';
 import { UnregisteredUserModule } from './modules/unregistered-user/unregistered-user.module';
 import { AppRoutingModule } from 'src/infrastructure/app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
+import { AdminModule } from './modules/admin/admin.module';
+import { ManagerModule } from './modules/manager/manager.module';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
     AuthModule,
     LayoutModule,
-    UnregisteredUserModule
+    UnregisteredUserModule,
+    AdminModule,
+    ManagerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

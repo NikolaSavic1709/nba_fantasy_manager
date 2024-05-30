@@ -25,8 +25,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/")
-@CrossOrigin
+@RequestMapping(value = "/api")
 public class AuthenticationController {
 
     @Autowired
@@ -49,7 +48,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserCredentialsDTO userCredentialsDTO) throws Exception {
+    public ResponseEntity<?> login(@RequestBody UserCredentialsDTO userCredentialsDTO) throws Exception {
 
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(

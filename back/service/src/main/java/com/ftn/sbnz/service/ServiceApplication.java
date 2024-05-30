@@ -36,7 +36,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"com.ftn.sbnz"})
 @EnableJpaRepositories(basePackages = "com.ftn.sbnz.repository")
 @EntityScan(basePackages = "com.ftn.sbnz.model.models")
 public class ServiceApplication  {

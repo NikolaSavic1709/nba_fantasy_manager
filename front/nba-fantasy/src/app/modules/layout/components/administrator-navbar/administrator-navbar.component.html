@@ -1,0 +1,12 @@
+<div id="admin">
+    <div id="admin-mid-div"></div>
+    <button mat-raised-button id="home-button" (click)="toHome()"
+            [ngClass]="selectedPage===enumSP.HOME ? 'navbar-button selected-button': 'navbar-button'">Home
+    </button>
+    
+    <button mat-raised-button id="players-button" (click)="toPlayers()"
+            [ngClass]="selectedPage===enumSP.PLAYERS ? 'navbar-button selected-button': 'navbar-button'">Players
+    </button>
+    <div id="admin-right-div"></div>
+    <button mat-raised-button class="navbar-button" id="sign-out-button" (click)="logout()">Sign out</button>
+  </div>

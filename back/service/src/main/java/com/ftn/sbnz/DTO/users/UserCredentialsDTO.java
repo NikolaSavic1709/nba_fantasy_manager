@@ -15,15 +15,15 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 public class UserCredentialsDTO {
     //@Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
-    @NotNull
-    @NotEmpty
-    @NotBlank
+//    @NotNull
+//    @NotEmpty
+//    @NotBlank
     private String email;
 
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    @Length(min = 6)
+//    @NotNull
+//    @NotEmpty
+//    @NotBlank
+//    @Length(min = 6)
     private String password;
 
 }
