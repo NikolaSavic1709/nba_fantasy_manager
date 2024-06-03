@@ -1,5 +1,6 @@
 package com.ftn.sbnz.model.models;
 
+import com.ftn.sbnz.model.models.injuries.Injury;
 import com.ftn.sbnz.model.models.stats.FantasyStatisticalColumns;
 import com.ftn.sbnz.model.models.stats.StatisticalColumns;
 import lombok.*;

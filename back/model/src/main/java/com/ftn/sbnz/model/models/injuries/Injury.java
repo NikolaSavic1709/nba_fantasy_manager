@@ -1,13 +1,15 @@
-package com.ftn.sbnz.model.models;
+package com.ftn.sbnz.model.models.injuries;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.ftn.sbnz.model.models.Player;
+import lombok.*;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -16,8 +18,8 @@ public class Injury {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
-    private String name;
+    @ElementCollection
+    private List<String> name;
     private String description;
     private boolean isRecovered;
     private Integer recoveryTimeInDays;
