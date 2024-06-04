@@ -18,6 +18,9 @@ import com.ftn.sbnz.repository.players.IInjuryRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.repository.players.IStatisticalColumnsRepository;
 import com.ftn.sbnz.utils.TemplateLoader;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,9 +87,26 @@ public class ServiceApplication  {
 //		return kieSession;
 
 		//KieHelper kieHelper = TemplateLoader.loadFromObjects();
+
+
+//		KieHelper kieHelper = TemplateLoader.loadFromSpreadsheet();
+//		KieSession kieSession = kieHelper.build().newKieSession();
+//		TemplateLoader.getNumberOfRules(kieSession);
+//		return kieSession;
+
 		KieHelper kieHelper = TemplateLoader.loadFromSpreadsheet();
-		KieSession kieSession = kieHelper.build().newKieSession();
+
+		KieServices kieServices = KieServices.Factory.get();
+
+		KieBaseConfiguration kieBaseConfiguration = kieServices.newKieBaseConfiguration();
+		kieBaseConfiguration.setOption(EventProcessingOption.STREAM);
+
+		KieBase kieBase = kieHelper.build(kieBaseConfiguration);
+
+		KieSession kieSession = kieBase.newKieSession();
+
 		TemplateLoader.getNumberOfRules(kieSession);
+
 		return kieSession;
 	}
 	
@@ -113,12 +133,20 @@ public class ServiceApplication  {
 		List<String> specificBodyParts=new ArrayList<>();
 		List<String> bodyParts=new ArrayList<>();
 
-		try (Reader reader = new FileReader(teamsCsvFile);
+		try (Reader reader = new FileReader(injuriesBackwardCsvFile);
 			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 			for (CSVRecord csvRecord : csvParser) {
-				injuryLevels.add(csvRecord.get("Injury Severity Level"));
-				specificBodyParts.add(csvRecord.get("Specific Body Part"));
-				bodyParts.add(csvRecord.get("Body Part"));
+				String injurySeverityLevel=csvRecord.get("Injury_Severity_Level");
+				if (!Objects.equals(injurySeverityLevel, ""))
+					injuryLevels.add(injurySeverityLevel);
+				String specificBodyPart = csvRecord.get("Specific_Body_Part");
+				if (!Objects.equals(specificBodyPart, "")) {
+					specificBodyParts.add(specificBodyPart);
+				}
+				String bodyPart = csvRecord.get("Body_Part");
+				if (!Objects.equals(bodyPart, "")) {
+					bodyParts.add(bodyPart);
+				}
 			}
 		}
 		catch (IOException e) {
@@ -339,9 +367,12 @@ public class ServiceApplication  {
 
 		Map<String, InjuryHistoryData> injuryHistoryDataMap = new HashMap<>();
 
-		InjuryHistoryData root=new InjuryHistoryData("",0.0,0);
+		InjuryHistoryData root=new InjuryHistoryData(0,"",0.0,0);
 		injuryHistoryDataMap.put("",root);
 		String foundInjuryLevel, foundSpecificBodyPart, foundBodyPart;
+
+		int currId=1;
+
 		for (Injury injury: injuries)
 		{
 			foundInjuryLevel=null;
@@ -353,26 +384,26 @@ public class ServiceApplication  {
 					foundBodyPart=bodyPart.toLowerCase();
 			if (foundBodyPart!=null)
 			{
-				for(String specificBodyPart: specificBodyParts)
-					if(injury.getDescription().toLowerCase().contains(specificBodyPart.toLowerCase()))
-						foundSpecificBodyPart=specificBodyPart.toLowerCase();
-				if (foundSpecificBodyPart!=null) {
-					for (String injuryLevel : injuryLevels)
-						if (injury.getDescription().toLowerCase().contains(injuryLevel.toLowerCase()))
-							foundInjuryLevel = injuryLevel.toLowerCase();
-					if (foundInjuryLevel!=null)
+				for(String injuryLevel: injuryLevels)
+					if(injury.getDescription().toLowerCase().contains(injuryLevel.toLowerCase()))
+						foundInjuryLevel=injuryLevel.toLowerCase();
+				if (foundInjuryLevel!=null) {
+					for (String specificBodyPart : specificBodyParts)
+						if (injury.getDescription().toLowerCase().contains(specificBodyPart.toLowerCase()))
+							foundSpecificBodyPart = specificBodyPart.toLowerCase();
+					if (foundSpecificBodyPart!=null)
 					{
-						InjuryHistoryData ihd=injuryHistoryDataMap.get(foundBodyPart+" "+foundSpecificBodyPart+" "+foundInjuryLevel);
+						InjuryHistoryData ihd=injuryHistoryDataMap.get(foundBodyPart+"_"+foundInjuryLevel+"_"+foundSpecificBodyPart);
 						if(ihd==null)
-							injuryHistoryDataMap.put(foundBodyPart+" "+foundSpecificBodyPart+" "+foundInjuryLevel, new InjuryHistoryData(foundBodyPart+" "+foundSpecificBodyPart+" "+foundInjuryLevel, injury.getRecoveryTimeInDays(), 1));
+							injuryHistoryDataMap.put(foundBodyPart+"_"+foundInjuryLevel+"_"+foundSpecificBodyPart, new InjuryHistoryData(currId++, foundBodyPart+"_"+foundInjuryLevel+"_"+foundSpecificBodyPart, injury.getRecoveryTimeInDays(), 1));
 						else {
 							ihd.setInjuryCount(ihd.getInjuryCount()+1);
 							ihd.setTotalDays(ihd.getTotalDays()+ injury.getRecoveryTimeInDays());
 						}
 					}
-					InjuryHistoryData ihd=injuryHistoryDataMap.get(foundBodyPart+" "+foundSpecificBodyPart);
+					InjuryHistoryData ihd=injuryHistoryDataMap.get(foundBodyPart+"_"+foundInjuryLevel);
 					if(ihd==null)
-						injuryHistoryDataMap.put(foundBodyPart+" "+foundSpecificBodyPart, new InjuryHistoryData(foundBodyPart+" "+foundSpecificBodyPart, injury.getRecoveryTimeInDays(), 1));
+						injuryHistoryDataMap.put(foundBodyPart+"_"+foundInjuryLevel, new InjuryHistoryData(currId++,foundBodyPart+"_"+foundInjuryLevel, injury.getRecoveryTimeInDays(), 1));
 					else {
 						ihd.setInjuryCount(ihd.getInjuryCount()+1);
 						ihd.setTotalDays(ihd.getTotalDays()+ injury.getRecoveryTimeInDays());
@@ -380,7 +411,7 @@ public class ServiceApplication  {
 				}
 				InjuryHistoryData ihd=injuryHistoryDataMap.get(foundBodyPart);
 				if(ihd==null)
-					injuryHistoryDataMap.put(foundBodyPart, new InjuryHistoryData(foundBodyPart, injury.getRecoveryTimeInDays(), 1));
+					injuryHistoryDataMap.put(foundBodyPart, new InjuryHistoryData(currId++, foundBodyPart, injury.getRecoveryTimeInDays(), 1));
 				else {
 					ihd.setInjuryCount(ihd.getInjuryCount()+1);
 					ihd.setTotalDays(ihd.getTotalDays()+ injury.getRecoveryTimeInDays());

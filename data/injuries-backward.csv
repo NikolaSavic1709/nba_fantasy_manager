@@ -1,29 +1,32 @@
-Body Part,Specific Body Part,Injury Severity Level,
-hip,Achilles,sore,
-shoulder,ligament,sprain,
-knee,meniscus,bruise,
-foot,adductor,irritation,
-toe,nerve,contusion,
-thigh,patellar tendon,strain,
-groin,plantar fascia,fracture,
-lower leg,bone,dislocation,
-chest,quadriceps tendon,tear,
-heel,soleus,stiff,
-leg,MCL,tight,
-ankle,LCL,inflammation,
-forearm,hamstring,bursitis,
-ribs,ACL,tendon,
-arm,PCL,rupture,
-hand,,spasm,
-wrist,,pain,
-abdomen,,install,
-elbow,,tendinosis,
-finger,,,
-thumb,,,
-calf,,,
-lower back,,,
-back,,,
-neck,,,
-quadriceps,,,
-head,,,
-illness,,,
+Body_Part,Specific_Body_Part,Injury_Severity_Level
+hip,PCL,sore
+shoulder,ligament,sprain
+knee,meniscus,bruise
+foot,adductor,irritation
+toe,nerve,contusion
+thigh,patellar tendon,strain
+groin,plantar fascia,fracture
+lower leg,bone,dislocation
+chest,quadriceps tendon,tear
+heel,soleus,stiff
+leg,MCL,tight
+ankle,LCL,inflammation
+forearm,hamstring,bursitis
+ribs,ACL,tendon
+arm,flexor,rupture
+hand,,spasm
+wrist,,pain
+abdomen,,install
+elbow,,tendinosis
+finger,,
+thumb,,
+calf,,
+lower back,,
+back,,
+neck,,
+quadriceps,,
+head,,
+illness,,
+eye,,
+Achilles,,
+concussion,,

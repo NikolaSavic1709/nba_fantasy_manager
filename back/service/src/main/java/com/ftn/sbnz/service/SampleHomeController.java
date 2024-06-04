@@ -2,7 +2,6 @@ package com.ftn.sbnz.service;
 
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.model.models.stats.CategoryScores;
-import com.ftn.sbnz.model.models.stats.StatisticalColumns;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
@@ -37,7 +36,7 @@ public class SampleHomeController {
     }
 
     @RequestMapping("/injury")
-	public String injury() {
+	public Integer injury() {
 
 		Player p = playerRepository.getReferenceById(1); //Lebron 1, Curry 5
 
@@ -48,11 +47,13 @@ public class SampleHomeController {
 		i.setTimestamp(new Date());
 		i.setPlayer(p);
 
+		List<String> injuryName=new ArrayList<>(List.of("lips", "strain", ""));
+		i.setName(injuryName);
 		//kieSession.getAgenda().getAgendaGroup("injury-group").setFocus();
 		this.kieSession.insert(i);
 		this.kieSession.fireAllRules();
 //		this.kieSession.dispose();
-		return i.getEstimatedRecoveryTimeInDays().toString();
+		return i.getEstimatedRecoveryTimeInDays();
 	}
 
 	@RequestMapping("/recovery")

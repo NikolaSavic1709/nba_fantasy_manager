@@ -1,0 +1,103 @@
+.navbar-button {
+    box-sizing: border-box;
+  
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Nunito';
+    letter-spacing: 0.3px;
+  
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    padding: 8px;
+  
+    width: 94px;
+    height: 35px;
+    min-width: 94px;
+    color: white !important;
+    background-color: rgba(38, 50, 56, 0.5) !important;
+  
+  }
+  
+  #sign-out-button {
+    border-radius: 8px;
+    margin: 10px;
+    color: white;
+    background-color: rgba(38, 50, 56, 0.5);
+  }
+  
+  #home-button, #players-button {
+    border-radius: 0;
+    margin: 10px 0;
+  }
+  
+  #players-button {
+    padding-inline: 3.5em;
+  }
+  
+  .selected-button {
+    color: rgba(38, 50, 56, 0.5) !important;
+    background-color: white !important;
+  }
+  
+  #sign-out-button:hover {
+    color: rgba(38, 50, 56, 0.5);
+    background-color: white;
+  }
+  
+  #admin-mid-div {
+    box-sizing: content-box;
+    width: 750px;
+  }
+  
+  #admin-right-div {
+    box-sizing: content-box;
+    width: 100px;
+  }
+  
+  #admin {
+    box-sizing: content-box;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 0px;
+  }
+  
+  @media (max-width: 1500px) {
+    #admin-mid-div {
+      width: 400px;
+    }
+  
+    #admin-right-div {
+      width: 50px;
+    }
+  }
+  
+  @media (max-width: 1100px) {
+    #admin-mid-div {
+      width: 200px;
+    }
+  
+  
+  }
+  
+  @media (max-width: 580px) {
+    #navbar {
+      gap: 5px;
+    }
+  
+    #pre-div {
+      width: 5%;
+    }
+  
+    #mid-div {
+      width: 5%;
+    }
+  
+    .navbar-button {
+      box-sizing: border-box;
+      font-size: 14px;
+      width: 75px;
+      min-width: 75px;
+    }
+  }

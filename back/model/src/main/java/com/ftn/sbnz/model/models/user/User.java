@@ -13,6 +13,13 @@ import jakarta.validation.constraints.*;
 
 import static jakarta.persistence.InheritanceType.JOINED;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,8 +28,7 @@ import static jakarta.persistence.InheritanceType.JOINED;
 @Inheritance(strategy=JOINED)
 @Table(name = "members")
 @Entity
-public class User {
-//public class User implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,37 +59,37 @@ public class User {
     @Column(name = "is_enabled")
     private boolean isEnabled;
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        Authority authority = this.getAuthority();
-//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority(authority.getName()));
-//        return authorities;
-//    }
-//
-//    @Override
-//    public String getUsername() {
-//        return email;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonExpired() {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonLocked() {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean isCredentialsNonExpired() {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean isEnabled() {
-//        return isEnabled;
-//    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Authority authority = this.getAuthority();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(authority.getName()));
+        return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
 
 }
