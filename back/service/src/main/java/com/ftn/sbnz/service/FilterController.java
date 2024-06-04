@@ -3,6 +3,7 @@ package com.ftn.sbnz.service;
 
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
+import com.ftn.sbnz.utils.KieSessionProvider;
 import org.apache.commons.io.IOUtils;
 import org.drools.template.ObjectDataCompiler;
 import org.kie.api.KieBase;
@@ -32,21 +33,21 @@ public class FilterController {
 
     private final KieContainer kieContainer;
 
-    private final KieSession kieSession;
+    private final KieSessionProvider kieSessionProvider;
     private final IPlayerRepository playerRepository;
 
     @Autowired
-    public FilterController(KieContainer kieContainer, KieSession kieSession, IPlayerRepository playerRepository) {
+    public FilterController(KieContainer kieContainer, KieSessionProvider kieSessionProvider, IPlayerRepository playerRepository) {
         this.kieContainer = kieContainer;
-        this.kieSession = kieSession;
+        this.kieSessionProvider = kieSessionProvider;
         this.playerRepository = playerRepository;
     }
 
     @GetMapping(value = "/filter_1")
     public String filter1() {
         StartFilter sf = new StartFilter(1);
-        kieSession.insert(sf);
-        int i = kieSession.fireAllRules();
+        kieSessionProvider.getKieSession().insert(sf);
+        int i = kieSessionProvider.getKieSession().fireAllRules();
         System.out.println(i);
         return "filter";
     }
@@ -54,8 +55,8 @@ public class FilterController {
     @GetMapping(value = "/filter_2")
     public String filter2() {
         StartFilter sf = new StartFilter(2);
-        kieSession.insert(sf);
-        int i = kieSession.fireAllRules();
+        kieSessionProvider.getKieSession().insert(sf);
+        int i = kieSessionProvider.getKieSession().fireAllRules();
         System.out.println(i);
         return "filter2";
     }
@@ -63,8 +64,8 @@ public class FilterController {
     @GetMapping(value = "/filter_3")
     public String filter3() {
         StartFilter sf = new StartFilter(3);
-        kieSession.insert(sf);
-        int i = kieSession.fireAllRules();
+        kieSessionProvider.getKieSession().insert(sf);
+        int i = kieSessionProvider.getKieSession().fireAllRules();
         System.out.println(i);
         return "filter3";
     }
@@ -72,8 +73,8 @@ public class FilterController {
     @GetMapping(value = "/filter_4")
     public String filter4() {
         StartFilter sf = new StartFilter(4);
-        kieSession.insert(sf);
-        int i = kieSession.fireAllRules();
+        kieSessionProvider.getKieSession().insert(sf);
+        int i = kieSessionProvider.getKieSession().fireAllRules();
         System.out.println(i);
         return "filter4";
     }

@@ -16,3 +16,16 @@ VALUES ('miki@gmail.com', 'Tupatu', 'Serbedzija',
 INSERT INTO MANAGER(id)
 VALUES (2);--admin021
 
+
+-- filters
+INSERT INTO FILTER (min_price, max_price, team, position)
+VALUES (10, 100, 'Minnesota Timberwolves', 5);
+
+INSERT INTO FILTER (min_price, max_price, team, position)
+VALUES (10, 100, 'Golden State Warriors', 1);
+
+INSERT INTO FILTER (min_price, max_price, team, position)
+VALUES (10, 100, 'Denver Nuggets', 5);
+
+INSERT INTO FILTER (min_price, max_price, team, position)
+VALUES (10, 100, 'Los Angeles Lakers', 1);

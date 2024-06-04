@@ -2,6 +2,7 @@ package com.ftn.sbnz.service;
 
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
+import com.ftn.sbnz.utils.KieSessionProvider;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -24,13 +25,13 @@ public class SampleHomeController {
 
 	private final KieContainer kieContainer;
 
-	private final KieSession kieSession;
+	private final KieSessionProvider kieSessionProvider;
 	private final IPlayerRepository playerRepository;
 
 	@Autowired
-    public SampleHomeController(KieContainer kieContainer, KieSession kieSession, IPlayerRepository playerRepository) {
+    public SampleHomeController(KieContainer kieContainer, KieSessionProvider kieSessionProvider, IPlayerRepository playerRepository) {
         this.kieContainer = kieContainer;
-		this.kieSession = kieSession;
+		this.kieSessionProvider = kieSessionProvider;
         this.playerRepository = playerRepository;
     }
 
@@ -45,10 +46,10 @@ public class SampleHomeController {
 		i.setTimestamp(new Date());
 		i.setPlayer(p);
 
-		//kieSession.getAgenda().getAgendaGroup("injury-group").setFocus();
-		this.kieSession.insert(i);
-		this.kieSession.fireAllRules();
-//		this.kieSession.dispose();
+		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("injury-group").setFocus();
+		this.kieSessionProvider.getKieSession().insert(i);
+		this.kieSessionProvider.getKieSession().fireAllRules();
+//		this.kieSessionProvider.getKieSession().dispose();
 		return i.getEstimatedRecoveryTimeInDays().toString();
 	}
 	@RequestMapping("/injury_1")
@@ -118,19 +119,19 @@ public class SampleHomeController {
 		denver.getPlayers().add(gordon);
 		Injury i = new Injury(1L,"name", "placed on IL with strained right hip flexor", false, null, null, new Date(), gordon);
 
-		//kieSession.getAgenda().getAgendaGroup("injury-group").setFocus();
-		this.kieSession.insert(i);
+		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("injury-group").setFocus();
+		this.kieSessionProvider.getKieSession().insert(i);
 
-		this.kieSession.insert(jokic);
-		this.kieSession.insert(murray);
-		this.kieSession.insert(gordon);
-		this.kieSession.insert(edwards);
-		this.kieSession.insert(denver);
-		this.kieSession.insert(minnesota);
-		this.kieSession.insert(categoryScores);
+		this.kieSessionProvider.getKieSession().insert(jokic);
+		this.kieSessionProvider.getKieSession().insert(murray);
+		this.kieSessionProvider.getKieSession().insert(gordon);
+		this.kieSessionProvider.getKieSession().insert(edwards);
+		this.kieSessionProvider.getKieSession().insert(denver);
+		this.kieSessionProvider.getKieSession().insert(minnesota);
+		this.kieSessionProvider.getKieSession().insert(categoryScores);
 
-		this.kieSession.fireAllRules();
-//		this.kieSession.dispose();
+		this.kieSessionProvider.getKieSession().fireAllRules();
+//		this.kieSessionProvider.getKieSession().dispose();
 		return i.getEstimatedRecoveryTimeInDays().toString();
 	}
 
@@ -147,10 +148,10 @@ public class SampleHomeController {
 		Date date = myCal.getTime();
 		Injury i = new Injury(1L,"name", "desc", true, null, null, date, p);
 
-		//kieSession.getAgenda().getAgendaGroup("injury-group").setFocus();
-		kieSession.insert(i);
-		kieSession.insert(p);
-		kieSession.fireAllRules();
+		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("injury-group").setFocus();
+		kieSessionProvider.getKieSession().insert(i);
+		kieSessionProvider.getKieSession().insert(p);
+		kieSessionProvider.getKieSession().fireAllRules();
 		return "rec";
 	}
 
@@ -159,8 +160,8 @@ public class SampleHomeController {
 	public Filter filter(@RequestParam(required = true) Integer minPrice, @RequestParam(required = true) Integer maxPrice,
 						 @RequestParam(required = true) String team, @RequestParam(required = true) Integer position) {
 
-		//kieSession.getAgenda().getAgendaGroup("recommendation-group").setFocus();
-		Filter filter = new Filter(minPrice, maxPrice, team, position, null);
+		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("recommendation-group").setFocus();
+		Filter filter = new Filter(1L, minPrice, maxPrice, team, position);
 		NBATeam team1 = new NBATeam(1L, null, "Denver");
 		NBATeam team2 = new NBATeam(1L, null, "Lakers");
 
@@ -178,10 +179,10 @@ public class SampleHomeController {
 		p2.setNbaTeam(team2);
 		p2.setPosition(Arrays.asList(4, 5));
 
-		kieSession.insert(filter);
-		kieSession.insert(p1);
-		kieSession.insert(p2);
-		kieSession.fireAllRules();
+		kieSessionProvider.getKieSession().insert(filter);
+		kieSessionProvider.getKieSession().insert(p1);
+		kieSessionProvider.getKieSession().insert(p2);
+		kieSessionProvider.getKieSession().fireAllRules();
 		return filter;
 	}
 
@@ -201,8 +202,8 @@ public class SampleHomeController {
 
 		RecommendationList rl = new RecommendationList();
 		KieServices ks = KieServices.Factory.get();
-		//kieSession.getAgenda().getAgendaGroup("recommendation-group").setFocus();
-		Collection<?> recommendationLists = kieSession.getObjects(new ObjectFilter() {
+		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("recommendation-group").setFocus();
+		Collection<?> recommendationLists = kieSessionProvider.getKieSession().getObjects(new ObjectFilter() {
 			@Override
 			public boolean accept(Object object) {
 				return object instanceof RecommendationList;
@@ -210,10 +211,10 @@ public class SampleHomeController {
 		});
 
 		if (recommendationLists.isEmpty()) {
-			kieSession.insert(categoryScores);
-			kieSession.insert(rl);
+			kieSessionProvider.getKieSession().insert(categoryScores);
+			kieSessionProvider.getKieSession().insert(rl);
 
-			kieSession.fireAllRules();
+			kieSessionProvider.getKieSession().fireAllRules();
 		} else {
 			rl = (RecommendationList) recommendationLists.iterator().next();
 
@@ -225,7 +226,7 @@ public class SampleHomeController {
 	public String style() {
 		Player p = playerRepository.findByName("Jayson Tatum").orElse(null);
 
-		for (Object obj : this.kieSession.getObjects()) {
+		for (Object obj : this.kieSessionProvider.getKieSession().getObjects()) {
 			if (obj instanceof Player) {
 				p = (Player) obj;
 				if (p.getName().equals("LeBron James")) {
@@ -233,11 +234,11 @@ public class SampleHomeController {
 				}
 			}
 		}
-		FactHandle handle = this.kieSession.getFactHandle(p);
+		FactHandle handle = this.kieSessionProvider.getKieSession().getFactHandle(p);
 
 		p.setStatus(PlayerStatus.OUT);
-		this.kieSession.update(handle,p);
-		this.kieSession.fireAllRules();
+		this.kieSessionProvider.getKieSession().update(handle,p);
+		this.kieSessionProvider.getKieSession().fireAllRules();
 		return "style";
 	}
 

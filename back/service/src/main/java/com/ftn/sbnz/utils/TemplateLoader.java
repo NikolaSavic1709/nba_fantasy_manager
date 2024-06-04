@@ -1,6 +1,8 @@
 package com.ftn.sbnz.utils;
 
 import com.ftn.sbnz.model.models.Filter;
+import com.ftn.sbnz.repository.IFilterRepository;
+import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.service.FilterController;
 import org.drools.template.ObjectDataCompiler;
 import org.drools.decisiontable.ExternalSpreadsheetCompiler;
@@ -12,26 +14,35 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class TemplateLoader {
 
-    public TemplateLoader() {
+
+    private IFilterRepository filterRepository;
+
+    @Autowired
+    public TemplateLoader(IFilterRepository filterRepository) {
+        this.filterRepository = filterRepository;
     }
 
-    public static KieHelper loadFromObjects() {
+    public KieHelper loadFromObjects() {
 
         InputStream template = TemplateLoader.class.getResourceAsStream("/rules/template/filter-player.drt");
-        List<Filter> data = new ArrayList<Filter>();
+        List<Filter> data = filterRepository.findAll();
 
-        data.add(new Filter(10, 100, "Denver Nuggets", 5, 1));
+        //data.add(new Filter(1L,10, 100, "Denver Nuggets", 5));
 
         ObjectDataCompiler converter = new ObjectDataCompiler();
         String drl = converter.compile(data, template);

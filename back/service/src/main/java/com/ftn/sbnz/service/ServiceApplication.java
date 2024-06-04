@@ -10,15 +10,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.repository.IFilterRepository;
 import com.ftn.sbnz.repository.INBATeamRepository;
 import com.ftn.sbnz.repository.players.IInjuryRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.repository.players.IStatisticalColumnsRepository;
+import com.ftn.sbnz.utils.KieSessionProvider;
 import com.ftn.sbnz.utils.TemplateLoader;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import org.kie.api.conf.KieBaseOption;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +53,14 @@ public class ServiceApplication  {
 	@Autowired
 	private INBATeamRepository nbaTeamRepository;
 	@Autowired
+	private IFilterRepository filterRepository;
+	@Autowired
+	private TemplateLoader templateLoader;
+
+	@Autowired
+	private KieSessionProvider kieSessionProvider;
+
+	@Autowired
 	private IStatisticalColumnsRepository statisticalColumnsRepository;
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(ServiceApplication.class, args);
@@ -75,18 +87,21 @@ public class ServiceApplication  {
 		kScanner.start(1000);
 		return kContainer;
 	}
-	@Bean
-	public KieSession kieSession(){
-//		KieContainer kieContainer= this.kieContainer();
-//		KieSession kieSession = kieContainer.newKieSession("fwKsession");
-//		return kieSession;
 
-		//KieHelper kieHelper = TemplateLoader.loadFromObjects();
-		KieHelper kieHelper = TemplateLoader.loadFromSpreadsheet();
-		KieSession kieSession = kieHelper.build().newKieSession();
-		TemplateLoader.getNumberOfRules(kieSession);
-		return kieSession;
-	}
+//	@Bean()
+//	public KieSession kieSession(){
+////		KieContainer kieContainer= this.kieContainer();
+////		KieSession kieSession = kieContainer.newKieSession("fwKsession");
+////		return kieSession;
+//
+//		//KieHelper kieHelper = TemplateLoader.loadFromObjects();
+//		KieHelper kieHelper = templateLoader.loadFromObjects();
+//		KieSession kieSession = kieHelper.build().newKieSession();
+//		TemplateLoader.getNumberOfRules(kieSession);
+//		return kieSession;
+//	}
+
+
 	
 	/*
 	 * KieServices ks = KieServices.Factory.get(); KieContainer kContainer =
@@ -97,7 +112,7 @@ public class ServiceApplication  {
 	 */
 
 	private void readData(){
-		KieSession kieSession= this.kieSession();
+		KieSession kieSession= this.kieSessionProvider.getKieSession();
 
 		String teamsCsvFile="../data/teams.csv";
 		String injuriesCsvFile = "../data/injuries.csv";

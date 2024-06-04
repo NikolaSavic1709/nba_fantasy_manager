@@ -3,7 +3,7 @@ maxPrice
 minPrice
 team
 position
-period
+id
 
 package template;
 
@@ -17,7 +17,7 @@ template "filter-player-rules"
 rule "Filter Players_@{row.rowNumber}"
 no-loop true
 when
-    $f : StartFilter(number == @{period})
+    $f : StartFilter(number == @{id})
     $p: Player(
         status == PlayerStatus.HEALTHY,
         price <= @{maxPrice},
@@ -26,7 +26,7 @@ when
         position.contains(@{position})
     )
 then
-    System.out.println("Filtered Player: " + $p.getName() + "@{period}");
+    System.out.println("Filtered Player: " + $p.getName() + "@{id}");
 end
 
 end template
