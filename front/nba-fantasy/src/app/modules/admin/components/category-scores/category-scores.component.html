@@ -1,0 +1,60 @@
+<div class="content">
+    <h1>Category scores</h1>
+    <div class="example-action-buttons">
+        <button class="action-btn" (click)="accordion.openAll()">Expand All</button>
+        <button class="action-btn" (click)="accordion.closeAll()">Collapse All</button>
+    </div>
+    <mat-accordion class="example-headers-align" multi>
+        <mat-expansion-panel *ngFor="let score of categoryScores">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Category Scores {{score.id}}
+              </mat-panel-title>
+              <mat-panel-description>
+                How many points is each statistic worth
+                <mat-icon *ngIf="score.isActive" class="active-icon">check_circle</mat-icon>
+                <mat-icon *ngIf="!score.isActive" class="inactive-icon" (click)="activateScore(score.id)">play_circle_filled_icon</mat-icon>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+      
+            <mat-form-field appearance="outline">
+              <mat-label>Point score</mat-label>
+              <input matInput type="number" min="-100" max="100" [value]="score.pointScore" readonly>
+            </mat-form-field>
+      
+            <mat-form-field appearance="outline">
+              <mat-label>Rebound Score</mat-label>
+              <input matInput type="number" min="-100" max="100" [value]="score.reboundScore" readonly>
+            </mat-form-field>
+      
+            <mat-form-field appearance="outline">
+              <mat-label>Assist Score</mat-label>
+              <input matInput type="number" min="-100" max="100" [value]="score.assistScore" readonly>
+            </mat-form-field>
+      
+            <mat-form-field appearance="outline">
+              <mat-label>Steal Score</mat-label>
+              <input matInput type="number" min="-100" max="100" [value]="score.stealScore" readonly>
+            </mat-form-field>
+      
+            <mat-form-field appearance="outline">
+              <mat-label>Turnover Score</mat-label>
+              <input matInput type="number" min="-100" max="100" [value]="score.turnoverScore" readonly>
+            </mat-form-field>
+      
+            <mat-form-field appearance="outline">
+              <mat-label>Block Score</mat-label>
+              <input matInput type="number" min="-100" max="100" [value]="score.blockScore" readonly>
+            </mat-form-field>
+      
+            <mat-form-field appearance="outline">
+              <mat-label>Bonus Margin</mat-label>
+              <input matInput type="number" min="-100" max="100" [value]="score.bonusMargin" readonly>
+            </mat-form-field>
+          </mat-expansion-panel>
+
+    </mat-accordion>
+
+</div>
+
+<!-- queue icon  check circle icon   play_circle_filled_icon -->
