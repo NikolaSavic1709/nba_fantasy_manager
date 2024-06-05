@@ -9,6 +9,7 @@ import { UnregisteredUserModule } from './modules/unregistered-user/unregistered
 import { AppRoutingModule } from 'src/infrastructure/app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { AdminModule } from './modules/admin/admin.module';
+import { MaterialModule } from '../infrastructure/material.module'; 
 import { ManagerModule } from './modules/manager/manager.module';
 
 @NgModule({
@@ -23,6 +24,7 @@ import { ManagerModule } from './modules/manager/manager.module';
     AuthModule,
     LayoutModule,
     UnregisteredUserModule,
+    MaterialModule,
     AdminModule,
     ManagerModule
   ],

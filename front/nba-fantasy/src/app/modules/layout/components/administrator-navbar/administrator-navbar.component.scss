@@ -28,9 +28,12 @@
     border-radius: 0;
     margin: 10px 0;
   }
-  
+  #home-button{
+    border-radius: 8px 0 0 8px;
+  }
   #players-button {
     padding-inline: 3.5em;
+    border-radius: 0 8px 8px 0;
   }
   
   .selected-button {

@@ -1,7 +1,6 @@
 package com.ftn.sbnz.utils;
 
 import com.ftn.sbnz.model.models.Filter;
-import com.ftn.sbnz.service.FilterController;
 import org.drools.template.ObjectDataCompiler;
 import org.drools.decisiontable.ExternalSpreadsheetCompiler;
 import org.kie.api.KieBase;

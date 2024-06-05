@@ -1,4 +1,4 @@
-package com.ftn.sbnz.service;
+package com.ftn.sbnz.controller;
 
 
 import com.ftn.sbnz.model.models.*;
