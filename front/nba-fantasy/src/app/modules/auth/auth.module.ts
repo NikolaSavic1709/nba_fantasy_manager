@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LoginComponent } from './components/login/login.component';
 import { MaterialModule } from 'src/infrastructure/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { AuthInterceptor } from './interceptor/auth-interceptor.interceptor';
 
 
 @NgModule({
