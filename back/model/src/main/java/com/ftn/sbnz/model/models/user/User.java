@@ -1,4 +1,4 @@
-package com.ftn.sbnz.model.models;
+package com.ftn.sbnz.model.models.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

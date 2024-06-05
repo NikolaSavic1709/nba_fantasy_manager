@@ -1,0 +1,307 @@
+#content{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 7%;
+    align-items: center;
+    justify-content: space-around;
+}
+#header{
+    width: 90%;
+    background-color: rgb(202, 202, 202);
+    height: 150px;
+}
+.container {
+    flex: 1;
+    padding: 5px;
+    margin: 0 10px;
+    border: 1px solid rgba($color: #000000, $alpha: 0.3);
+
+    border-radius: 10px;
+    background-color: rgb(213, 214, 216);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#containers {
+    display: flex;
+    width: 90%;
+    height: 600px;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 3%;
+}
+.players-container{
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+h3, h4{
+    margin: 15px;
+    color: #5a5a5a;
+    font-weight: 400;
+}
+.player-short{
+    width: 90%;
+    
+    height: 40px;
+    display: grid;
+    grid-template-columns: 8% 2% 58% 10% 12%;
+    grid-template-rows: 50% 45%;
+    row-gap: 3%;
+    column-gap: 3%;
+    background: #bdbdbd;
+    padding: 5px 10px;
+    border: 0.5px solid rgba($color: #000000, $alpha: 0.1);
+
+    margin: auto;
+    cursor: pointer;
+
+    
+}
+.basic-text{
+    justify-self: start;
+    align-self: center;
+    // font-family: 'Nunito';
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+#player-name{
+    grid-row: 1;
+    grid-column: 3;
+    // font-weight: 600;
+    
+}
+#player-team{
+    grid-row: 2;
+    grid-column: 3;
+    // font-weight: 400;
+}
+#player-points{
+    grid-row: 1/3;
+    grid-column: 4;
+    font-weight: 600;
+    font-size: 14px;
+    justify-self: center;
+}
+#injury-icon{
+    grid-row: 1/3;
+    grid-column: 2;
+    font-weight: 600;
+    font-size: 15px;
+    justify-self: center;
+    width: 20px;
+    height: 20px;
+    color: rgb(139, 0, 0);
+}
+#player-position{
+    grid-row: 1/3;
+    grid-column: 1;
+    font-weight: 600;
+    font-size: 14px;
+    justify-self: center;
+}
+#player-remove, #player-add{
+    grid-row: 1/3;
+    grid-column: 5;
+    justify-self: center;
+    align-self: center;
+}
+#player-remove>mat-icon{
+    color: rgb(139, 0, 0);
+}
+#player-add>mat-icon{
+    color: rgb(0, 139, 0);
+}
+#empty{
+    position: relative;
+    top: 50%;
+    // left: 50%;
+    transform: translate(0%, -50%);
+}
+#details{
+    display: grid;
+    grid-template-columns: 50% 30% 17%;
+    grid-template-rows: 6% 2% repeat(7, 5%) 1% 6% repeat(6, 5%);
+    row-gap: 1%;
+    column-gap: 1%;
+
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    
+}
+.label{
+    display: inline-block;
+  width: 15ch;
+  text-align: left;
+}
+.stats-label{
+    display: inline-block;
+  width: 5ch;
+  text-align: left;
+}
+.label-value{
+    display: inline-block;
+  width: 22ch;
+  text-align: right;
+}
+.stats-label-value{
+    display: inline-block;
+  width: 5ch;
+  text-align: right;
+}
+#player-name-label{
+    grid-row: 1/3;
+    grid-column: 1/4;
+    justify-self: center;
+    margin: 5px;
+    font-size: 24px;
+}
+#player-stats-label{
+    grid-row: 11;
+    grid-column: 1/4;
+    justify-self: center;
+    margin: 5px;
+    font-size: 20px;
+}
+#injury-icon-details{
+    justify-self: center;
+    grid-row: 1;
+    grid-column: 3;
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+    color: rgb(139, 0, 0);
+}
+#healthy-icon-details{
+    justify-self: center;
+    grid-row: 1;
+    grid-column: 3;
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+    color: rgb(0, 139, 0);
+}
+#injury-status{
+    justify-self: center;
+    grid-row: 2;
+    grid-column: 3;
+    margin: 0 !important;
+    font-size: 12px;
+    transform: translate(0%, -20%);
+}
+#details>p{
+    margin-left: 20px;
+    align-self: center;
+}
+#team-label{
+    grid-row: 3;
+    grid-column: 1/4;
+}
+#position-label{
+    grid-row: 4;
+    grid-column: 1/4;
+}
+#fantasy-points-label {
+    grid-row: 5;
+    grid-column: 1/4;
+}
+
+#bonus-points-label {
+    grid-row: 6;
+    grid-column: 1/4;
+}
+
+#nationality-label {
+    grid-row: 7;
+    grid-column: 1/4;
+}
+
+#birthday-label {
+    grid-row: 8;
+    grid-column: 1/4;
+}
+
+#price-label {
+    grid-row: 9;
+    grid-column: 1/4;
+}
+#details-hr{
+    grid-row: 10;
+    grid-column: 1/4;
+    border: none; 
+  border-top: 1px solid rgba($color: #000000, $alpha: 0.2);
+  margin: 10px 10px;
+  align-self: center;
+  
+}
+.stats{
+    font-size: 14px;
+    margin-left: 40px !important;
+}
+#gp-label {
+    grid-row: 12;
+    grid-column: 1;
+  }
+  #mpg-label {
+    grid-row: 12;
+    grid-column: 2/4;
+  }
+#ppg-label {
+    grid-row: 13;
+    grid-column: 1;
+  }
+  
+  #rpg-label {
+    grid-row: 13;
+    grid-column: 2/4;
+  }
+  
+  #apg-label {
+    grid-row: 14;
+    grid-column: 1;
+  }
+  
+  #spg-label {
+    grid-row: 14;
+    grid-column: 2/4;
+  }
+  
+  #tpg-label {
+    grid-row: 15;
+    grid-column: 1;
+  }
+  
+  #bpg-label {
+    grid-row: 15;
+    grid-column: 2/4;
+  }
+  
+  #pfpg-label {
+    grid-row: 16;
+    grid-column: 1;
+  }
+  
+  #fgPercentage-label {
+    grid-row: 16;
+    grid-column: 2/4;
+  }
+  
+  #twoPointPercentage-label {
+    grid-row: 17;
+    grid-column: 1;
+  }
+  
+  #threePointPercentage-label {
+    grid-row: 17;
+    grid-column: 2/4;
+  }

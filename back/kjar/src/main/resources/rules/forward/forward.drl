@@ -1,10 +1,10 @@
 package forward;
-import com.ftn.sbnz.model.models.Injury;
+import com.ftn.sbnz.model.models.injuries.Injury;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 import java.util.Date;
 
-import com.ftn.sbnz.model.models.CategoryScores;
+import com.ftn.sbnz.model.models.stats.CategoryScores;
 import com.ftn.sbnz.model.models.RecommendationList
 import java.util.ArrayList
 import java.util.List
@@ -13,35 +13,7 @@ import java.util.stream.Collectors
 import java.util.Comparator;
 
 
-rule "new_injury"
-//agenda-group "injury-group"
-    when
-        $i: Injury(recoveryTimeInDays == null, playerId:player.getId())
-        $p: Player(id==playerId, status==PlayerStatus.HEALTHY)
-    then
-        modify($p){setStatus(PlayerStatus.OUT)};
-        System.out.println($p.getStatus());
-end
 
-// bounus += igrac_ou - prosek tima - broj dana koji propusta
-rule "Change bonus points because of injury"
-//agenda-group "injury-group"
-salience 1
-no-loop true
-    when
-
-        $i: Injury(recoveryTimeInDays == null, $estDays: estimatedRecoveryTimeInDays, desc: description, playerId:player.getId())
-        $p: Player(id==playerId, status==PlayerStatus.OUT, $gp: statisticalColumns.getGp(), team: nbaTeam.getName(), $bonus: totalBonusPoints)
-        Number( $gpAvg: intValue ) from accumulate(
-            Player(nbaTeam.name==team, id!=playerId, gp: statisticalColumns.gp),
-                      average(gp)
-                    )
-    then
-        System.out.println($gpAvg);
-        System.out.println($estDays);
-        modify($p){setTotalBonusPoints(((int)  -$gpAvg) + $bonus + $gp - $estDays )};
-        System.out.println($p.getTotalBonusPoints());
-end
 
 rule "Remove from recommendation list when under bonus margin"
 //agenda-group "injury-group"
@@ -58,20 +30,7 @@ rule "Remove from recommendation list when under bonus margin"
 end
 
 
-rule "recovery"
-//agenda-group "injury-group"
-    when
-        $i: Injury(recoveryTimeInDays == null, recovered == true, playerId:player.getId(), startDate:timestamp)
-        $p: Player(id==playerId, status==PlayerStatus.OUT)
-    then
-        modify($p){setStatus(PlayerStatus.HEALTHY)};
-        Date currentDate = new Date();
-        long difference = currentDate.getTime() - startDate.getTime();
-        long differenceInDays = difference / (24 * 60 * 60 * 1000);
-        modify($i){setRecoveryTimeInDays((int) differenceInDays)};
-        System.out.println($i.getRecoveryTimeInDays());
-        System.out.println($p.getStatus());
-end
+
 
 
 //rule "Update Player Scores"
@@ -126,20 +85,7 @@ end
 //        System.out.println($i.getRecoveryTimeInDays());
 //end
 
-rule "calc_injury_estimated_time"
-//agenda-group "injury-group"
-salience 2
-    when
-        $i: Injury(recoveryTimeInDays == null, desc: description, playerId:player.getId())
-        $p: Player(id==playerId, status==PlayerStatus.OUT)
-        Number( $avg: intValue ) from accumulate(
-               Injury($r: recoveryTimeInDays, recoveryTimeInDays != null, description==desc),
-              average($r)
-            )
-    then
-        System.out.println("calc_injury_estimated_time");
-        modify($i){setEstimatedRecoveryTimeInDays((int) $avg)};
-end
+
 
 //rule "players"
 //    when

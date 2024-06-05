@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.repository.IFilterRepository;
+import com.ftn.sbnz.model.models.injuries.Injury;
+import com.ftn.sbnz.model.models.injuries.InjuryHistoryData;
+import com.ftn.sbnz.model.models.stats.StatisticalColumns;
 import com.ftn.sbnz.repository.INBATeamRepository;
 import com.ftn.sbnz.repository.players.IInjuryRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
@@ -19,6 +22,9 @@ import com.ftn.sbnz.utils.KieSessionProvider;
 import com.ftn.sbnz.utils.TemplateLoader;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.kie.api.conf.KieBaseOption;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +46,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages={"com.ftn.sbnz"})
+@SpringBootApplication(scanBasePackages = {"com.ftn.sbnz"})
 @EnableJpaRepositories(basePackages = "com.ftn.sbnz.repository")
 @EntityScan(basePackages = "com.ftn.sbnz.model.models")
 public class ServiceApplication  {
@@ -88,6 +94,7 @@ public class ServiceApplication  {
 		return kContainer;
 	}
 
+
 //	@Bean()
 //	public KieSession kieSession(){
 ////		KieContainer kieContainer= this.kieContainer();
@@ -99,8 +106,30 @@ public class ServiceApplication  {
 //		KieSession kieSession = kieHelper.build().newKieSession();
 //		TemplateLoader.getNumberOfRules(kieSession);
 //		return kieSession;
-//	}
 
+		//KieHelper kieHelper = TemplateLoader.loadFromObjects();
+
+
+//		KieHelper kieHelper = TemplateLoader.loadFromSpreadsheet();
+//		KieSession kieSession = kieHelper.build().newKieSession();
+//		TemplateLoader.getNumberOfRules(kieSession);
+//		return kieSession;
+
+	// 	KieHelper kieHelper = TemplateLoader.loadFromSpreadsheet();
+
+	// 	KieServices kieServices = KieServices.Factory.get();
+
+	// 	KieBaseConfiguration kieBaseConfiguration = kieServices.newKieBaseConfiguration();
+	// 	kieBaseConfiguration.setOption(EventProcessingOption.STREAM);
+
+	// 	KieBase kieBase = kieHelper.build(kieBaseConfiguration);
+
+	// 	KieSession kieSession = kieBase.newKieSession();
+
+	// 	TemplateLoader.getNumberOfRules(kieSession);
+
+	// 	return kieSession;
+	// }
 
 	
 	/*
@@ -114,6 +143,7 @@ public class ServiceApplication  {
 	private void readData(){
 		KieSession kieSession= this.kieSessionProvider.getKieSession();
 
+		String injuriesBackwardCsvFile="../data/injuries-backward.csv";
 		String teamsCsvFile="../data/teams.csv";
 		String injuriesCsvFile = "../data/injuries.csv";
 		SimpleDateFormat injuriesDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -121,12 +151,35 @@ public class ServiceApplication  {
 		SimpleDateFormat playersDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 		String playersStatisticCsvFile="../data/players_percentage.csv";
 
+		List<String> injuryLevels=new ArrayList<>();
+		List<String> specificBodyParts=new ArrayList<>();
+		List<String> bodyParts=new ArrayList<>();
+
+		try (Reader reader = new FileReader(injuriesBackwardCsvFile);
+			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
+			for (CSVRecord csvRecord : csvParser) {
+				String injurySeverityLevel=csvRecord.get("Injury_Severity_Level");
+				if (!Objects.equals(injurySeverityLevel, ""))
+					injuryLevels.add(injurySeverityLevel);
+				String specificBodyPart = csvRecord.get("Specific_Body_Part");
+				if (!Objects.equals(specificBodyPart, "")) {
+					specificBodyParts.add(specificBodyPart);
+				}
+				String bodyPart = csvRecord.get("Body_Part");
+				if (!Objects.equals(bodyPart, "")) {
+					bodyParts.add(bodyPart);
+				}
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		List<NBATeam> teams=readTeams(teamsCsvFile);
 		List<Player> players=readPlayers(playersCsvFile, playersStatisticCsvFile, teams, playersDateFormat);
 
 		List<Injury> injuries=readInjuries(injuriesCsvFile, players, injuriesDateFormat);
-
+		List<InjuryHistoryData> injuryHistoryData=createInjuryTree(injuries, injuryLevels, specificBodyParts, bodyParts);
 
 		for (NBATeam team : teams){
 			kieSession.insert(team);
@@ -137,7 +190,6 @@ public class ServiceApplication  {
 			statisticalColumnsRepository.save(player.getStatisticalColumns());
 			playerRepository.save(player);
 		}
-
 		for (Player player : players) {
 			kieSession.insert(player);
 //			playerRepository.save(player);
@@ -145,6 +197,9 @@ public class ServiceApplication  {
 		for (Injury injury : injuries){
 			kieSession.insert(injury);
 			injuryRepository.save(injury);
+		}
+		for (InjuryHistoryData injury: injuryHistoryData){
+			kieSession.insert(injury);
 		}
 		kieSession.fireAllRules();
 		System.out.println("gotovo");
@@ -171,7 +226,6 @@ public class ServiceApplication  {
 		List<Player> players=new ArrayList<>();
 		Map<String, List<Integer>> positionMap = new HashMap<>();
 
-		// Initialize the map with keys and corresponding lists of integers
 		positionMap.put("PG", Arrays.asList(1, 2));
 		positionMap.put("SG", Arrays.asList(2, 3, 1));
 		positionMap.put("SF", Arrays.asList(3, 4, 2));
@@ -184,7 +238,6 @@ public class ServiceApplication  {
 		try (Reader reader = new FileReader(playersCsvFile);
 			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 			for (CSVRecord csvRecord : csvParser) {
-				// Extract fields from each record
 				String name = csvRecord.get("full_name");
 				String price = csvRecord.get("rating");
 				String teamName= csvRecord.get("team");
@@ -224,11 +277,8 @@ public class ServiceApplication  {
 		try (Reader reader = new FileReader(playersStatisticCsvFile);
 			 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
 			for (CSVRecord csvRecord : csvParser) {
-				// Extract fields from each record
 				String name = csvRecord.get("Player");
 				String position= csvRecord.get("Pos");
-
-
 
 				StatisticalColumns statisticalColumns=new StatisticalColumns();
 				statisticalColumns.setGp(Integer.parseInt(csvRecord.get("G")));
@@ -256,8 +306,6 @@ public class ServiceApplication  {
 				result.ifPresent(player -> player.setPosition(positionMap.get(position)));
 //				result.ifPresent(statisticalColumns::setPlayer);
 //				result.ifPresent(player -> player.getNbaTeam().getPlayers().add(player));
-
-
 			}
 
 		}
@@ -307,7 +355,7 @@ public class ServiceApplication  {
 				}
 				if(!isRecovery(notes)){
 					Date injuryTimestamp = injuriesDateFormat.parse(date);
-					Injury injury=new Injury((long) injuries.size(),"",notes,false,null, null, injuryTimestamp, current_player);
+					Injury injury=new Injury((long) injuries.size(),new ArrayList<>(),notes,false,null, null, injuryTimestamp, current_player);
 					if(injuries.size()==0 || injuries.get(injuries.size()-1).isRecovered())
 						injuries.add(injury);
 					else
@@ -334,6 +382,68 @@ public class ServiceApplication  {
 			e.printStackTrace();
 		}
 		return injuries;
+	}
+
+	private List<InjuryHistoryData> createInjuryTree(List<Injury> injuries, List<String> injuryLevels, List<String> specificBodyParts, List<String> bodyParts){
+
+
+		Map<String, InjuryHistoryData> injuryHistoryDataMap = new HashMap<>();
+
+		InjuryHistoryData root=new InjuryHistoryData(0,"",0.0,0);
+		injuryHistoryDataMap.put("",root);
+		String foundInjuryLevel, foundSpecificBodyPart, foundBodyPart;
+
+		int currId=1;
+
+		for (Injury injury: injuries)
+		{
+			foundInjuryLevel=null;
+			foundSpecificBodyPart=null;
+			foundBodyPart=null;
+
+			for(String bodyPart: bodyParts)
+				if(injury.getDescription().toLowerCase().contains(bodyPart.toLowerCase()))
+					foundBodyPart=bodyPart.toLowerCase();
+			if (foundBodyPart!=null)
+			{
+				for(String injuryLevel: injuryLevels)
+					if(injury.getDescription().toLowerCase().contains(injuryLevel.toLowerCase()))
+						foundInjuryLevel=injuryLevel.toLowerCase();
+				if (foundInjuryLevel!=null) {
+					for (String specificBodyPart : specificBodyParts)
+						if (injury.getDescription().toLowerCase().contains(specificBodyPart.toLowerCase()))
+							foundSpecificBodyPart = specificBodyPart.toLowerCase();
+					if (foundSpecificBodyPart!=null)
+					{
+						InjuryHistoryData ihd=injuryHistoryDataMap.get(foundBodyPart+"_"+foundInjuryLevel+"_"+foundSpecificBodyPart);
+						if(ihd==null)
+							injuryHistoryDataMap.put(foundBodyPart+"_"+foundInjuryLevel+"_"+foundSpecificBodyPart, new InjuryHistoryData(currId++, foundBodyPart+"_"+foundInjuryLevel+"_"+foundSpecificBodyPart, injury.getRecoveryTimeInDays(), 1));
+						else {
+							ihd.setInjuryCount(ihd.getInjuryCount()+1);
+							ihd.setTotalDays(ihd.getTotalDays()+ injury.getRecoveryTimeInDays());
+						}
+					}
+					InjuryHistoryData ihd=injuryHistoryDataMap.get(foundBodyPart+"_"+foundInjuryLevel);
+					if(ihd==null)
+						injuryHistoryDataMap.put(foundBodyPart+"_"+foundInjuryLevel, new InjuryHistoryData(currId++,foundBodyPart+"_"+foundInjuryLevel, injury.getRecoveryTimeInDays(), 1));
+					else {
+						ihd.setInjuryCount(ihd.getInjuryCount()+1);
+						ihd.setTotalDays(ihd.getTotalDays()+ injury.getRecoveryTimeInDays());
+					}
+				}
+				InjuryHistoryData ihd=injuryHistoryDataMap.get(foundBodyPart);
+				if(ihd==null)
+					injuryHistoryDataMap.put(foundBodyPart, new InjuryHistoryData(currId++, foundBodyPart, injury.getRecoveryTimeInDays(), 1));
+				else {
+					ihd.setInjuryCount(ihd.getInjuryCount()+1);
+					ihd.setTotalDays(ihd.getTotalDays()+ injury.getRecoveryTimeInDays());
+				}
+			}
+			root.setInjuryCount(root.getInjuryCount()+1);
+			root.setTotalDays(root.getTotalDays()+injury.getRecoveryTimeInDays());
+
+		}
+		return  new ArrayList<>(injuryHistoryDataMap.values());
 	}
 	private boolean isRecovery(String target){
 		List<String> recoveryStrings=new ArrayList<>();

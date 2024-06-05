@@ -1,0 +1,119 @@
+package forward;
+import com.ftn.sbnz.model.models.injuries.Injury;
+import com.ftn.sbnz.model.models.injuries.InjuryHistoryData;
+import com.ftn.sbnz.model.models.injuries.FoundInjuryHistoryData;
+import com.ftn.sbnz.model.models.Player;
+import com.ftn.sbnz.model.models.PlayerStatus;
+import java.util.Date;
+import java.util.List;
+
+//query isInjuryExist(List<String> descriptionPart, int currentInd)
+//    InjuryHistoryData(description==String.join(" ", descriptionPart))
+//    or
+//    isInjuryExist(descriptionPart.subList(0, currentInd) ,currentInd-1;)
+//end
+query isInjuryExist(double total, int count, String desc, String s1, String s2, String s3)
+    InjuryHistoryData(description==desc, description==s1, total==totalDays, count==injuryCount)
+    or
+    (InjuryHistoryData(description.length() < s1.length(), s1.contains(description)) and isInjuryExist( total, count, desc, s2, s3, ""; ))
+end
+
+rule "calc_injury_estimated_time_backward"
+salience 3
+    when
+        $i: Injury(recoveryTimeInDays == null, $name: name, $str: (name.get(0) + "_" + name.get(1) + "_" + name.get(2)), playerId:player.getId())
+        $p: Player(id==playerId, status==PlayerStatus.OUT)
+        isInjuryExist(total, count, desc, $name.get(0)+"_"+$name.get(1)+"_"+$name.get(2), $name.get(0)+"_"+$name.get(1), $name.get(0);)
+//        $ihd: InjuryHistoryData(description==$name.get(0)+"_"+$name.get(1)+"_"+$name.get(2), total: totalDays, count: injuryCount)
+
+    then
+        System.out.println("calc_injury_estimated_time_backward");
+        modify($i){setEstimatedRecoveryTimeInDays(0)};
+        insert(new FoundInjuryHistoryData(desc, total, count, $i));
+
+
+end
+
+
+rule "get_longest_found_injury"
+salience 2
+    when
+        $i: Injury(recoveryTimeInDays == null, estimatedRecoveryTimeInDays==0, $name: name, playerId:player.getId())
+        $p: Player(id==playerId, status==PlayerStatus.OUT)
+        Number( $maxLength: intValue ) from accumulate(
+                       FoundInjuryHistoryData($desc: description, injury==$i),
+                      max($desc.length())
+                    )
+
+        $fihd: FoundInjuryHistoryData(description.length()==$maxLength, total: totalDays, count: injuryCount, $i==injury)
+    then
+        System.out.println("get_longest");
+        System.out.println($maxLength);
+        System.out.println(total);
+        System.out.println(count);
+        modify($i){setEstimatedRecoveryTimeInDays((int) total/count)};
+end
+
+rule "new_injury"
+//agenda-group "injury-group"
+    when
+        $i: Injury(recoveryTimeInDays == null, playerId:player.getId())
+        $p: Player(id==playerId, status==PlayerStatus.HEALTHY)
+    then
+        modify($p){setStatus(PlayerStatus.OUT)};
+        System.out.println($p.getStatus());
+end
+
+rule "recovery"
+//agenda-group "injury-group"
+    when
+        $i: Injury(recoveryTimeInDays == null, recovered == true, playerId:player.getId(), startDate:timestamp)
+        $p: Player(id==playerId, status==PlayerStatus.OUT)
+
+    then
+        modify($p){setStatus(PlayerStatus.HEALTHY)};
+        Date currentDate = new Date();
+        long difference = currentDate.getTime() - startDate.getTime();
+        long differenceInDays = difference / (24 * 60 * 60 * 1000);
+        modify($i){setRecoveryTimeInDays((int) differenceInDays)};
+        System.out.println($i.getRecoveryTimeInDays());
+        System.out.println($p.getStatus());
+end
+
+rule "calc_injury_estimated_time"
+//agenda-group "injury-group"
+enabled false
+salience 2
+    when
+        $i: Injury(recoveryTimeInDays == null, desc: description, playerId:player.getId())
+        $p: Player(id==playerId, status==PlayerStatus.OUT)
+        Number( $avg: intValue ) from accumulate(
+               Injury($r: recoveryTimeInDays, recoveryTimeInDays != null, description==desc),
+              average($r)
+            )
+    then
+        System.out.println("calc_injury_estimated_time");
+        modify($i){setEstimatedRecoveryTimeInDays((int) $avg)};
+end
+
+// bounus += igrac_ou - prosek tima - broj dana koji propusta
+rule "Change bonus points because of injury"
+//agenda-group "injury-group"
+salience 1
+no-loop true
+    when
+
+        $i: Injury(recoveryTimeInDays == null, estimatedRecoveryTimeInDays!=0, $estDays: estimatedRecoveryTimeInDays, desc: description, playerId:player.getId())
+        $p: Player(id==playerId, status==PlayerStatus.OUT, $gp: statisticalColumns.getGp(), team: nbaTeam.getName(), $bonus: totalBonusPoints)
+        Number( $gpAvg: intValue ) from accumulate(
+            Player(nbaTeam.name==team, id!=playerId, gp: statisticalColumns.gp),
+                      average(gp)
+                    )
+
+    then
+        System.out.println("Change bonus points because of injury");
+        System.out.println($gpAvg);
+        System.out.println($estDays);
+        modify($p){setTotalBonusPoints(((int)  -$gpAvg) + $bonus + $gp - $estDays )};
+        System.out.println($p.getTotalBonusPoints());
+end

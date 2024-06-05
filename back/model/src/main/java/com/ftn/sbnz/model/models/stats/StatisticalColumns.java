@@ -1,5 +1,6 @@
-package com.ftn.sbnz.model.models;
+package com.ftn.sbnz.model.models.stats;
 
+import com.ftn.sbnz.model.models.Player;
 import lombok.*;
 
 import jakarta.persistence.*;

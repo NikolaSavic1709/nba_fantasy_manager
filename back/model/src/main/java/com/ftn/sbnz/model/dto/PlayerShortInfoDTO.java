@@ -1,0 +1,28 @@
+package com.ftn.sbnz.model.dto;
+
+import com.ftn.sbnz.model.models.Player;
+import com.ftn.sbnz.model.models.PlayerStatus;
+
+public class PlayerShortInfoDTO {
+    Long id;
+    String name;
+    int fantasyPoints;
+    int bonusPoints;
+    String nationality;
+    String nbaTeam;
+    int position;
+    PlayerStatus status;
+
+    public PlayerShortInfoDTO(Player player)
+    {
+        this.id=player.getId();
+        this.name=player.getName();
+        this.fantasyPoints=player.getTotalFantasyPoints();
+        this.bonusPoints=player.getTotalBonusPoints();
+        this.nationality=player.getNationality();
+        this.status=player.getStatus();
+        this.nbaTeam=player.getNbaTeam().getName();
+        this.position=player.getPosition().get(0);
+    }
+
+}

@@ -1,11 +1,10 @@
 package com.ftn.sbnz.utils;
 
-import com.ftn.sbnz.model.models.CategoryScores;
 import com.ftn.sbnz.model.models.Filter;
+import com.ftn.sbnz.model.models.stats.CategoryScores;
 import com.ftn.sbnz.repository.ICategoryScoresRepository;
 import com.ftn.sbnz.repository.IFilterRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
-import com.ftn.sbnz.service.FilterController;
 import org.drools.template.ObjectDataCompiler;
 import org.drools.decisiontable.ExternalSpreadsheetCompiler;
 import org.kie.api.KieBase;

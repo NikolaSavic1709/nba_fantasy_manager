@@ -1,16 +1,14 @@
 package com.ftn.sbnz.model.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ftn.sbnz.model.models.injuries.Injury;
+import com.ftn.sbnz.model.models.stats.FantasyStatisticalColumns;
+import com.ftn.sbnz.model.models.stats.StatisticalColumns;
 import lombok.*;
 
 import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter

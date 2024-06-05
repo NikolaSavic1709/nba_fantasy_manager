@@ -32,6 +32,7 @@
 
 #stats-button {
   padding-inline: 3.5em;
+  border-radius: 8px 0 0 8px;
 }
 
 .selected-button{
@@ -43,18 +44,9 @@
     border-radius: 0 8px 8px 0;
 }
 
-#profile-button {
-  border-radius: 0;
-  margin: 10px 0;
-}
-
 .selected-button {
   color: rgba(38, 50, 56, 0.5) !important;
   background-color: white !important;
-}
-
-#profile-button {
-  border-radius: 0 8px 8px 0;
 }
 
 

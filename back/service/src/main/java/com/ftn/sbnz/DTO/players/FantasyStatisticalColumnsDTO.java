@@ -1,6 +1,6 @@
 package com.ftn.sbnz.DTO.players;
 
-import com.ftn.sbnz.model.models.FantasyStatisticalColumns;
+import com.ftn.sbnz.model.models.stats.FantasyStatisticalColumns;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

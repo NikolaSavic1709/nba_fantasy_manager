@@ -1,5 +1,6 @@
 package com.ftn.sbnz.model.models;
 
+import com.ftn.sbnz.model.models.user.Manager;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

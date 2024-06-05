@@ -1,6 +1,6 @@
 package com.ftn.sbnz.service;
 
-import com.ftn.sbnz.model.models.User;
+import com.ftn.sbnz.model.models.user.User;
 import com.ftn.sbnz.repository.users.IUserRepository;
 import com.sendgrid.Method;
 import com.sendgrid.Request;

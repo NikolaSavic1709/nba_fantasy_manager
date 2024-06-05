@@ -1,6 +1,6 @@
 package com.ftn.sbnz.utils;
 
-import com.ftn.sbnz.model.models.User;
+import com.ftn.sbnz.model.models.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

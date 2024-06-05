@@ -1,6 +1,7 @@
-package com.ftn.sbnz.service;
+package com.ftn.sbnz.controller;
 
 import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.model.models.stats.CategoryScores;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.utils.KieSessionProvider;
 import org.kie.api.KieServices;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
-import com.ftn.sbnz.model.models.Injury;
+import com.ftn.sbnz.model.models.injuries.Injury;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 
@@ -36,103 +37,24 @@ public class SampleHomeController {
     }
 
     @RequestMapping("/injury")
-	public String injury() {
+	public Integer injury() {
 
-		Player p = playerRepository.getReferenceById(1); //Lebron 1, Curry 5
+		Optional<Player> p = playerRepository.findById(1L); //Lebron 1, Curry 5
 
 		Injury i = new Injury();
+		i.setName(new ArrayList<>());
 		i.setDescription("placed on IL with strained right hip flexor");
 		i.setRecovered(false);
 		i.setTimestamp(new Date());
-		i.setPlayer(p);
+		i.setPlayer(p.get());
 
+		List<String> injuryName=new ArrayList<>(List.of("lips", "strain", ""));
+		i.setName(injuryName);
 		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("injury-group").setFocus();
 		this.kieSessionProvider.getKieSession().insert(i);
 		this.kieSessionProvider.getKieSession().fireAllRules();
 //		this.kieSessionProvider.getKieSession().dispose();
-		return i.getEstimatedRecoveryTimeInDays().toString();
-	}
-	@RequestMapping("/injury_1")
-	public String injury_1() {
-		CategoryScores categoryScores=new CategoryScores();
-		categoryScores.setBonusMargin(-10);
-		categoryScores.setAssistScore(1);
-		categoryScores.setBlockScore(1);
-		categoryScores.setReboundScore(1);
-		categoryScores.setPointScore(1);
-		categoryScores.setStealScore(1);
-		categoryScores.setTurnoverScore(1);
-
-		NBATeam denver=new NBATeam();
-		NBATeam minnesota=new NBATeam();
-
-		Player jokic = new Player();
-		Player murray = new Player();
-		Player gordon = new Player();
-		Player edwards = new Player();
-		{
-			denver.setName("Denver");
-			denver.setPlayers(new ArrayList<>());
-			minnesota.setName("Minnesota");
-			minnesota.setPlayers(new ArrayList<>());
-
-			jokic.setId(1L);
-			jokic.setName("Nikola Jokic");
-			jokic.setStatus(PlayerStatus.HEALTHY);
-			jokic.setTotalBonusPoints(0);
-			StatisticalColumns jokiceveKolone = new StatisticalColumns();
-			jokiceveKolone.setGp(40);
-			jokic.setStatisticalColumns(jokiceveKolone);
-			jokic.setNbaTeam(denver);
-
-
-			murray.setId(2L);
-			murray.setName("Jamal Murray");
-			murray.setStatus(PlayerStatus.HEALTHY);
-			murray.setTotalBonusPoints(0);
-			StatisticalColumns marijeveKolone = new StatisticalColumns();
-			marijeveKolone.setGp(30);
-			murray.setStatisticalColumns(marijeveKolone);
-			murray.setNbaTeam(denver);
-
-			gordon.setId(3L);
-			gordon.setName("Aaron Gordon");
-			gordon.setStatus(PlayerStatus.HEALTHY);
-			gordon.setTotalBonusPoints(0);
-			StatisticalColumns gordonoveKolone = new StatisticalColumns();
-			gordonoveKolone.setGp(25);
-			gordon.setStatisticalColumns(gordonoveKolone);
-			gordon.setNbaTeam(denver);
-
-			edwards.setId(4L);
-			edwards.setName("Anthony Edwards");
-			edwards.setStatus(PlayerStatus.HEALTHY);
-			edwards.setTotalBonusPoints(0);
-			StatisticalColumns edvardsoveKolone = new StatisticalColumns();
-			edvardsoveKolone.setGp(50);
-			edwards.setStatisticalColumns(edvardsoveKolone);
-			edwards.setNbaTeam(minnesota);
-		}
-		minnesota.getPlayers().add(edwards);
-		denver.getPlayers().add(jokic);
-		denver.getPlayers().add(murray);
-		denver.getPlayers().add(gordon);
-		Injury i = new Injury(1L,"name", "placed on IL with strained right hip flexor", false, null, null, new Date(), gordon);
-
-		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("injury-group").setFocus();
-		this.kieSessionProvider.getKieSession().insert(i);
-
-		this.kieSessionProvider.getKieSession().insert(jokic);
-		this.kieSessionProvider.getKieSession().insert(murray);
-		this.kieSessionProvider.getKieSession().insert(gordon);
-		this.kieSessionProvider.getKieSession().insert(edwards);
-		this.kieSessionProvider.getKieSession().insert(denver);
-		this.kieSessionProvider.getKieSession().insert(minnesota);
-		this.kieSessionProvider.getKieSession().insert(categoryScores);
-
-		this.kieSessionProvider.getKieSession().fireAllRules();
-//		this.kieSessionProvider.getKieSession().dispose();
-		return i.getEstimatedRecoveryTimeInDays().toString();
+		return i.getEstimatedRecoveryTimeInDays();
 	}
 
 	@RequestMapping("/recovery")
@@ -146,7 +68,7 @@ public class SampleHomeController {
 		Calendar myCal = Calendar.getInstance();
 		myCal.set(2024,Calendar.APRIL,20);
 		Date date = myCal.getTime();
-		Injury i = new Injury(1L,"name", "desc", true, null, null, date, p);
+		Injury i = new Injury(1L,new ArrayList<>(), "desc", true, null, null, date, p);
 
 		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("injury-group").setFocus();
 		kieSessionProvider.getKieSession().insert(i);
