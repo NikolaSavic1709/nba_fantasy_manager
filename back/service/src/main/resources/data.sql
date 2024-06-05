@@ -29,3 +29,17 @@ VALUES (10, 100, 'Denver Nuggets', 5);
 
 INSERT INTO FILTER (min_price, max_price, team, position)
 VALUES (10, 100, 'Los Angeles Lakers', 1);
+
+
+-- category scores
+INSERT INTO CATEGORY_SCORES (point_score, rebound_score, assist_score, steal_score, turnover_score, block_score, bonus_margin, is_active)
+VALUES (1, 1, 2, 3, -1, 3, -10, true);
+
+INSERT INTO CATEGORY_SCORES (point_score, rebound_score, assist_score, steal_score, turnover_score, block_score, bonus_margin, is_active)
+VALUES (2, 5, 2, 5, -5, 5, -20, false);
+
+INSERT INTO CATEGORY_SCORES (point_score, rebound_score, assist_score, steal_score, turnover_score, block_score, bonus_margin, is_active)
+VALUES (1, 1, 1, 2, -1, 2, -10, false);
+
+INSERT INTO CATEGORY_SCORES (point_score, rebound_score, assist_score, steal_score, turnover_score, block_score, bonus_margin, is_active)
+VALUES (1, 1, 2, 3, -2, 3, -10, false);

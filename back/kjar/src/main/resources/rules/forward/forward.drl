@@ -74,39 +74,39 @@ rule "recovery"
 end
 
 
-rule "Update Player Scores"
-salience 100
-//agenda-group "recommendation-group"
-when
-    $categoryScores : CategoryScores($pointScore : pointScore,
-                                      $reboundScore : reboundScore,
-                                      $assistScore : assistScore,
-                                      $stealScore : stealScore,
-                                      $turnoverScore : turnoverScore,
-                                      $blockScore : blockScore)
-
-    $player : Player(
-        $gamesPlayed : statisticalColumns.gp,
-        $ppg : statisticalColumns.ppg,
-        $rpg : statisticalColumns.rpg,
-        $apg : statisticalColumns.apg,
-        $spg : statisticalColumns.spg,
-        $tpg : statisticalColumns.tpg,
-        $bpg : statisticalColumns.bpg
-    )
-
-    $newTotalFantasyPoints : Integer() from
-            new Integer(
-                (int) ($ppg * $gamesPlayed * $pointScore) +
-                (int) ($rpg * $gamesPlayed * $reboundScore) +
-                (int) ($apg * $gamesPlayed * $assistScore) +
-                (int) ($spg * $gamesPlayed * $stealScore) +
-                (int) ($tpg * $gamesPlayed * $turnoverScore) +
-                (int) ($bpg * $gamesPlayed * $blockScore)
-            )
-then
-    $player.setTotalFantasyPoints($newTotalFantasyPoints);
-end
+//rule "Update Player Scores"
+//salience 100
+////agenda-group "recommendation-group"
+//when
+//    $categoryScores : CategoryScores($pointScore : pointScore,
+//                                      $reboundScore : reboundScore,
+//                                      $assistScore : assistScore,
+//                                      $stealScore : stealScore,
+//                                      $turnoverScore : turnoverScore,
+//                                      $blockScore : blockScore)
+//
+//    $player : Player(
+//        $gamesPlayed : statisticalColumns.gp,
+//        $ppg : statisticalColumns.ppg,
+//        $rpg : statisticalColumns.rpg,
+//        $apg : statisticalColumns.apg,
+//        $spg : statisticalColumns.spg,
+//        $tpg : statisticalColumns.tpg,
+//        $bpg : statisticalColumns.bpg
+//    )
+//
+//    $newTotalFantasyPoints : Integer() from
+//            new Integer(
+//                (int) ($ppg * $gamesPlayed * $pointScore) +
+//                (int) ($rpg * $gamesPlayed * $reboundScore) +
+//                (int) ($apg * $gamesPlayed * $assistScore) +
+//                (int) ($spg * $gamesPlayed * $stealScore) +
+//                (int) ($tpg * $gamesPlayed * $turnoverScore) +
+//                (int) ($bpg * $gamesPlayed * $blockScore)
+//            )
+//then
+//    $player.setTotalFantasyPoints($newTotalFantasyPoints);
+//end
 
 rule "Recommendation list"
 //agenda-group "recommendation-group"

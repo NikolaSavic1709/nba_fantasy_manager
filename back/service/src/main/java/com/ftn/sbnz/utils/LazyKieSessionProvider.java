@@ -24,6 +24,7 @@ public class LazyKieSessionProvider implements KieSessionProvider {
     public synchronized KieSession getKieSession() {
         if (kieSession == null) {
             if (dataIsLoaded()) {
+                //KieHelper kieHelper = TemplateLoader.loadFromSpreadsheets();
                 KieHelper kieHelper = templateLoader.loadFromObjects();
                 kieSession = kieHelper.build().newKieSession();
             } else {

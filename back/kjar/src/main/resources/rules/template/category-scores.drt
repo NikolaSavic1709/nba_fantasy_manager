@@ -1,0 +1,48 @@
+template header
+pointScore
+reboundScore
+assistScore
+stealScore
+turnoverScore
+blockScore
+bonusMargin
+isActive
+
+package template;
+
+import com.ftn.sbnz.model.models.Player;
+import com.ftn.sbnz.model.models.PlayerStatus;
+
+template "category-scores"
+
+
+rule "Update Player Scores_@{row.rowNumber}"
+salience 100
+when
+    eval(@{isActive} == true)
+
+    $player : Player(
+        $gamesPlayed : statisticalColumns.gp,
+        $ppg : statisticalColumns.ppg,
+        $rpg : statisticalColumns.rpg,
+        $apg : statisticalColumns.apg,
+        $spg : statisticalColumns.spg,
+        $tpg : statisticalColumns.tpg,
+        $bpg : statisticalColumns.bpg
+    )
+
+    $newTotalFantasyPoints : Integer() from
+            new Integer(
+                (int) ($ppg * $gamesPlayed * @{pointScore}) +
+                (int) ($rpg * $gamesPlayed * @{reboundScore}) +
+                (int) ($apg * $gamesPlayed * @{assistScore}) +
+                (int) ($spg * $gamesPlayed * @{stealScore}) +
+                (int) ($tpg * $gamesPlayed * @{turnoverScore}) +
+                (int) ($bpg * $gamesPlayed * @{blockScore})
+            )
+then
+    $player.setTotalFantasyPoints($newTotalFantasyPoints);
+    //System.out.println("Player: " + $player.getName() + "have: " + $newTotalFantasyPoints + "  @{row.rowNumber}");
+end
+
+end template

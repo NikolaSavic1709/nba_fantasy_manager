@@ -26,4 +26,5 @@ public class CategoryScores {
     private Integer turnoverScore;
     private Integer blockScore;
     private Integer bonusMargin;
+    private boolean isActive;
 }
