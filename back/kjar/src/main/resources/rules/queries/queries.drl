@@ -9,6 +9,9 @@ import java.util.Collections
 import java.util.stream.Collectors
 import java.util.Comparator;
 
+import java.util.Map;
+import java.util.HashMap;
+import com.ftn.sbnz.model.models.injuries.Injury;
 
 
 query "getMostSelectedPlayersByThreshold" (int threshold)
@@ -27,4 +30,35 @@ query "getTeamsWithSelectedPlayers"
         count($p)
     )
 end
+
+query "getMostDroppedPlayersByThreshold" (int threshold)
+    $player : Player( fantasyStatisticalColumns!=null, fantasyStatisticalColumns.timesDropped > threshold)
+end
+
+query "getMostDroppedPlayersByNBATeamName" (String team)
+    $player : Player( nbaTeam.name == team, fantasyStatisticalColumns!=null, fantasyStatisticalColumns.timesDropped > 0)
+end
+
+
+query "getFrequentInjuriesAndAverageRecovery" (int threshold)
+    $injury : Injury($nameList : name)
+    $injuryName : String() from $nameList.stream().collect(Collectors.joining(", "))
+    accumulate(
+        Injury(name == $nameList, $recoveryTime : recoveryTimeInDays),
+        $avgRecoveryTime : average($recoveryTime),
+        $occurrence: count(1)
+    )
+    eval ($occurrence > threshold)
+end
+
+query "getFrequentInjuryDescriptionAndAverageRecovery" (int threshold)
+    $injury : Injury($injuryName : description)
+    accumulate(
+        Injury(description == $injuryName, $recoveryTime : recoveryTimeInDays),
+        $avgRecoveryTime : average($recoveryTime),
+        $occurrence: count(1)
+    )
+    eval ($occurrence > threshold)
+end
+
 
