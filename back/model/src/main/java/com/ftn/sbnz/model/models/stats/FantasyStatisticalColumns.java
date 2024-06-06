@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 
+import java.util.Random;
+
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
 public class FantasyStatisticalColumns {
     @Id
@@ -22,4 +23,27 @@ public class FantasyStatisticalColumns {
     private int timesSelected;
     private int timesDropped;
     private int recommendationRank;
+
+    public FantasyStatisticalColumns(){
+        this.timesSelected = getRandom();
+        this.timesDropped = 0;
+        this.recommendationRank = 0;
+    }
+
+    public FantasyStatisticalColumns(int timesSelected, int timesDropped, int recommendationRank){
+        this.timesSelected = timesSelected;
+        this.timesDropped = timesDropped;
+        this.recommendationRank = recommendationRank;
+    }
+
+    private int getRandom() {
+        double num = Math.random();
+
+        if (num > 0.99) return 5;
+        if (num > 0.98) return 4;
+        if (num > 0.95) return 3;
+        if (num > 0.92) return 2;
+        if (num > 0.9) return 1;
+        return 0;
+    }
 }

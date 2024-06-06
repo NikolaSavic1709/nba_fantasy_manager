@@ -10,11 +10,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.model.models.stats.FantasyStatisticalColumns;
 import com.ftn.sbnz.repository.IFilterRepository;
 import com.ftn.sbnz.model.models.injuries.Injury;
 import com.ftn.sbnz.model.models.injuries.InjuryHistoryData;
 import com.ftn.sbnz.model.models.stats.StatisticalColumns;
 import com.ftn.sbnz.repository.INBATeamRepository;
+import com.ftn.sbnz.repository.players.IFantasyStatisticalColumnsRepository;
 import com.ftn.sbnz.repository.players.IInjuryRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.repository.players.IStatisticalColumnsRepository;
@@ -68,6 +70,10 @@ public class ServiceApplication  {
 
 	@Autowired
 	private IStatisticalColumnsRepository statisticalColumnsRepository;
+
+	@Autowired
+	private IFantasyStatisticalColumnsRepository fantasyStatisticalColumnsRepository;
+
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(ServiceApplication.class, args);
 
@@ -188,6 +194,7 @@ public class ServiceApplication  {
 		for (Player player : players) {
 			kieSession.insert(player.getStatisticalColumns());
 			statisticalColumnsRepository.save(player.getStatisticalColumns());
+			fantasyStatisticalColumnsRepository.save(player.getFantasyStatisticalColumns());
 			playerRepository.save(player);
 		}
 		for (Player player : players) {
@@ -266,6 +273,8 @@ public class ServiceApplication  {
 					}
 
                     result.ifPresent(player::setNbaTeam);
+
+					player.setFantasyStatisticalColumns(new FantasyStatisticalColumns());
 					players.add(player);
 				}
 			}
