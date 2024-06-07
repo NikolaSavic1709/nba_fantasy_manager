@@ -60,7 +60,7 @@ export class AuthService {
       if (!accessToken)
         return 0;
       const helper = new JwtHelperService();
-      return helper.decodeToken(accessToken).jti;
+      return helper.decodeToken(accessToken).id;
     }
     return 0;
   }

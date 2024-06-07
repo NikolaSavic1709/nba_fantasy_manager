@@ -28,7 +28,7 @@ const POSITION_MAP: { [key: number]: string } = {
   styleUrls: ['./admin-home.component.scss']
 })
 export class AdminHomeComponent implements AfterViewInit{
-  displayedColumns: string[] = ['name', 'position', 'nbaTeam', 'price', 'totalFantasyPoints'];
+  displayedColumns: string[] = ['name', 'position', 'nbaTeam', 'price', 'fantasyPoints'];
   dataSource: MatTableDataSource<Player>;
   players: Player[];
   @ViewChild(MatPaginator) paginator!: MatPaginator;

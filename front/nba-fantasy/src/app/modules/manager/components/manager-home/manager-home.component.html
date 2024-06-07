@@ -4,9 +4,9 @@
         <div class="container" id="left">
             <h3>My Team: {{teamName}}</h3>
             <div class="players-container">
-                <div *ngFor="let player of players" class="player-short" (click)="openPlayer(player)">
+                <div *ngFor="let player of teamPlayers" class="player-short" (click)="openPlayer(player)">
                     <p id="player-position" class="basic-text">{{positionMap[player.position]}}</p>
-                    <mat-icon id="injury-icon" *ngIf="player.status===playerStatus.OUT">healing</mat-icon>
+                    <mat-icon id="injury-icon" *ngIf="player.status==='OUT'">healing</mat-icon>
                 
                     <p id="player-name" class="basic-text"><b>{{player.name}}</b> ({{player.nationality}})</p>
                     <p id="player-team" class="basic-text">{{player.nbaTeam}}</p>
@@ -25,13 +25,13 @@
             <h3 id="empty" *ngIf="selectedPlayer===null">Choose player</h3>
             <div id="details" *ngIf="selectedPlayer!==null">
                 <h3 id="player-name-label">{{selectedPlayer.name}}</h3>
-                <mat-icon id="injury-icon-details" *ngIf="selectedPlayer.status===playerStatus.OUT">healing</mat-icon>
-                <mat-icon id="healthy-icon-details" *ngIf="selectedPlayer.status===playerStatus.HEALTHY">check_circle</mat-icon>
-                <p id="injury-status"><b>{{transformStatus(selectedPlayer.status)}}</b></p>
+                <mat-icon id="injury-icon-details" *ngIf="selectedPlayer.status==='OUT'">healing</mat-icon>
+                <mat-icon id="healthy-icon-details" *ngIf="selectedPlayer.status==='HEALTHY'">check_circle</mat-icon>
+                <p id="injury-status"><b>{{selectedPlayer.status}}</b></p>
                 <p id="team-label"><span class="label">Team:</span> <span class="label-value">{{selectedPlayer.nbaTeam}}</span></p>
                 <p id="position-label"><span class="label">Position:</span> <span class="label-value">{{transformPos(selectedPlayer.position)}}</span></p>
-                <p id="fantasy-points-label"><span class="label">Fantasy Points:</span> <span class="label-value">{{selectedPlayer.totalFantasyPoints}}</span></p>
-                <p id="bonus-points-label"><span class="label">Bonus Points:</span> <span class="label-value">{{selectedPlayer.totalBonusPoints}}</span></p>
+                <p id="fantasy-points-label"><span class="label">Fantasy Points:</span> <span class="label-value">{{selectedPlayer.fantasyPoints}}</span></p>
+                <p id="bonus-points-label"><span class="label">Bonus Points:</span> <span class="label-value">{{selectedPlayer.bonusPoints}}</span></p>
                 <p id="nationality-label"><span class="label">Nationality:</span> <span class="label-value">{{selectedPlayer.nationality}}</span></p>
                 <p id="birthday-label"><span class="label">Birthday:</span> <span class="label-value">{{selectedPlayer.birthday}}</span></p>
                 <p id="price-label"><span class="label">Price:</span> <span class="label-value">{{selectedPlayer.price}}</span></p>
@@ -56,7 +56,7 @@
         <div class="container" id="right">
             <h3>Recommendation List</h3>
             <div class="players-container">
-                <div *ngFor="let player of players" class="player-short" (click)="openPlayer(player)">
+                <div *ngFor="let player of recommendationList" class="player-short" (click)="openPlayer(player)">
                     <p id="player-position" class="basic-text">{{positionMap[player.position]}}</p>
                     <p id="player-name" class="basic-text"><b>{{player.name}}</b> ({{player.nationality}})</p>
                     <p id="player-team" class="basic-text">{{player.nbaTeam}}</p>

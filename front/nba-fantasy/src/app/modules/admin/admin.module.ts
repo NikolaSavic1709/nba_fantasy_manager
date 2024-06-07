@@ -6,6 +6,10 @@ import { CategoryScoresComponent } from './components/category-scores/category-s
 import { AddCategoryScoresDialogComponent } from './components/add-category-scores-dialog/add-category-scores-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
+import { InjuriesComponent } from './components/injuries/injuries.component';
+import { GameStatsComponent } from './components/game-stats/game-stats.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 
 
@@ -14,7 +18,9 @@ import { AddFilterDialogComponent } from './components/add-filter-dialog/add-fil
     AdminHomeComponent,
     CategoryScoresComponent,
     AddCategoryScoresDialogComponent,
-    AddFilterDialogComponent
+    AddFilterDialogComponent,
+    InjuriesComponent,
+    GameStatsComponent,
   ],
   imports: [
     CommonModule,

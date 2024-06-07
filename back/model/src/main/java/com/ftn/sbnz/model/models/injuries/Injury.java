@@ -4,6 +4,10 @@ import com.ftn.sbnz.model.models.Player;
 import lombok.*;
 
 import jakarta.persistence.*;
+import org.kie.api.definition.type.Role;
+import org.kie.api.definition.type.Timestamp;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +17,11 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Injury {
+@Role(Role.Type.EVENT)
+@Timestamp("timestamp")
+public class Injury implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

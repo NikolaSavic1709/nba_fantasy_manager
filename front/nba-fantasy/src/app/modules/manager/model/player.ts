@@ -5,20 +5,20 @@ export interface PlayerShortInfo{
     nationality: string
     nbaTeam: string
     position: number
-    status: PlayerStatus
+    status: string
     }
 
 export interface PlayerDetails{
     id: number;
     name: string;
-    totalFantasyPoints: number;
-    totalBonusPoints: number;
+    fantasyPoints: number;
+    bonusPoints: number;
     nationality: string
     nbaTeam: string
     position: number[]
     birthday: string
     price: number
-    status: PlayerStatus,
+    status: string,
     ppg: number,
     rpg: number,
     apg: number,

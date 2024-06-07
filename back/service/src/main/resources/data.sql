@@ -13,8 +13,14 @@ VALUES (1);--admin021
 INSERT INTO members (email, name, surname, password, authority_id, is_enabled)
 VALUES ('miki@gmail.com', 'Tupatu', 'Serbedzija',
         '$2a$12$O/NJDsbdC7Fzs1eZofJUcuH3VHQAwj5hJbyF9PoI5xg9fZrljtQau', 1, true);
-INSERT INTO MANAGER(id)
-VALUES (2);--admin021
+
+INSERT INTO fantasy_team (id, name, total_points) VALUES (1, 'Partizan', 0);
+
+INSERT INTO MANAGER(id, team_id)
+VALUES (2,1);--admin021
+
+
+
 
 
 -- filters
