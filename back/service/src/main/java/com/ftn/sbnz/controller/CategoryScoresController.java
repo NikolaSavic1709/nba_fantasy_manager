@@ -58,7 +58,7 @@ public class CategoryScoresController {
         categoryScoreToActivate.setActive(true);
 
         categoryScoresRepository.saveAll(categoryScoresList);
-
+        kieSessionProvider.refreshKieSession();
         return new ResponseEntity<>(new CategoryScoresDTO(categoryScoreToActivate), HttpStatus.OK);
     }
 
@@ -74,6 +74,8 @@ public class CategoryScoresController {
         CategoryScores categoryScores = categoryScoresDTO.generateCategoryScores();
         categoryScores.setActive(true);
         CategoryScores newCategoryScore = categoryScoresRepository.save(categoryScores);
+
+        kieSessionProvider.refreshKieSession();
 
         return new ResponseEntity<>(new CategoryScoresDTO(newCategoryScore), HttpStatus.OK);
     }

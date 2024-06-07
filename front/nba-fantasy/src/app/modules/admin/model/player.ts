@@ -4,8 +4,8 @@ export interface Player {
     nationality: string;
     position: number[];
     birthDate: string; 
-    fantasyPoints:number;
-    bonusPoints:number;
+    totalFantasyPoints:number;
+    totalBonusPoints:number;
     price:number;
     status: PlayerStatus;
     nbaTeam: string;

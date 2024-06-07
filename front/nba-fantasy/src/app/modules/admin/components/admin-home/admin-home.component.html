@@ -7,6 +7,7 @@
       <mat-form-field class="field" appearance="outline">
         <mat-label>Filters</mat-label>
         <mat-select name="filterControl" formControlName="filterControl">
+          <mat-option value="0"></mat-option>
           <mat-option *ngFor="let filter of filters" [value]="filter.id">from {{ filter.minPrice }}$ to {{
             filter.maxPrice }}$, {{ getPosition(filter.position) }}, {{ filter.team }}</mat-option>
         </mat-select>
@@ -70,7 +71,7 @@
       <!-- Fantasy Points Column -->
       <ng-container matColumnDef="fantasyPoints">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Fantasy Points </th>
-        <td mat-cell *matCellDef="let row"> {{row.fantasyPoints}} </td>
+        <td mat-cell *matCellDef="let row"> {{row.totalFantasyPoints}} </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
