@@ -1,0 +1,64 @@
+package forward;
+
+import com.ftn.sbnz.model.models.stats.FantasyStatisticalColumns;
+import com.ftn.sbnz.model.models.Player
+import com.ftn.sbnz.model.models.NBATeam
+import java.util.ArrayList
+import java.util.List
+import java.util.Collections
+import java.util.stream.Collectors
+import java.util.Comparator;
+
+import java.util.Map;
+import java.util.HashMap;
+import com.ftn.sbnz.model.models.injuries.Injury;
+
+
+query "getMostSelectedPlayersByThreshold" (int threshold)
+    $player : Player( fantasyStatisticalColumns!=null, fantasyStatisticalColumns.timesSelected > threshold)
+end
+
+query "getMostSelectedPlayersByNBATeamName" (String team)
+    $player : Player( nbaTeam.name == team, fantasyStatisticalColumns!=null, fantasyStatisticalColumns.timesSelected > 0)
+end
+
+
+query "getTeamsWithSelectedPlayers"
+    $team : NBATeam()
+    $count : Number(intValue > 0) from accumulate(
+        $p : Player(nbaTeam == $team, fantasyStatisticalColumns!=null, fantasyStatisticalColumns.timesSelected > 0),
+        count($p)
+    )
+end
+
+query "getMostDroppedPlayersByThreshold" (int threshold)
+    $player : Player( fantasyStatisticalColumns!=null, fantasyStatisticalColumns.timesDropped > threshold)
+end
+
+query "getMostDroppedPlayersByNBATeamName" (String team)
+    $player : Player( nbaTeam.name == team, fantasyStatisticalColumns!=null, fantasyStatisticalColumns.timesDropped > 0)
+end
+
+
+query "getFrequentInjuriesAndAverageRecovery" (int threshold)
+    $injury : Injury($nameList : name)
+    $injuryName : String() from $nameList.stream().collect(Collectors.joining(", "))
+    accumulate(
+        Injury(name == $nameList, $recoveryTime : recoveryTimeInDays),
+        $avgRecoveryTime : average($recoveryTime),
+        $occurrence: count(1)
+    )
+    eval ($occurrence > threshold)
+end
+
+query "getFrequentInjuryDescriptionAndAverageRecovery" (int threshold)
+    $injury : Injury($injuryName : description)
+    accumulate(
+        Injury(description == $injuryName, $recoveryTime : recoveryTimeInDays),
+        $avgRecoveryTime : average($recoveryTime),
+        $occurrence: count(1)
+    )
+    eval ($occurrence > threshold)
+end
+
+

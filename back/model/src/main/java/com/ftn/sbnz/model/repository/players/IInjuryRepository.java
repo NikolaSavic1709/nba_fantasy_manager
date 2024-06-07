@@ -1,4 +1,4 @@
-package com.ftn.sbnz.repository.players;
+package com.ftn.sbnz.model.repository.players;
 
 import com.ftn.sbnz.model.models.injuries.Injury;
 import com.ftn.sbnz.model.models.user.Manager;

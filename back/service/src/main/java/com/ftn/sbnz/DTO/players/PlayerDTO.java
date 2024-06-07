@@ -51,7 +51,7 @@ public class PlayerDTO {
         this.nbaTeam = player.getNbaTeam().getName();
 
         this.statisticalColumns = new StatisticalColumnsDTO(player.getStatisticalColumns());
-        //this.fantasyStatisticalColumns = new FantasyStatisticalColumnsDTO(player.getFantasyStatisticalColumns());
-        this.fantasyStatisticalColumns = null;
+        this.fantasyStatisticalColumns = new FantasyStatisticalColumnsDTO(player.getFantasyStatisticalColumns());
+        //this.fantasyStatisticalColumns = null;
     }
 }

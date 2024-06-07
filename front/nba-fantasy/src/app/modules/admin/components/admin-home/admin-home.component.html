@@ -1,24 +1,60 @@
-<mat-form-field>
-    <mat-label>Filter</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+<div class="content">
+  <h1>Players</h1>
+  <div class="example-action-buttons">
+
+    <form [formGroup]="setFilterForm" (ngSubmit)="setFilter()" id="setFilter">
+
+      <mat-form-field class="field" appearance="outline">
+        <mat-label>Filters</mat-label>
+        <mat-select name="filterControl" formControlName="filterControl">
+          <mat-option *ngFor="let filter of filters" [value]="filter.id">from {{ filter.minPrice }}$ to {{
+            filter.maxPrice }}$, {{ getPosition(filter.position) }}, {{ filter.team }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="setFilterForm.get('filterControl')?.invalid && setFilterForm.get('filterControl')?.touched">
+          <span *ngIf="setFilterForm.get('filterControl')?.errors?.['required']" class="input-error">Field is
+            required</span>
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-fab extended color="primary" type="submit" class="btn" [disabled]="!setFilterForm.valid">
+        <mat-icon>filter_list</mat-icon>
+        Apply Filter
+      </button>
+
+      <button mat-fab extended color="primary" (click)="addFilter()">
+        <mat-icon>add</mat-icon>
+        Add new filter
+      </button>
+
+      <mat-error *ngIf="filterError" class="signup-error-container">
+        <span class="signup-error">Filter error</span>
+      </mat-error>
+    </form>
+
+    
+
+  </div>
+  <mat-form-field appearance="outline" class="search-filter">
+    <mat-label>Search Filter</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="..." #input>
   </mat-form-field>
-  
+
   <div class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource" matSort>
-  
-        <!-- Name Column -->
+
+      <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
         <td mat-cell *matCellDef="let row"> {{row.name}} </td>
       </ng-container>
-  
+
       <!-- Position Column -->
       <ng-container matColumnDef="position">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Position </th>
         <td mat-cell *matCellDef="let row"> {{ getPositionLabel(row.position) }} </td>
       </ng-container>
 
-  
+
       <!-- NBA Team Column -->
       <ng-container matColumnDef="nbaTeam">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> NBA Team </th>
@@ -36,15 +72,17 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Fantasy Points </th>
         <td mat-cell *matCellDef="let row"> {{row.fantasyPoints}} </td>
       </ng-container>
-  
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  
+
       <!-- Row shown when there is no matching data. -->
       <tr class="mat-row" *matNoDataRow>
         <td class="mat-cell" colspan="5">No data matching the filter "{{input.value}}"</td>
       </tr>
     </table>
-  
+
     <mat-paginator [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of players"></mat-paginator>
   </div>
+
+</div>

@@ -32,6 +32,11 @@ export class AdministratorNavbarComponent {
     this.router.navigate(['/administrator/injuries']);
   }
 
+  toCategoryScores() {
+    this.selectedPage = SelectedPage.CATEGORY_SCORES;
+    this.router.navigate(['/admin/category-scores']);
+  }
+
   logout() {
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
@@ -39,5 +44,5 @@ export class AdministratorNavbarComponent {
 }
 
 enum SelectedPage {
-  HOME, PLAYERS, GAME_STATS, INJURIES
+  HOME, PLAYERS, GAME_STATS, INJURIES, CATEGORY_SCORES
 }

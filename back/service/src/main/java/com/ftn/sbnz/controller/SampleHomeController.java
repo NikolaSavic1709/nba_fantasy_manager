@@ -2,12 +2,10 @@ package com.ftn.sbnz.controller;
 
 import com.ftn.sbnz.model.dto.InjuryDTO;
 import com.ftn.sbnz.model.dto.NewInjuryDTO;
-import com.ftn.sbnz.model.dto.PlayerBasicInfoDTO;
-import com.ftn.sbnz.model.dto.PlayerDetailsDTO;
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.model.models.stats.CategoryScores;
-import com.ftn.sbnz.repository.players.IInjuryRepository;
-import com.ftn.sbnz.repository.players.IPlayerRepository;
+import com.ftn.sbnz.model.repository.players.IInjuryRepository;
+import com.ftn.sbnz.model.repository.players.IPlayerRepository;
 import com.ftn.sbnz.utils.KieSessionProvider;
 import com.ftn.sbnz.utils.TokenUtils;
 import org.kie.api.KieServices;
@@ -100,35 +98,35 @@ public class SampleHomeController {
 		return ResponseEntity.ok(injuriesResponse);
 	}
 
-	@RequestMapping(value = "/filter", method = RequestMethod.GET, produces = "application/json")
-	public Filter filter(@RequestParam(required = true) Integer minPrice, @RequestParam(required = true) Integer maxPrice,
-						 @RequestParam(required = true) String team, @RequestParam(required = true) Integer position) {
-
-		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("recommendation-group").setFocus();
-		Filter filter = new Filter(1L, minPrice, maxPrice, team, position);
-		NBATeam team1 = new NBATeam(1L, null, "Denver");
-		NBATeam team2 = new NBATeam(1L, null, "Lakers");
-
-		Player p1 = new Player();
-		p1.setName("Jamal");
-		p1.setStatus(PlayerStatus.HEALTHY);
-		p1.setPrice(20);
-		p1.setNbaTeam(team1);
-		p1.setPosition(Arrays.asList(1, 2, 3));
-
-		Player p2 = new Player();
-		p2.setName("Anthony");
-		p2.setStatus(PlayerStatus.HEALTHY);
-		p2.setPrice(50);
-		p2.setNbaTeam(team2);
-		p2.setPosition(Arrays.asList(4, 5));
-
-		kieSessionProvider.getKieSession().insert(filter);
-		kieSessionProvider.getKieSession().insert(p1);
-		kieSessionProvider.getKieSession().insert(p2);
-		kieSessionProvider.getKieSession().fireAllRules();
-		return filter;
-	}
+//	@RequestMapping(value = "/filter", method = RequestMethod.GET, produces = "application/json")
+//	public Filter filter(@RequestParam(required = true) Integer minPrice, @RequestParam(required = true) Integer maxPrice,
+//						 @RequestParam(required = true) String team, @RequestParam(required = true) Integer position) {
+//
+//		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("recommendation-group").setFocus();
+//		Filter filter = new Filter(1L, minPrice, maxPrice, team, position);
+//		NBATeam team1 = new NBATeam(1L, null, "Denver");
+//		NBATeam team2 = new NBATeam(1L, null, "Lakers");
+//
+//		Player p1 = new Player();
+//		p1.setName("Jamal");
+//		p1.setStatus(PlayerStatus.HEALTHY);
+//		p1.setPrice(20);
+//		p1.setNbaTeam(team1);
+//		p1.setPosition(Arrays.asList(1, 2, 3));
+//
+//		Player p2 = new Player();
+//		p2.setName("Anthony");
+//		p2.setStatus(PlayerStatus.HEALTHY);
+//		p2.setPrice(50);
+//		p2.setNbaTeam(team2);
+//		p2.setPosition(Arrays.asList(4, 5));
+//
+//		kieSessionProvider.getKieSession().insert(filter);
+//		kieSessionProvider.getKieSession().insert(p1);
+//		kieSessionProvider.getKieSession().insert(p2);
+//		kieSessionProvider.getKieSession().fireAllRules();
+//		return filter;
+//	}
 
 	@RequestMapping(value = "/recommend", method = RequestMethod.GET, produces = "application/json")
 	public RecommendationList recommendationList() {

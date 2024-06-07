@@ -1,0 +1,71 @@
+<div class="content" id="addFilterContent">
+    <h1 id="title">Add new Filter</h1>
+    <form [formGroup]="addFilterForm" (ngSubmit)="addFilter()" id="addFilter">
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Min price</mat-label>
+            <input matInput type="number" placeholder="Enter min price" name="minPrice"
+                formControlName="minPrice">
+            <mat-error
+                *ngIf="addFilterForm.get('minPrice')?.invalid && addFilterForm.get('minPrice')?.touched">
+                <span
+                    *ngIf="addFilterForm.get('minPrice')?.errors?.['min'] || addFilterForm.get('minPrice')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [0, 200]
+                </span>
+                <span *ngIf="addFilterForm.get('minPrice')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Max price</mat-label>
+            <input matInput type="number" placeholder="Enter max price" name="maxPrice"
+                formControlName="maxPrice">
+            <mat-error
+                *ngIf="addFilterForm.get('maxPrice')?.invalid && addFilterForm.get('maxPrice')?.touched">
+                <span
+                    *ngIf="addFilterForm.get('maxPrice')?.errors?.['min'] || addFilterForm.get('maxPrice')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [0, 200]
+                </span>
+                <span *ngIf="addFilterForm.get('maxPrice')?.errors?.['minMaxPrice']"
+            class="input-error">Min price must be less than or equal to Max price</span>
+                <span *ngIf="addFilterForm.get('maxPrice')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>NBA Team</mat-label>
+            <mat-select name="team" formControlName="team">
+              <mat-option *ngFor="let team of nbaTeams" [value]="team">{{ team }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="addFilterForm.get('team')?.invalid && addFilterForm.get('team')?.touched">
+              <span *ngIf="addFilterForm.get('team')?.errors?.['required']" class="input-error">Field is required</span>
+            </mat-error>
+          </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Position</mat-label>
+            <mat-select name="position" formControlName="position">
+              <mat-option value="1" selected >PG</mat-option>
+              <mat-option value="2" >SG</mat-option>
+              <mat-option value="3" >SF</mat-option>
+              <mat-option value="4" >PF</mat-option>
+              <mat-option value="5" >C</mat-option>
+            </mat-select>
+            <mat-error *ngIf="addFilterForm.get('position')?.invalid && addFilterForm.get('addFilterForm')?.touched">
+              <span *ngIf="addFilterForm.get('position')?.errors?.['required']" class="input-error">Field is required</span>
+            </mat-error>
+          </mat-form-field>
+
+        <button type="submit" class="btn" [disabled]="!addFilterForm.valid">Add new Filter</button>
+
+
+        <mat-error *ngIf="filterError" class="signup-error-container">
+            <span class="signup-error">Filter cannot be added</span>
+        </mat-error>
+    </form>
+
+</div>

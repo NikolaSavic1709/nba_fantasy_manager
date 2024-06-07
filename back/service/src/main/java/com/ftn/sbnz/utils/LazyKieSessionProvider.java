@@ -1,7 +1,7 @@
 package com.ftn.sbnz.utils;
 
 import com.ftn.sbnz.model.models.Filter;
-import com.ftn.sbnz.repository.IFilterRepository;
+import com.ftn.sbnz.model.repository.IFilterRepository;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.conf.EventProcessingOption;

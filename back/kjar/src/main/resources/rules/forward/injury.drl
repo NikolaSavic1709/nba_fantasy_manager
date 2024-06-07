@@ -4,8 +4,11 @@ import com.ftn.sbnz.model.models.injuries.InjuryHistoryData;
 import com.ftn.sbnz.model.models.injuries.FoundInjuryHistoryData;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
+import com.ftn.sbnz.model.repository.players.IPlayerRepository;
 import java.util.Date;
 import java.util.List;
+
+global IPlayerRepository playerRepository;
 
 //query isInjuryExist(List<String> descriptionPart, int currentInd)
 //    InjuryHistoryData(description==String.join(" ", descriptionPart))
@@ -61,6 +64,7 @@ rule "new_injury"
         $p: Player(id==playerId, status==PlayerStatus.HEALTHY)
     then
         modify($p){setStatus(PlayerStatus.OUT)};
+        playerRepository.save($p);
         System.out.println($p.getStatus());
 end
 

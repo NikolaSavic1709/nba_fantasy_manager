@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminHomeComponent } from 'src/app/modules/admin/components/admin-home/admin-home.component';
+import { CategoryScoresComponent } from 'src/app/modules/admin/components/category-scores/category-scores.component';
 import { GameStatsComponent } from 'src/app/modules/admin/components/game-stats/game-stats.component';
 import { InjuriesComponent } from 'src/app/modules/admin/components/injuries/injuries.component';
 import { LoginComponent } from 'src/app/modules/auth/components/login/login.component';
@@ -24,6 +25,10 @@ const routes: Routes = [
   {
     path: 'administrator',
     component: AdminHomeComponent
+  },
+  {
+    path: 'admin/category-scores',
+    component: CategoryScoresComponent
   },
   {
     path: 'administrator/injuries',

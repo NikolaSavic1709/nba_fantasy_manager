@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.ftn.sbnz.model.models.stats.CategoryScores;
 import com.ftn.sbnz.model.models.RecommendationList
+import com.ftn.sbnz.model.models.RemovedList
 import java.util.ArrayList
 import java.util.List
 import java.util.Collections
@@ -69,14 +70,64 @@ end
 
 rule "Recommendation list"
 //agenda-group "recommendation-group"
-salience 1
+salience 3
     when
         $r: RecommendationList(players == null)
         $list: List() from collect(Player())
     then
-        $r.setPlayers(new ArrayList<>($list));
+        modify($r){setPlayers(new ArrayList<>($list))};
+        Collections.sort($r.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
+        modify($r){setFormed(true)};
+end
+
+
+rule "Remove injured players from recommendation list"
+salience 2
+    when
+        $r: RecommendationList(formed == true, $players: players)
+        $removedList: RemovedList(players == null)
+
+        $injuredPlayers: List(size>0) from collect(
+            Player(status == PlayerStatus.OUT)
+             from $players
+        )
+    then
+        List<Player> updatedList = new ArrayList<>($r.getPlayers());
+        List<Player> removedPlayers = new ArrayList<>();
+
+        for (Object o : $injuredPlayers) {
+            Player player = (Player) o;
+            updatedList.remove(player);
+            removedPlayers.add(player);
+
+        }
+
+        modify($r){setPlayers(updatedList)};
+        modify($r){setFormed(false)};
+        modify($removedList){setPlayers(removedPlayers)};
+end
+
+rule "Update totalFantasyPoints"
+salience 1
+no-loop
+    when
+        $p : Player($team: nbaTeam, $oldPoints: totalFantasyPoints)
+        $r: RecommendationList(formed == false, $players: players, $p memberOf players)
+        $removedList: RemovedList(players != null, $removedPlayers: players)
+
+        accumulate(
+            Player(nbaTeam == $team, $points: totalFantasyPoints) from $removedPlayers,
+            $avg : average($points),
+            $total: sum($points)
+        )
+    then
+        double coefficient = 0.1;
+        int scaledPoints = (int) (coefficient * $total);
+        int updatedTotal = $oldPoints + scaledPoints;
+        modify($p){setTotalFantasyPoints(updatedTotal)};
         Collections.sort($r.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
 end
+
 
 //rule "injury_history"
 //    when

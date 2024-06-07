@@ -22,6 +22,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableModule} from '@angular/material/table';
 import {MatNativeDateModule} from "@angular/material/core";
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @NgModule({
   imports: [
@@ -47,7 +48,13 @@ import {MatNativeDateModule} from "@angular/material/core";
     MatRippleModule,
     MatAutocompleteModule,
     MatPaginatorModule,
-    MatTableModule
+    MatTableModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatNativeDateModule,
   ],
   exports: [
     MatButtonModule,
@@ -73,7 +80,8 @@ import {MatNativeDateModule} from "@angular/material/core";
     MatAutocompleteModule,
     MatPaginatorModule,
     MatTableModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatExpansionModule
   ],
 })
 export class MaterialModule {}

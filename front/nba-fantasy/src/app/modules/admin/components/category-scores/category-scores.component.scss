@@ -1,22 +1,4 @@
-table {
-    width: 100%;
-  }
-  
-  .mat-mdc-form-field {
-    font-size: 14px;
-    width: 100%;
-  }
-  
-  td, th {
-    width: 20%;
-  }
-
-
-  .search-filter{
-    margin-top: 50px;
-  }
-
-  .content {
+.content {
     margin-top: 100px;
     margin-left: 30px;
     margin-right: 30px;
@@ -45,18 +27,24 @@ h1 {
     margin-right: 10px;
 }
 
-#setFilter{
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 20px;
+.active-icon {
+    color: green;
 }
 
-#setFilter .field{
-  width: 50%;
-  margin-right: 50px;
-  
+.inactive-icon {
+    cursor: pointer;
+    color: grey;
 }
 
-#setFilter button{
-  margin-right: 50px;
+.inactive-icon:hover {
+    color: rgb(44, 44, 44);
+}
+
+.example-headers-align .mat-expansion-panel-header-description {
+    justify-content: space-between;
+    align-items: center;
+}
+
+.example-headers-align .mat-mdc-form-field+.mat-mdc-form-field {
+    margin-left: 8px;
 }
