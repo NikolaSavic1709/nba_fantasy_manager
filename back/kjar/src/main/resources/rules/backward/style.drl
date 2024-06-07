@@ -1,7 +1,10 @@
 package forward;
+
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
+import com.ftn.sbnz.model.models.SimilarPlayer;
 
+global IPlayerRepository playerRepository;
 
 query hasStyle( String player, String playerWithThatStyle, String team )
   Player(player==name,playerStyle != null, playerWithThatStyle==playerStyle.name, nbaTeam.getName()== team)
@@ -11,10 +14,24 @@ end
 
 rule "Find players with similar style on the same team"
 when
-    $player : Player(status == PlayerStatus.OUT)
+    $player : Player(status == PlayerStatus.OUT, $fantasyPoints : totalFantasyPoints)
     hasStyle( similarPlayer, $player.name, $player.nbaTeam.name; )
 then
     System.out.println("Found player with similar style: " + similarPlayer);
+    insert(new SimilarPlayer(similarPlayer, $fantasyPoints));
 end
 
+
+rule "Modify fantasy points for players similar to injured player on team"
+when
+    $s : SimilarPlayer($similarPlayer : name, $fantasyPoints : injuredPlayerPoints)
+    $player : Player(name == $similarPlayer, $oldPoints: totalFantasyPoints)
+then
+    double coefficient = 0.5;
+    int scaledPoints = (int) (coefficient * $fantasyPoints);
+    int updatedTotal = $oldPoints + scaledPoints;
+    modify($player){setTotalFantasyPoints(updatedTotal)};
+    playerRepository.save($player);
+    delete($s);
+end
 
