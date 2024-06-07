@@ -1,6 +1,7 @@
 package com.ftn.sbnz.controller;
 
 import com.ftn.sbnz.DTO.players.PlayerDTO;
+import com.ftn.sbnz.DTO.stats.AddCategoryScoresDTO;
 import com.ftn.sbnz.DTO.stats.CategoryScoresDTO;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.RecommendationList;
@@ -8,16 +9,16 @@ import com.ftn.sbnz.model.models.stats.CategoryScores;
 import com.ftn.sbnz.repository.ICategoryScoresRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.utils.KieSessionProvider;
+import jakarta.validation.Valid;
 import org.kie.api.runtime.KieContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,22 @@ public class CategoryScoresController {
         categoryScoresRepository.saveAll(categoryScoresList);
 
         return new ResponseEntity<>(new CategoryScoresDTO(categoryScoreToActivate), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/category_scores", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createCategoryScores(@RequestBody AddCategoryScoresDTO categoryScoresDTO) {
+
+        List<CategoryScores> categoryScoresList = categoryScoresRepository.findAll();
+        for (CategoryScores score : categoryScoresList) {
+            score.setActive(false);
+        }
+        categoryScoresRepository.saveAll(categoryScoresList);
+
+        CategoryScores categoryScores = categoryScoresDTO.generateCategoryScores();
+        categoryScores.setActive(true);
+        CategoryScores newCategoryScore = categoryScoresRepository.save(categoryScores);
+
+        return new ResponseEntity<>(new CategoryScoresDTO(newCategoryScore), HttpStatus.OK);
     }
 }
 

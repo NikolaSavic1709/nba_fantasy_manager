@@ -3,6 +3,7 @@
     <div class="example-action-buttons">
         <button class="action-btn" (click)="accordion.openAll()">Expand All</button>
         <button class="action-btn" (click)="accordion.closeAll()">Collapse All</button>
+        <button class="action-btn" (click)="addCategoryScores()">Add new Category Scores</button>
     </div>
     <mat-accordion class="example-headers-align" multi>
         <mat-expansion-panel *ngFor="let score of categoryScores">

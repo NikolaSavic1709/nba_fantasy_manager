@@ -1,0 +1,124 @@
+<div class="content" id="addCategoryScoresContent">
+    <h1 id="title">Add new Category Scores</h1>
+    <form [formGroup]="addCategoryScoresForm" (ngSubmit)="addCategory()" id="addCategoryScores">
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Point score</mat-label>
+            <input matInput type="number" placeholder="Enter points score" name="pointScore"
+                formControlName="pointScore">
+            <mat-error
+                *ngIf="addCategoryScoresForm.get('pointScore')?.invalid && addCategoryScoresForm.get('pointScore')?.touched">
+                <span
+                    *ngIf="addCategoryScoresForm.get('pointScore')?.errors?.['min'] || addCategoryScoresForm.get('pointScore')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [-100, 100]
+                </span>
+                <span *ngIf="addCategoryScoresForm.get('pointScore')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Rebound score</mat-label>
+            <input matInput type="number" placeholder="Enter rebound score" name="reboundScore"
+                formControlName="reboundScore">
+            <mat-error
+                *ngIf="addCategoryScoresForm.get('reboundScore')?.invalid && addCategoryScoresForm.get('reboundScore')?.touched">
+                <span
+                    *ngIf="addCategoryScoresForm.get('reboundScore')?.errors?.['min'] || addCategoryScoresForm.get('reboundScore')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [-100, 100]
+                </span>
+                <span *ngIf="addCategoryScoresForm.get('reboundScore')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Assist score</mat-label>
+            <input matInput type="number" placeholder="Enter assist score" name="assistScore"
+                formControlName="assistScore">
+            <mat-error
+                *ngIf="addCategoryScoresForm.get('assistScore')?.invalid && addCategoryScoresForm.get('assistScore')?.touched">
+                <span
+                    *ngIf="addCategoryScoresForm.get('assistScore')?.errors?.['min'] || addCategoryScoresForm.get('assistScore')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [-100, 100]
+                </span>
+                <span *ngIf="addCategoryScoresForm.get('assistScore')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Steal score</mat-label>
+            <input matInput type="number" placeholder="Enter steal score" name="stealScore"
+                formControlName="stealScore">
+            <mat-error
+                *ngIf="addCategoryScoresForm.get('stealScore')?.invalid && addCategoryScoresForm.get('stealScore')?.touched">
+                <span
+                    *ngIf="addCategoryScoresForm.get('stealScore')?.errors?.['min'] || addCategoryScoresForm.get('stealScore')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [-100, 100]
+                </span>
+                <span *ngIf="addCategoryScoresForm.get('stealScore')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Turnover score</mat-label>
+            <input matInput type="number" placeholder="Enter turnover score" name="turnoverScore"
+                formControlName="turnoverScore">
+            <mat-error
+                *ngIf="addCategoryScoresForm.get('turnoverScore')?.invalid && addCategoryScoresForm.get('turnoverScore')?.touched">
+                <span
+                    *ngIf="addCategoryScoresForm.get('turnoverScore')?.errors?.['min'] || addCategoryScoresForm.get('turnoverScore')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [-100, 100]
+                </span>
+                <span *ngIf="addCategoryScoresForm.get('turnoverScore')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Block score</mat-label>
+            <input matInput type="number" placeholder="Enter block score" name="blockScore"
+                formControlName="blockScore">
+            <mat-error
+                *ngIf="addCategoryScoresForm.get('blockScore')?.invalid && addCategoryScoresForm.get('blockScore')?.touched">
+                <span
+                    *ngIf="addCategoryScoresForm.get('blockScore')?.errors?.['min'] || addCategoryScoresForm.get('blockScore')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [-100, 100]
+                </span>
+                <span *ngIf="addCategoryScoresForm.get('blockScore')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="field" appearance="outline">
+            <mat-label>Bonus margin</mat-label>
+            <input matInput type="number" placeholder="Enter bonus margin" name="bonusMargin"
+                formControlName="bonusMargin">
+            <mat-error
+                *ngIf="addCategoryScoresForm.get('bonusMargin')?.invalid && addCategoryScoresForm.get('bonusMargin')?.touched">
+                <span
+                    *ngIf="addCategoryScoresForm.get('bonusMargin')?.errors?.['min'] || addCategoryScoresForm.get('bonusMargin')?.errors?.['max']"
+                    class="input-error">
+                    Must be in range [-100, 100]
+                </span>
+                <span *ngIf="addCategoryScoresForm.get('bonusMargin')?.errors?.['required']" class="input-error">Field is
+                    required</span>
+            </mat-error>
+        </mat-form-field>
+
+        <button type="submit" class="btn" [disabled]="!addCategoryScoresForm.valid">Add Category Scores</button>
+
+        <mat-error *ngIf="categoryError" class="signup-error-container">
+            <span class="signup-error">Category scores cannot be added</span>
+        </mat-error>
+    </form>
+
+</div>
