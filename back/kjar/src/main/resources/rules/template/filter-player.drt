@@ -29,7 +29,7 @@ when
     )
 then
     modify($filteredList) {getPlayers().add($player)};
-    System.out.println("Filtered Player: " + $player.getName() + "@{id}");
+    //System.out.println("Filtered Player: " + $player.getName() + "@{id}");
 end
 
 end template

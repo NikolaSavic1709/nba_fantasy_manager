@@ -10,3 +10,53 @@ table {
   td, th {
     width: 20%;
   }
+
+
+  .search-filter{
+    margin-top: 50px;
+  }
+
+  .content {
+    margin-top: 100px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+h1 {
+    color: gray;
+}
+
+.example-action-buttons {
+    padding-bottom: 20px;
+}
+
+.action-btn {
+    font-size: 16px;
+    font-weight: 800;
+
+    padding: 8px;
+
+    width: fit-content;
+    height: 35px;
+    min-width: 94px;
+    color: white !important;
+    background-color: rgb(122, 122, 122) !important;
+    border-radius: 20px;
+    margin-right: 10px;
+}
+
+#setFilter{
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+
+#setFilter .field{
+  width: 50%;
+  margin-right: 50px;
+  
+}
+
+#setFilter button{
+  margin-right: 50px;
+}

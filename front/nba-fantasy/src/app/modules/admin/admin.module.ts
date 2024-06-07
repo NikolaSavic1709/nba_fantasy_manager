@@ -5,6 +5,7 @@ import { MaterialModule } from 'src/infrastructure/material.module';
 import { CategoryScoresComponent } from './components/category-scores/category-scores.component';
 import { AddCategoryScoresDialogComponent } from './components/add-category-scores-dialog/add-category-scores-dialog.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AddFilterDialogComponent } from './components/add-filter-dialog/add-filter-dialog.component';
 
 
 
@@ -12,7 +13,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   declarations: [
     AdminHomeComponent,
     CategoryScoresComponent,
-    AddCategoryScoresDialogComponent
+    AddCategoryScoresDialogComponent,
+    AddFilterDialogComponent
   ],
   imports: [
     CommonModule,

@@ -20,6 +20,7 @@ import org.kie.api.definition.KiePackage;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,12 @@ public class FilterController {
         for(Player p : filteredList.getPlayers()){
             playerDTOList.add(new PlayerDTO(p));
         }
+
+        FactHandle sfHandle = kieSessionProvider.getKieSession().getFactHandle(sf);
+        kieSessionProvider.getKieSession().delete(sfHandle);
+
+        FactHandle factHandle = kieSessionProvider.getKieSession().getFactHandle(filteredList);
+        kieSessionProvider.getKieSession().delete(factHandle);
 
         return new ResponseEntity<>(playerDTOList, HttpStatus.OK);
     }

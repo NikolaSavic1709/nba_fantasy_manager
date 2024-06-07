@@ -12,8 +12,6 @@ import { AddCategoryScores } from '../../model/categoryScore';
 })
 export class AddCategoryScoresDialogComponent {
 
-  hidePassword = true;
-  hideConfirmPassword = true;
   hasError = false;
 
   addCategoryScoresForm = new FormGroup({
