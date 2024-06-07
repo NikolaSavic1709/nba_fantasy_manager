@@ -12,4 +12,5 @@ import java.util.List;
 public class RecommendationList {
 
     private List<Player> players;
+    private boolean isFormed;
 }

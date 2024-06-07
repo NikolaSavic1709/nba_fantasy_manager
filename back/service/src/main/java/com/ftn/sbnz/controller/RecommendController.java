@@ -3,6 +3,7 @@ package com.ftn.sbnz.controller;
 import com.ftn.sbnz.DTO.players.PlayerDTO;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.RecommendationList;
+import com.ftn.sbnz.model.models.RemovedList;
 import com.ftn.sbnz.model.models.StartFilter;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.utils.KieSessionProvider;
@@ -33,7 +34,9 @@ public class RecommendController {
     @GetMapping(value = "/recommendation_list")
     public ResponseEntity<?> getRecommendationList() {
         RecommendationList rl = new RecommendationList();
+        RemovedList removedList = new RemovedList();
         kieSessionProvider.getKieSession().insert(rl);
+        kieSessionProvider.getKieSession().insert(removedList);
         int i = kieSessionProvider.getKieSession().fireAllRules();
         System.out.println(i);
         List<PlayerDTO> playerDTOList = new ArrayList<>();
@@ -41,7 +44,9 @@ public class RecommendController {
             playerDTOList.add(new PlayerDTO(p));
             //System.out.println("Player: " + p.getName() + " have: " + p.getTotalFantasyPoints());
         }
-
+//        for(Player p : removedList.getPlayers()){
+//            System.out.println("Inj Player: " + p.getName() + " have: " + p.getTotalFantasyPoints());
+//        }
         return new ResponseEntity<>(playerDTOList, HttpStatus.OK);
     }
 }
