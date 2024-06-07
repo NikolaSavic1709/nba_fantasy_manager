@@ -11,6 +11,7 @@ import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 import com.ftn.sbnz.model.models.NBATeam;
 import com.ftn.sbnz.model.models.StartFilter;
+import com.ftn.sbnz.model.models.FilteredList;
 
 template "filter-player-rules"
 
@@ -18,7 +19,8 @@ rule "Filter Players_@{row.rowNumber}"
 no-loop true
 when
     $f : StartFilter(number == @{id})
-    $p: Player(
+    $filteredList: FilteredList(players!=null)
+    $player: Player(
         status == PlayerStatus.HEALTHY,
         price <= @{maxPrice},
         price >= @{minPrice},
@@ -26,7 +28,8 @@ when
         position.contains(@{position})
     )
 then
-    System.out.println("Filtered Player: " + $p.getName() + "@{id}");
+    modify($filteredList) {getPlayers().add($player)};
+    System.out.println("Filtered Player: " + $player.getName() + "@{id}");
 end
 
 end template
