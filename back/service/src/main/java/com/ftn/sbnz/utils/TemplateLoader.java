@@ -2,9 +2,8 @@ package com.ftn.sbnz.utils;
 
 import com.ftn.sbnz.model.models.Filter;
 import com.ftn.sbnz.model.models.stats.CategoryScores;
-import com.ftn.sbnz.repository.ICategoryScoresRepository;
-import com.ftn.sbnz.repository.IFilterRepository;
-import com.ftn.sbnz.repository.players.IPlayerRepository;
+import com.ftn.sbnz.model.repository.ICategoryScoresRepository;
+import com.ftn.sbnz.model.repository.IFilterRepository;
 import org.drools.template.ObjectDataCompiler;
 import org.drools.decisiontable.ExternalSpreadsheetCompiler;
 import org.kie.api.KieBase;
@@ -19,12 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

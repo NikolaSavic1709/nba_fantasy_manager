@@ -1,4 +1,4 @@
-package com.ftn.sbnz.repository;
+package com.ftn.sbnz.model.repository;
 
 import com.ftn.sbnz.model.models.stats.CategoryScores;
 import org.springframework.data.jpa.repository.JpaRepository;

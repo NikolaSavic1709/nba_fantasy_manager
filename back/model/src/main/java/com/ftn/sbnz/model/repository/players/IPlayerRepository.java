@@ -1,4 +1,4 @@
-package com.ftn.sbnz.repository.players;
+package com.ftn.sbnz.model.repository.players;
 
 import com.ftn.sbnz.model.models.Player;
 import org.springframework.data.jpa.repository.JpaRepository;

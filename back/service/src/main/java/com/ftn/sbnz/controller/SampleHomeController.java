@@ -2,12 +2,10 @@ package com.ftn.sbnz.controller;
 
 import com.ftn.sbnz.model.dto.InjuryDTO;
 import com.ftn.sbnz.model.dto.NewInjuryDTO;
-import com.ftn.sbnz.model.dto.PlayerBasicInfoDTO;
-import com.ftn.sbnz.model.dto.PlayerDetailsDTO;
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.model.models.stats.CategoryScores;
-import com.ftn.sbnz.repository.players.IInjuryRepository;
-import com.ftn.sbnz.repository.players.IPlayerRepository;
+import com.ftn.sbnz.model.repository.players.IInjuryRepository;
+import com.ftn.sbnz.model.repository.players.IPlayerRepository;
 import com.ftn.sbnz.utils.KieSessionProvider;
 import com.ftn.sbnz.utils.TokenUtils;
 import org.kie.api.KieServices;

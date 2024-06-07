@@ -11,27 +11,20 @@ import java.util.stream.Collectors;
 
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.model.models.stats.FantasyStatisticalColumns;
-import com.ftn.sbnz.repository.IFantasyTeamRepository;
-import com.ftn.sbnz.repository.IFilterRepository;
+import com.ftn.sbnz.model.repository.IFantasyTeamRepository;
+import com.ftn.sbnz.model.repository.IFilterRepository;
 import com.ftn.sbnz.model.models.injuries.Injury;
 import com.ftn.sbnz.model.models.injuries.InjuryHistoryData;
 import com.ftn.sbnz.model.models.stats.StatisticalColumns;
-import com.ftn.sbnz.repository.INBATeamRepository;
-import com.ftn.sbnz.repository.players.IFantasyStatisticalColumnsRepository;
-import com.ftn.sbnz.repository.players.IInjuryRepository;
-import com.ftn.sbnz.repository.players.IPlayerRepository;
-import com.ftn.sbnz.repository.players.IStatisticalColumnsRepository;
+import com.ftn.sbnz.model.repository.INBATeamRepository;
+import com.ftn.sbnz.model.repository.players.IFantasyStatisticalColumnsRepository;
+import com.ftn.sbnz.model.repository.players.IInjuryRepository;
+import com.ftn.sbnz.model.repository.players.IPlayerRepository;
+import com.ftn.sbnz.model.repository.players.IStatisticalColumnsRepository;
 import com.ftn.sbnz.utils.KieSessionProvider;
 import com.ftn.sbnz.utils.TemplateLoader;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import org.kie.api.conf.KieBaseOption;
-import org.kie.api.KieBase;
-import org.kie.api.KieBaseConfiguration;
-import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieSession;
-import org.kie.internal.utils.KieHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -50,7 +43,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = {"com.ftn.sbnz"})
-@EnableJpaRepositories(basePackages = "com.ftn.sbnz.repository")
+@EnableJpaRepositories(basePackages = "com.ftn.sbnz.model.repository")
 @EntityScan(basePackages = "com.ftn.sbnz.model.models")
 public class ServiceApplication  {
 	
@@ -89,6 +82,7 @@ public class ServiceApplication  {
 		}
 		ServiceApplication app = ctx.getBean(ServiceApplication.class);
 		app.readData();
+		app.setGlobals();
 //		log.info(sb.toString());
 	}
 
@@ -148,6 +142,11 @@ public class ServiceApplication  {
 	 * ks.newKieScanner(kContainer); kScanner.start(10_000); KieSession kSession =
 	 * kContainer.newKieSession();
 	 */
+
+	private void setGlobals(){
+		KieSession kieSession= this.kieSessionProvider.getKieSession();
+		kieSession.setGlobal("playerRepository", playerRepository);
+	}
 
 	private void readData(){
 		KieSession kieSession= this.kieSessionProvider.getKieSession();
