@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class InjuryService {
@@ -36,6 +38,10 @@ public class InjuryService {
             result.add(new InjuryStatsDTO(injury, occurrence, avgRecoveryTime));
         }
         //kieSession.dispose();
+
+        result = new ArrayList<>(result.stream()
+                .collect(Collectors.toMap(InjuryStatsDTO::getInjuryName, Function.identity(), (dto1, dto2) -> dto1))
+                .values());
 
         result.sort((i1, i2) -> Long.compare(
                 i2.getOccurrence(),
