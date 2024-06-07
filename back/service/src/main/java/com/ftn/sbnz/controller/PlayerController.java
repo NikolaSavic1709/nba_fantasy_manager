@@ -2,6 +2,7 @@ package com.ftn.sbnz.controller;
 
 import com.ftn.sbnz.DTO.users.JWTToken;
 import com.ftn.sbnz.DTO.users.UserCredentialsDTO;
+import com.ftn.sbnz.model.dto.PlayerBasicInfoDTO;
 import com.ftn.sbnz.model.dto.PlayerDetailsDTO;
 import com.ftn.sbnz.model.dto.PlayerShortInfoDTO;
 import com.ftn.sbnz.model.models.FantasyTeam;
@@ -60,15 +61,27 @@ public class PlayerController {
             if(manager.isPresent())
             {
                 List<Player> players=manager.get().getTeam().getPlayers();
-                return ResponseEntity.ok(players.stream()
+                List<PlayerShortInfoDTO> playersResponse=players.stream()
                         .map(PlayerShortInfoDTO::new)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList());
+                return ResponseEntity.ok(playersResponse);
             }
             else
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Manager not found");
         }
         else
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden");
+
+    }
+    @GetMapping("/playersBasic")
+    public ResponseEntity<?> getPlayersForAutocomplete() {
+
+        List<Player> players=playerRepository.findAll();
+        List<PlayerBasicInfoDTO> playersResponse=players.stream()
+                .map(PlayerBasicInfoDTO::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(playersResponse);
+
 
     }
 }

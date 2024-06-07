@@ -16,4 +16,5 @@ public class Manager extends User {
 
     @OneToOne(fetch = FetchType.EAGER)
     private FantasyTeam team;
+
 }

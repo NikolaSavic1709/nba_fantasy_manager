@@ -76,6 +76,7 @@ rule "recovery"
         long difference = currentDate.getTime() - startDate.getTime();
         long differenceInDays = difference / (24 * 60 * 60 * 1000);
         modify($i){setRecoveryTimeInDays((int) differenceInDays)};
+        modify($i){setRecovered(true)};
         System.out.println($i.getRecoveryTimeInDays());
         System.out.println($p.getStatus());
 end

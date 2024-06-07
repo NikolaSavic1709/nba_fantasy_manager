@@ -1,0 +1,62 @@
+<div id="content">
+    <!-- <div id="header"></div> -->
+    <div id="containers">
+        <div class="container" id="top">
+            <h3>Injured Players</h3>
+            <div class="players-container">
+                <div *ngFor="let injury of injuries" class="injury">
+                    <p id="player-name" class="basic-text"><b>{{injury.player}}</b></p>
+                
+                    <p id="player-team" class="basic-text">{{injury.team}}</p>
+                    <p id="injury-description" class="basic-text">{{injury.description}}</p>
+                    <p id="injury-estimatedTime" class="basic-text">Estimated: <b>{{injury.estimatedRecoveryTimeInDays}}</b> days</p>
+                    <p id="injury-elapsedTime" class="basic-text">Absence: <b>{{calcElapsedTime(injury.timestamp)}}</b> days</p>
+                    <p id="injury-timestamp" class="basic-text">{{convertToDate(injury.timestamp)}}</p>
+                    
+                      <button id="recovery" (click)="setRecovered(injury)" mat-button>
+                        Set Recovered
+                      </button>
+                </div>
+            </div>
+        </div>
+        <div class="container" id="bottom">
+            <h3>Add New Injury</h3>
+            <form [formGroup]="injuryForm" (ngSubmit)="addInjury()">
+                <div id="formFields">
+                    <mat-form-field id="playerField" appearance="outline">
+                        <mat-label>Player</mat-label>
+                        <input type="text" matInput formControlName="playerName" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                            {{ option.name }}
+                          </mat-option>
+                        </mat-autocomplete>
+                      </mat-form-field>
+                      <div id="injuryDetails">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Body part</mat-label>
+                            <input matInput formControlName="bodyPart">
+                          </mat-form-field>
+                          <mat-form-field appearance="outline">
+                              <mat-label>Injury level</mat-label>
+                              <input matInput formControlName="injuryLevel">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                              <mat-label>Specific body part</mat-label>
+                              <input matInput formControlName="specificBodyPart">
+                            </mat-form-field>
+                      </div>
+                    
+                    <mat-form-field id="injuryDescriptionField" appearance="outline">
+                      <mat-label>Description</mat-label>
+                      <textarea matInput formControlName="description"></textarea>
+                    </mat-form-field>
+                </div>
+                
+                
+                <button id="submit" mat-raised-button type="submit">Add Injury</button>
+              </form>
+
+        </div>
+    </div>
+</div>

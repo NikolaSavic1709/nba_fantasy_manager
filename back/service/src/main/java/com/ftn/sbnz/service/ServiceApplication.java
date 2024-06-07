@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.repository.IFantasyTeamRepository;
 import com.ftn.sbnz.repository.IFilterRepository;
 import com.ftn.sbnz.model.models.injuries.Injury;
 import com.ftn.sbnz.model.models.injuries.InjuryHistoryData;
@@ -58,6 +59,8 @@ public class ServiceApplication  {
 	private IInjuryRepository injuryRepository;
 	@Autowired
 	private INBATeamRepository nbaTeamRepository;
+	@Autowired
+	private IFantasyTeamRepository fantasyTeamRepository;
 	@Autowired
 	private IFilterRepository filterRepository;
 	@Autowired
@@ -198,6 +201,14 @@ public class ServiceApplication  {
 			kieSession.insert(injury);
 			injuryRepository.save(injury);
 		}
+		FantasyTeam fantasyTeam=fantasyTeamRepository.findById(1).get();
+		for(int i=1;i<10;i++)
+		{
+			Player player=players.get(i);
+			player.setFantasyTeam(fantasyTeam);
+			playerRepository.save(player);
+		}
+
 		for (InjuryHistoryData injury: injuryHistoryData){
 			kieSession.insert(injury);
 		}
@@ -255,6 +266,7 @@ public class ServiceApplication  {
 					player.setNationality(nationality);
 					player.setStatus(PlayerStatus.HEALTHY);
 					player.setTotalBonusPoints(0);
+					player.setTotalFantasyPoints(0);
 					player.setPrice(Integer.parseInt(price));
 
 					Optional<NBATeam> result = teams.stream()

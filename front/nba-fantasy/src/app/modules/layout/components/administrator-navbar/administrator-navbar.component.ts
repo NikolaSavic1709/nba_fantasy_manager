@@ -11,7 +11,7 @@ export class AdministratorNavbarComponent {
   public selectedPage!: SelectedPage;
   public enumSP=SelectedPage;
   constructor(private router:Router, private authService:AuthService) {
-    this.toHome();
+    this.toInjuries();
     this.authService.setUser();
   }
   toHome(){
@@ -23,6 +23,14 @@ export class AdministratorNavbarComponent {
     this.selectedPage = SelectedPage.PLAYERS;
     this.router.navigate(['/administrator/players']);
   }
+  toGameStats(){
+    this.selectedPage = SelectedPage.GAME_STATS;
+    this.router.navigate(['/administrator/game_stats']);
+  }
+  toInjuries(){
+    this.selectedPage = SelectedPage.INJURIES;
+    this.router.navigate(['/administrator/injuries']);
+  }
 
   logout() {
     localStorage.removeItem('user');
@@ -31,5 +39,5 @@ export class AdministratorNavbarComponent {
 }
 
 enum SelectedPage {
-  HOME, PLAYERS
+  HOME, PLAYERS, GAME_STATS, INJURIES
 }

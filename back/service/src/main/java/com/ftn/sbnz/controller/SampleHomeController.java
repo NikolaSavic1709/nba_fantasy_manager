@@ -1,82 +1,104 @@
 package com.ftn.sbnz.controller;
 
+import com.ftn.sbnz.model.dto.InjuryDTO;
+import com.ftn.sbnz.model.dto.NewInjuryDTO;
+import com.ftn.sbnz.model.dto.PlayerBasicInfoDTO;
+import com.ftn.sbnz.model.dto.PlayerDetailsDTO;
 import com.ftn.sbnz.model.models.*;
 import com.ftn.sbnz.model.models.stats.CategoryScores;
+import com.ftn.sbnz.repository.players.IInjuryRepository;
 import com.ftn.sbnz.repository.players.IPlayerRepository;
 import com.ftn.sbnz.utils.KieSessionProvider;
+import com.ftn.sbnz.utils.TokenUtils;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.ObjectFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.ftn.sbnz.model.models.injuries.Injury;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 
 @RestController
+@RequestMapping(value = "/api")
 public class SampleHomeController {
 
 	private final KieContainer kieContainer;
 
+	private final TokenUtils tokenUtils;
 	private final KieSessionProvider kieSessionProvider;
 	private final IPlayerRepository playerRepository;
+	private final IInjuryRepository injuryRepository;
 
 	@Autowired
-    public SampleHomeController(KieContainer kieContainer, KieSessionProvider kieSessionProvider, IPlayerRepository playerRepository) {
+    public SampleHomeController(KieContainer kieContainer, TokenUtils tokenUtils, KieSessionProvider kieSessionProvider, IPlayerRepository playerRepository, IInjuryRepository injuryRepository) {
         this.kieContainer = kieContainer;
+		this.tokenUtils = tokenUtils;
 		this.kieSessionProvider = kieSessionProvider;
         this.playerRepository = playerRepository;
-    }
-
-    @RequestMapping("/injury")
-	public Integer injury() {
-
-		Optional<Player> p = playerRepository.findById(1L); //Lebron 1, Curry 5
-
-		Injury i = new Injury();
-		i.setName(new ArrayList<>());
-		i.setDescription("placed on IL with strained right hip flexor");
-		i.setRecovered(false);
-		i.setTimestamp(new Date());
-		i.setPlayer(p.get());
-
-		List<String> injuryName=new ArrayList<>(List.of("lips", "strain", ""));
-		i.setName(injuryName);
-		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("injury-group").setFocus();
-		this.kieSessionProvider.getKieSession().insert(i);
-		this.kieSessionProvider.getKieSession().fireAllRules();
-//		this.kieSessionProvider.getKieSession().dispose();
-		return i.getEstimatedRecoveryTimeInDays();
+		this.injuryRepository = injuryRepository;
 	}
 
-	@RequestMapping("/recovery")
-	public String recovery() {
-//		KieServices ks = KieServices.Factory.get();
-//		KieContainer kContainer = ks.getKieClasspathContainer();
-//		KieSession kieSession = kContainer.newKieSession("fwKsession");
-		Player p = new Player();
-		p.setId(1L);
-		p.setStatus(PlayerStatus.OUT);
-		Calendar myCal = Calendar.getInstance();
-		myCal.set(2024,Calendar.APRIL,20);
-		Date date = myCal.getTime();
-		Injury i = new Injury(1L,new ArrayList<>(), "desc", true, null, null, date, p);
+    @PostMapping("/injury")
+	public ResponseEntity<?> injury(@RequestBody NewInjuryDTO newInjuryDTO) {
 
-		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("injury-group").setFocus();
-		kieSessionProvider.getKieSession().insert(i);
-		kieSessionProvider.getKieSession().insert(p);
-		kieSessionProvider.getKieSession().fireAllRules();
-		return "rec";
+		Optional<Player> p = playerRepository.findById(newInjuryDTO.getPlayerId()); //Lebron 1, Curry 5
+		if(p.isPresent()){
+			Injury i = new Injury();
+			i.setDescription(newInjuryDTO.getDescription());
+			i.setName(newInjuryDTO.getName());
+			i.setRecovered(false);
+			i.setTimestamp(new Date());
+			i.setPlayer(p.get());
+			injuryRepository.save(i);
+			this.kieSessionProvider.getKieSession().insert(i);
+			this.kieSessionProvider.getKieSession().fireAllRules();
+			return ResponseEntity.ok(new InjuryDTO(i));
+		}
+		else
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Player not found");
+
 	}
 
+	@PutMapping("/recovery/{id}")
+	public ResponseEntity<?> recovery(@PathVariable("id") int id, @RequestHeader("Authorization") String authHeader) {
+
+		Optional<Injury> i= injuryRepository.findById(id);
+		if(i.isPresent()){
+			i.get().setRecovered(true);
+			injuryRepository.save(i.get());
+
+			FactHandle factHandle = kieSessionProvider.getKieSession().getFactHandle(i);
+
+			if (factHandle != null) {
+				kieSessionProvider.getKieSession().update(factHandle, i);
+			} else {
+				kieSessionProvider.getKieSession().insert(i);
+			}
+
+			kieSessionProvider.getKieSession().fireAllRules();
+			return ResponseEntity.noContent().build();
+		}
+		else
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Injury not found");
+
+	}
+	@GetMapping("/currentInjuries")
+	public ResponseEntity<?> getCurrentInjuries() throws Exception {
+		List<Injury> injuries=injuryRepository.findAll();
+		List<InjuryDTO> injuriesResponse=injuries.stream()
+				.filter(injury -> !injury.isRecovered())
+				.map(InjuryDTO::new)
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(injuriesResponse);
+	}
 
 	@RequestMapping(value = "/filter", method = RequestMethod.GET, produces = "application/json")
 	public Filter filter(@RequestParam(required = true) Integer minPrice, @RequestParam(required = true) Integer maxPrice,

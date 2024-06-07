@@ -2,7 +2,15 @@ package com.ftn.sbnz.model.dto;
 
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerShortInfoDTO {
     Long id;
     String name;
@@ -12,7 +20,6 @@ public class PlayerShortInfoDTO {
     String nbaTeam;
     int position;
     PlayerStatus status;
-
     public PlayerShortInfoDTO(Player player)
     {
         this.id=player.getId();

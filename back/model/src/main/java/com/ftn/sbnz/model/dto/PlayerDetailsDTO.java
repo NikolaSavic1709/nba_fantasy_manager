@@ -2,10 +2,17 @@ package com.ftn.sbnz.model.dto;
 
 import com.ftn.sbnz.model.models.PlayerStatus;
 import com.ftn.sbnz.model.models.Player;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
-
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerDetailsDTO {
     Long id;
     String name;

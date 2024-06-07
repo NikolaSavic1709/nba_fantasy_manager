@@ -1,0 +1,157 @@
+#content{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 7%;
+    margin-bottom: 5%;
+    align-items: center;
+    justify-content: flex-start;
+}
+#header{
+    width: 90%;
+    background-color: rgb(202, 202, 202);
+    height: 150px;
+}
+.container {
+    flex: 1;
+    padding: 5px;
+    margin: 0 10px;
+    border: 1px solid rgba($color: #000000, $alpha: 0.3);
+
+    border-radius: 10px;
+    background-color: rgb(213, 214, 216);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#containers {
+    display: flex;
+    width: 90%;
+    // height: 600px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10%;
+}
+.players-container{
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+h3, h4{
+    margin: 15px;
+    color: #5a5a5a;
+    font-weight: 400;
+}
+.injury{
+    width: 90%;
+    
+    height: 60px;
+    display: grid;
+    grid-template-columns: 10% 20% 30% 15% 15%;
+    grid-template-rows: 50% 45%;
+    row-gap: 3%;
+    column-gap: 3%;
+    background: #bdbdbd;
+    padding: 5px 10px;
+    border: 0.5px solid rgba($color: #000000, $alpha: 0.1);
+
+    margin: auto;
+
+    
+}
+.basic-text{
+    justify-self: start;
+    align-self: center;
+    // font-family: 'Nunito';
+    font-style: normal;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+#player-name{
+    grid-row: 1;
+    grid-column: 2;
+    // font-weight: 600;
+    
+}
+#player-team{
+    grid-row: 2;
+    grid-column: 2;
+    // font-weight: 400;
+}
+#injury-description{
+    grid-row: 1/3;
+    grid-column: 3;
+    justify-self: left;
+}
+
+#injury-estimatedTime{
+    grid-row: 1;
+    grid-column: 4;
+    justify-self: center;
+}
+
+#injury-elapsedTime{
+    grid-row: 2;
+    grid-column: 4;
+    justify-self: center;
+}
+#injury-timestamp{
+    grid-row: 1/3;
+    grid-column: 1;
+    justify-self: center;
+}
+#recovery{
+    grid-row: 1/3;
+    grid-column: 5;
+    justify-self: center;
+    align-self: center;
+    font-size: 12px;
+    color: white;
+    background-color: rgb(0, 139, 0);
+}
+form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
+    
+    gap: 10%;
+}
+#formFields{
+    width: 70%;
+    // flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#injuryDetails{
+    display: flex;
+    flex-direction: column;
+    // margin: 20px;
+}
+#playerField{
+    height: 50px;
+}
+textarea{
+    resize: none;
+}
+#submit{
+    margin-top: 20px;
+    font-size: 12px;
+    color: white;
+    background-color: rgb(139, 0, 0);
+}
+::ng-deep #injuryDescriptionField textarea {
+    height: 170px;
+  }
+  ::ng-deep #injuryDescriptionField{
+    height: 170px;
+  }
