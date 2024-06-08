@@ -210,12 +210,12 @@ public class ServiceApplication  {
 			injuryRepository.save(injury);
 		}
 		FantasyTeam fantasyTeam=fantasyTeamRepository.findById(1).get();
-		for(int i=1;i<10;i++)
-		{
-			Player player=players.get(i);
-			player.setFantasyTeam(fantasyTeam);
-			playerRepository.save(player);
-		}
+//		for(int i=1;i<10;i++)
+//		{
+//			Player player=players.get(i);
+//			player.setFantasyTeam(fantasyTeam);
+//			playerRepository.save(player);
+//		}
 
 		for (InjuryHistoryData injury: injuryHistoryData){
 			kieSession.insert(injury);
