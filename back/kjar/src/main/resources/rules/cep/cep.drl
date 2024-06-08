@@ -51,7 +51,7 @@ no-loop
         System.out.println("Added 3 players in ten minutes");
 end
 
-rule "5 penalties in seven days"
+rule "3 penalties in seven days"
 no-loop
     when
         $event: PenaltyEvent($timestamp: additionTime, $teamId: team.id, $team: team)
@@ -59,12 +59,12 @@ no-loop
             PenaltyEvent(this!=$event, $timestamp>additionTime ,team.id==$teamId) from window SevenDaysPenalties,
             $cnt: count(1)
         )
-        eval($cnt >= 4 )
+        eval($cnt >= 2 )
     then
         int totalPoints=$team.getTotalPoints();
         modify($team){setTotalPoints((int) totalPoints-100)};
-        fantasyTeamRepository.save($team);
-        System.out.println("5 penalties in seven days");
+        //fantasyTeamRepository.save($team);
+        System.out.println("3 penalties in seven days");
 end
 
 

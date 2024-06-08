@@ -27,7 +27,7 @@ when
     $s : SimilarPlayer($similarPlayer : name, $fantasyPoints : injuredPlayerPoints)
     $player : Player(name == $similarPlayer, $oldPoints: totalFantasyPoints)
 then
-    double coefficient = 0.5;
+    double coefficient = 0.2;
     int scaledPoints = (int) (coefficient * $fantasyPoints);
     int updatedTotal = $oldPoints + scaledPoints;
     modify($player){setTotalFantasyPoints(updatedTotal)};

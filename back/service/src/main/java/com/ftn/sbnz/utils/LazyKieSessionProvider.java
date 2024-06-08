@@ -1,7 +1,11 @@
 package com.ftn.sbnz.utils;
 
 import com.ftn.sbnz.model.models.Filter;
+import com.ftn.sbnz.model.repository.IFantasyTeamRepository;
 import com.ftn.sbnz.model.repository.IFilterRepository;
+import com.ftn.sbnz.model.repository.INBATeamRepository;
+import com.ftn.sbnz.model.repository.players.IInjuryRepository;
+import com.ftn.sbnz.model.repository.players.IPlayerRepository;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.conf.EventProcessingOption;
@@ -22,6 +26,15 @@ public class LazyKieSessionProvider implements KieSessionProvider {
     @Autowired
     private IFilterRepository filterRepository;
 
+    @Autowired
+    private IPlayerRepository playerRepository;
+    @Autowired
+    private IInjuryRepository injuryRepository;
+    @Autowired
+    private INBATeamRepository nbaTeamRepository;
+    @Autowired
+    private IFantasyTeamRepository fantasyTeamRepository;
+
     private KieSession kieSession;
 
     @Override
@@ -39,9 +52,16 @@ public class LazyKieSessionProvider implements KieSessionProvider {
             kieSession.destroy();
             initializeKieSession();
             insertFacts(kieSession, facts);
+            setGlobals(kieSession);
         } else {
             initializeKieSession();
         }
+    }
+
+    private void setGlobals(KieSession kieSession){
+        kieSession.setGlobal("playerRepository", playerRepository);
+        kieSession.setGlobal("injuryRepository", injuryRepository);
+        kieSession.setGlobal("fantasyTeamRepository", fantasyTeamRepository);
     }
 
     private void initializeKieSession() {

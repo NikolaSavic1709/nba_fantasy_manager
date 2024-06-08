@@ -93,6 +93,7 @@ rule "recovery"
         modify($i){setRecovered(true)};
         injuryRepository.save($i);
         $rl.getPlayers().add($p);
+        $rl.setFormed(true);
         Collections.sort($rl.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
         System.out.println($i.getRecoveryTimeInDays());
         System.out.println($p.getStatus());

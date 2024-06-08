@@ -33,8 +33,6 @@ end
 
 
 
-
-
 //rule "Update Player Scores"
 //salience 100
 ////agenda-group "recommendation-group"
@@ -72,8 +70,9 @@ end
 rule "Recommendation list"
 //agenda-group "recommendation-group"
 salience 3
+no-loop
     when
-        $r: RecommendationList(players == null)
+        $r: RecommendationList()
         $list: List() from collect(Player())
     then
         modify($r){setPlayers(new ArrayList<>($list))};
