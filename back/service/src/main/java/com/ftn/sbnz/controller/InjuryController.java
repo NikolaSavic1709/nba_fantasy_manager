@@ -31,7 +31,7 @@ public class InjuryController {
     }
 
     @GetMapping("/threshold")
-    public ResponseEntity<?> getMostSelectedPlayersByThreshold(@RequestParam int threshold) {
+    public ResponseEntity<?> getFrequentInjuryDescriptionAndAverageRecovery(@RequestParam int threshold) {
         List<InjuryStatsDTO> injuries = injuryService.getMostFrequentInjuryByThreshold(threshold);
         return new ResponseEntity<>(injuries, HttpStatus.OK);
     }

@@ -10,6 +10,7 @@ import { InjuriesComponent } from './components/injuries/injuries.component';
 import { GameStatsComponent } from './components/game-stats/game-stats.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ReportComponent } from './components/report/report.component';
 
 
 
@@ -21,6 +22,7 @@ import { MatInputModule } from '@angular/material/input';
     AddFilterDialogComponent,
     InjuriesComponent,
     GameStatsComponent,
+    ReportComponent,
   ],
   imports: [
     CommonModule,

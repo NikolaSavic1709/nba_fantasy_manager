@@ -77,4 +77,38 @@ public class SelectionService {
         //kieSession.dispose();
         return result;
     }
+
+    public List<Player> getMostDroppedPlayersByThreshold(int threshold) {
+        KieSession kieSession = kieSessionProvider.getKieSession();
+        List<Player> result = new ArrayList<>();
+        QueryResults queryResults = kieSession.getQueryResults("getMostDroppedPlayersByThreshold", threshold);
+        for (QueryResultsRow row : queryResults) {
+            Player player = (Player) row.get("$player");
+            result.add(player);
+        }
+        //kieSession.dispose();
+
+        result.sort((p1, p2) -> Integer.compare(
+                p2.getFantasyStatisticalColumns().getTimesDropped(),
+                p1.getFantasyStatisticalColumns().getTimesDropped()
+        ));
+        return result;
+    }
+
+    public List<Player> getMostDroppedPlayersByNBATeamName(String team) {
+        KieSession kieSession = kieSessionProvider.getKieSession();
+        List<Player> result = new ArrayList<>();
+        QueryResults queryResults = kieSession.getQueryResults("getMostDroppedPlayersByNBATeamName", team);
+        for (QueryResultsRow row : queryResults) {
+            Player player = (Player) row.get("$player");
+            result.add(player);
+        }
+        //kieSession.dispose();
+
+        result.sort((p1, p2) -> Integer.compare(
+                p2.getFantasyStatisticalColumns().getTimesDropped(),
+                p1.getFantasyStatisticalColumns().getTimesDropped()
+        ));
+        return result;
+    }
 }

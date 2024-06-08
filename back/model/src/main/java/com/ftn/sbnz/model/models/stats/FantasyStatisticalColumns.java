@@ -26,7 +26,7 @@ public class FantasyStatisticalColumns {
 
     public FantasyStatisticalColumns(){
         this.timesSelected = getRandom();
-        this.timesDropped = 0;
+        this.timesDropped = getRandom();
         this.recommendationRank = 0;
     }
 

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/selections")
+@RequestMapping(value = "/api")
 public class SelectionController {
 
     private final KieSessionProvider kieSessionProvider;
@@ -28,7 +28,7 @@ public class SelectionController {
         this.selectionService = selectionService;
     }
 
-    @GetMapping("/threshold")
+    @GetMapping("/selections/threshold")
     public ResponseEntity<?> getMostSelectedPlayersByThreshold(@RequestParam int threshold) {
         List<Player> players = selectionService.getMostSelectedPlayersByThreshold(threshold);
         List<PlayerDTO> playerDTOList = new ArrayList<>();
@@ -39,7 +39,7 @@ public class SelectionController {
         return new ResponseEntity<>(playerDTOList, HttpStatus.OK);
     }
 
-    @GetMapping("/team")
+    @GetMapping("/selections/team")
     public ResponseEntity<?> getMostSelectedPlayersByNBATeamName(@RequestParam String team) {
         List<Player> players = selectionService.getMostSelectedPlayersByNBATeamName(team);
         List<PlayerDTO> playerDTOList = new ArrayList<>();
@@ -50,7 +50,29 @@ public class SelectionController {
         return new ResponseEntity<>(playerDTOList, HttpStatus.OK);
     }
 
-    @GetMapping("/teams-with-selected-players")
+    @GetMapping("/dropped/threshold")
+    public ResponseEntity<?> getMostDroppedPlayersByThreshold(@RequestParam int threshold) {
+        List<Player> players = selectionService.getMostDroppedPlayersByThreshold(threshold);
+        List<PlayerDTO> playerDTOList = new ArrayList<>();
+        for(Player p : players){
+            playerDTOList.add(new PlayerDTO(p));
+        }
+
+        return new ResponseEntity<>(playerDTOList, HttpStatus.OK);
+    }
+
+    @GetMapping("/dropped/team")
+    public ResponseEntity<?> getMostDroppedPlayersByNBATeamName(@RequestParam String team) {
+        List<Player> players = selectionService.getMostDroppedPlayersByNBATeamName(team);
+        List<PlayerDTO> playerDTOList = new ArrayList<>();
+        for(Player p : players){
+            playerDTOList.add(new PlayerDTO(p));
+        }
+
+        return new ResponseEntity<>(playerDTOList, HttpStatus.OK);
+    }
+
+    @GetMapping("/selections/teams-with-selected-players")
     public ResponseEntity<?> getTeamsWithSelectedPlayers() {
         return new ResponseEntity<>(selectionService.getTeamsWithSelectedPlayers(), HttpStatus.OK);
     }
