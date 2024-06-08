@@ -54,6 +54,10 @@ export class AdminHomeComponent implements AfterViewInit{
   filterError = false;
 
   ngAfterViewInit() {
+    this.refreshList();
+  }
+
+  refreshList(){
     this.playerService.getRecommendationList().subscribe({
       next: (response) => {
         this.players = response;
@@ -67,12 +71,14 @@ export class AdminHomeComponent implements AfterViewInit{
         console.log(err);
       }
     });
-
   }
 
   setFilter() {
     const filterId = Number(this.setFilterForm.value.filterControl)
-
+    if (filterId === 0){
+      this.refreshList();
+      return ;
+    }
     if (this.setFilterForm.valid) {
       this.filterService.filterPlayers(filterId).subscribe({
         next: (response) => {

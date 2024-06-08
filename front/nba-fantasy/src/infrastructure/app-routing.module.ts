@@ -4,6 +4,7 @@ import { AdminHomeComponent } from 'src/app/modules/admin/components/admin-home/
 import { CategoryScoresComponent } from 'src/app/modules/admin/components/category-scores/category-scores.component';
 import { GameStatsComponent } from 'src/app/modules/admin/components/game-stats/game-stats.component';
 import { InjuriesComponent } from 'src/app/modules/admin/components/injuries/injuries.component';
+import { ReportComponent } from 'src/app/modules/admin/components/report/report.component';
 import { LoginComponent } from 'src/app/modules/auth/components/login/login.component';
 import { ManagerHomeComponent } from 'src/app/modules/manager/components/manager-home/manager-home.component';
 import { RecommendationComponent } from 'src/app/modules/manager/components/recommendation/recommendation.component';
@@ -42,6 +43,10 @@ const routes: Routes = [
   {
     path: 'administrator/game_stats',
     component: GameStatsComponent
+  },
+  {
+    path: 'administrator/reports',
+    component: ReportComponent
   }
 ];
 

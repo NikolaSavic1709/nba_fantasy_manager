@@ -19,9 +19,9 @@ export class AdministratorNavbarComponent {
     this.router.navigate(['/administrator']);
   }
 
-  toPlayers() {
-    this.selectedPage = SelectedPage.PLAYERS;
-    this.router.navigate(['/administrator/players']);
+  toReports() {
+    this.selectedPage = SelectedPage.REPORTS;
+    this.router.navigate(['/administrator/reports']);
   }
   toGameStats(){
     this.selectedPage = SelectedPage.GAME_STATS;
@@ -44,5 +44,5 @@ export class AdministratorNavbarComponent {
 }
 
 enum SelectedPage {
-  HOME, PLAYERS, GAME_STATS, INJURIES, CATEGORY_SCORES
+  HOME, REPORTS, GAME_STATS, INJURIES, CATEGORY_SCORES
 }

@@ -23,6 +23,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableModule} from '@angular/material/table';
 import {MatNativeDateModule} from "@angular/material/core";
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MatTabsModule} from '@angular/material/tabs';
+
 
 @NgModule({
   imports: [
@@ -55,6 +57,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
     MatButtonModule,
     MatExpansionModule,
     MatNativeDateModule,
+    MatTabsModule
   ],
   exports: [
     MatButtonModule,
@@ -81,7 +84,8 @@ import {MatExpansionModule} from '@angular/material/expansion';
     MatPaginatorModule,
     MatTableModule,
     MatNativeDateModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTabsModule
   ],
 })
 export class MaterialModule {}

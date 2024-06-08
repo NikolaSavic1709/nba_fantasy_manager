@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -55,6 +57,7 @@ public class FilterController {
         int i = kieSessionProvider.getKieSession().fireAllRules();
         System.out.println(i);
 
+        Collections.sort(filteredList.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
         List<PlayerDTO> playerDTOList = new ArrayList<>();
         for(Player p : filteredList.getPlayers()){
             playerDTOList.add(new PlayerDTO(p));
@@ -85,6 +88,8 @@ public class FilterController {
 
         Filter filter = filterDTO.generateFilter();
         Filter newFilter = filterRepository.save(filter);
+
+        kieSessionProvider.refreshKieSession();
 
         return new ResponseEntity<>(new FilterDTO(newFilter), HttpStatus.OK);
     }
