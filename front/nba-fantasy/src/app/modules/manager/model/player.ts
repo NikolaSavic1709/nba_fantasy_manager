@@ -16,7 +16,7 @@ export interface PlayerDetails{
     nationality: string
     nbaTeam: string
     position: number[]
-    birthday: string
+    birthday: number
     price: number
     status: string,
     ppg: number,
@@ -36,3 +36,7 @@ export enum PlayerStatus {
     HEALTHY, OUT
     }
 
+export interface RecommendationAndPreferencesList{
+    playersRecommendation: PlayerShortInfo[]
+    playersPreferences: PlayerShortInfo[]
+}

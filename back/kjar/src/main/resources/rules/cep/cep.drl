@@ -6,7 +6,11 @@ import com.ftn.sbnz.model.models.PreferencesList
 import com.ftn.sbnz.model.models.RecommendationList
 import java.util.List
 import java.util.Set
+import java.util.HashSet
 import java.util.Date
+import com.ftn.sbnz.model.repository.IFantasyTeamRepository;
+
+global IFantasyTeamRepository fantasyTeamRepository;
 
 declare window SevenDaysAdditions
     @doc("last 7d")
@@ -26,8 +30,13 @@ declare window OneMonthInjuries
     @doc("last 1mo")
     Injury() over window:time(30d)
 end
+declare window SevenDaysInjuries
+    @doc("last 7d")
+    Injury() over window:time(7d)
+end
 
 rule "Added 3 players in ten minutes"
+no-loop
     when
         $event: PlayerAdditionEvent($timestamp: additionTime,$fantasyTeamId: team.id, $team: team)
         accumulate(
@@ -42,39 +51,25 @@ rule "Added 3 players in ten minutes"
         System.out.println("Added 3 players in ten minutes");
 end
 
-rule "3 penalties in seven days"
+rule "5 penalties in seven days"
+no-loop
     when
-        $event: PenaltyEvent($timestamp: additionTime, $team: team)
+        $event: PenaltyEvent($timestamp: additionTime, $teamId: team.id, $team: team)
         accumulate(
-            PenaltyEvent(this!=$event, $timestamp>additionTime ,team==$team) from window SevenDaysPenalties,
+            PenaltyEvent(this!=$event, $timestamp>additionTime ,team.id==$teamId) from window SevenDaysPenalties,
             $cnt: count(1)
         )
-        eval($cnt >= 2 )
+        eval($cnt >= 4 )
     then
         int totalPoints=$team.getTotalPoints();
         modify($team){setTotalPoints((int) totalPoints-100)};
-        System.out.println("3 penalties in seven days");
+        fantasyTeamRepository.save($team);
+        System.out.println("5 penalties in seven days");
 end
 
-rule "Added 3 players from same team if preferences list doesnt exist"
-    when
-        $event: PlayerAdditionEvent($timestamp: additionTime,$fantasyTeamId: team.id, $teamId: player.nbaTeam.id, $team: team)
-        accumulate(
-            PlayerAdditionEvent(this!=$event, $timestamp>additionTime ,$fantasyTeamId == team.id, $teamId == player.nbaTeam.id) from window SevenDaysAdditions,
-            $cnt: count(1)
-        )
-        eval($cnt >= 2 )
-        $playersSet: Set() from collect(Player($teamId == nbaTeam.id, fantasyTeam==null))
-        not( PreferencesList( team == $team ) )
-    then
-        for (Object player : $playersSet) {
-            System.out.println(((Player) player).getName());
-        }
-        insert(new PreferencesList($playersSet, $team));
-        System.out.println("Added 3 players from same team if preferences list doesnt exist");
-end
 
 rule "Added 3 players from same team if preferences list exists"
+no-loop
     when
         $event: PlayerAdditionEvent($timestamp: additionTime,$fantasyTeamId: team.id, $teamId: player.nbaTeam.id, $team: team)
         accumulate(
@@ -83,7 +78,7 @@ rule "Added 3 players from same team if preferences list exists"
         )
         eval($cnt >= 2 )
         $playersSet: Set() from collect(Player($teamId == nbaTeam.id, fantasyTeam==null))
-        $preferenceList: PreferencesList( team == $team )
+        $preferenceList: PreferencesList( $fantasyTeamId == team.id )
     then
         for (Object player : $playersSet) {
             System.out.println(((Player) player).getName());
@@ -93,25 +88,10 @@ rule "Added 3 players from same team if preferences list exists"
         System.out.println("Added 3 players from same team if preferences list exists");
 end
 
-rule "Added 5 players at same position if preferences list doesnt exist"
-    when
-        $event: PlayerAdditionEvent($timestamp: additionTime,$fantasyTeamId: team.id, $positions: player.position, $team: team)
-        accumulate(
-            PlayerAdditionEvent(this!=$event, $timestamp>additionTime ,$fantasyTeamId == team.id, $positions[0] memberOf player.position) from window SevenDaysAdditions,
-            $cnt: count(1)
-        )
-        eval($cnt >= 4 )
-        $playersSet: Set() from collect(Player($positions[0] memberOf position, fantasyTeam==null))
-        not( PreferencesList( team == $team ) )
-    then
-        for (Object player : $playersSet) {
-            System.out.println(((Player) player).getName());
-        }
-        insert(new PreferencesList($playersSet, $team));
-        System.out.println("Added 5 players at same position if preferences list doesnt exist");
-end
+
 
 rule "Added 5 players at same position if preferences list exists"
+no-loop
     when
         $event: PlayerAdditionEvent($timestamp: additionTime,$fantasyTeamId: team.id, $positions: player.position, $team: team)
         accumulate(
@@ -120,38 +100,21 @@ rule "Added 5 players at same position if preferences list exists"
         )
         eval($cnt >= 4 )
         $playersSet: Set() from collect(Player($positions[0] memberOf position, fantasyTeam==null))
-        $preferenceList: PreferencesList( team == $team )
+        $preferenceList: PreferencesList( $fantasyTeamId == team.id )
    then
         for (Object player : $playersSet) {
             System.out.println(((Player) player).getName());
+            $preferenceList.getPlayers().add((Player) player);
         }
-        $preferenceList.getPlayers().addAll($playersSet);
+//        $preferenceList.getPlayers().addAll($playersSet);
         update($preferenceList);
         System.out.println("Added 5 players at same position if preferences list exists");
 end
 
-rule "Added players with price in range if preferences list doesnt exist"
-    when
-        $event: PlayerAdditionEvent($timestamp: additionTime,$fantasyTeamId: team.id, $price1: player.price, $team: team)
-        accumulate(
-            PlayerAdditionEvent(this!=$event, $timestamp>additionTime ,$fantasyTeamId == team.id, $price: player.price )
-            over window: length(5),
-            $max: max($price),
-            $min: min($price),
-            $count: count($price)
-        )
-        eval($count>=4)
-        $playersSet: Set() from collect(Player(Math.max($max, $price1)>price, Math.min($min, $price1)<price, fantasyTeam==null))
-        not( PreferencesList( team == $team ) )
-    then
-        for (Object player : $playersSet) {
-            System.out.println(((Player) player).getName());
-        }
-        insert(new PreferencesList($playersSet, $team));
-        System.out.println("Added players with price in range if preferences list doesnt exist");
-end
+
 
 rule "Added players with price in range if preferences list exists"
+no-loop
     when
         $event: PlayerAdditionEvent($timestamp: additionTime,$fantasyTeamId: team.id, $price1: player.price, $team: team)
         accumulate(
@@ -163,7 +126,7 @@ rule "Added players with price in range if preferences list exists"
         )
         eval($count>=4)
         $playersSet: Set() from collect(Player(Math.max($max, $price1)>price, Math.min($min, $price1)<price, fantasyTeam==null))
-        $preferenceList: PreferencesList( team == $team )
+        $preferenceList: PreferencesList( $fantasyTeamId == team.id )
     then
 
         for (Object player : $playersSet) {
@@ -175,12 +138,13 @@ rule "Added players with price in range if preferences list exists"
 end
 
 rule "Remove players from RL from team which has more than four injured players in last one month"
+no-loop
     when
         $rl: RecommendationList()
         $event: Injury($timestamp: timestamp,$team: player.nbaTeam)
         accumulate(
             Injury(this!=$event, $timestamp>timestamp ,$team == player.nbaTeam )
-            from window SevenDaysAdditions,
+            from window SevenDaysInjuries,
             $cnt: count(1)
         )
         eval($cnt >= 4 )

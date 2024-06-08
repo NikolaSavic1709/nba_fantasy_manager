@@ -1,5 +1,4 @@
 <div id="content">
-    <div id="header"></div>
     <div id="containers">
         <div class="container" id="left">
             <h3>My Team: {{teamName}}</h3>
@@ -15,7 +14,7 @@
                     <!-- <button id="player-remove" (click)="removePlayer(player)">
                         <img src="../../../../../assets/remove.png" alt="Icon">
                       </button> -->
-                      <button id="player-remove" (click)="removePlayer(player)" mat-icon-button>
+                      <button id="player-remove" (click)="removePlayer(player, $event)" mat-icon-button>
                         <mat-icon>do_not_disturb_on</mat-icon>
                       </button>
                 </div>
@@ -33,7 +32,7 @@
                 <p id="fantasy-points-label"><span class="label">Fantasy Points:</span> <span class="label-value">{{selectedPlayer.fantasyPoints}}</span></p>
                 <p id="bonus-points-label"><span class="label">Bonus Points:</span> <span class="label-value">{{selectedPlayer.bonusPoints}}</span></p>
                 <p id="nationality-label"><span class="label">Nationality:</span> <span class="label-value">{{selectedPlayer.nationality}}</span></p>
-                <p id="birthday-label"><span class="label">Birthday:</span> <span class="label-value">{{selectedPlayer.birthday}}</span></p>
+                <p id="birthday-label"><span class="label">Birthday:</span> <span class="label-value">{{convertToDate(selectedPlayer.birthday)}}</span></p>
                 <p id="price-label"><span class="label">Price:</span> <span class="label-value">{{selectedPlayer.price}}</span></p>
                 <hr id="details-hr">
                 <h4 id="player-stats-label">Player Stats</h4>
@@ -47,9 +46,9 @@
                 <p id="tpg-label" class="stats"><span class="stats-label">TPG:</span> <span class="stats-label-value">{{selectedPlayer.tpg}}</span></p>
                 <p id="bpg-label" class="stats"><span class="stats-label">BPG:</span> <span class="stats-label-value">{{selectedPlayer.bpg}}</span></p>
                 <p id="pfpg-label" class="stats"><span class="stats-label">PFPG:</span> <span class="stats-label-value">{{selectedPlayer.pfpg}}</span></p>
-                <p id="fgPercentage-label" class="stats"><span class="stats-label">FG%:</span> <span class="stats-label-value">{{selectedPlayer.fgPercentage}}</span></p>
-                <p id="twoPointPercentage-label" class="stats"><span class="stats-label">2P%:</span> <span class="stats-label-value">{{selectedPlayer.twoPointPercentage}}</span></p>
-                <p id="threePointPercentage-label" class="stats"><span class="stats-label">3P%:</span> <span class="stats-label-value">{{selectedPlayer.threePointPercentage}}</span></p>
+                <p id="fgPercentage-label" class="stats"><span class="stats-label">FG%:</span> <span class="stats-label-value">{{(selectedPlayer.fgPercentage*100) | number:'1.1-2' }}%</span></p>
+                <p id="twoPointPercentage-label" class="stats"><span class="stats-label">2P%:</span> <span class="stats-label-value">{{(selectedPlayer.twoPointPercentage * 100) | number:'1.1-2' }}%</span></p>
+                <p id="threePointPercentage-label" class="stats"><span class="stats-label">3P%:</span> <span class="stats-label-value">{{(selectedPlayer.threePointPercentage*100) | number:'1.1-2' }}%</span></p>
 
             </div>
         </div>
@@ -65,9 +64,37 @@
                     <!-- <button id="player-remove" (click)="removePlayer(player)">
                         <img src="../../../../../assets/remove.png" alt="Icon">
                       </button> -->
-                      <button id="player-add" (click)="addPlayer(player)" mat-icon-button>
+                      <button id="player-add" (click)="addPlayer(player, $event)" mat-icon-button>
                         <mat-icon>add_circle</mat-icon>
                       </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="containers">
+            <div class="transparent container" id="left">
+
+            </div>
+            <div class="transparent container" id="center">
+
+            </div>
+            <div class="container" id="right">
+                <h3>Preferences List</h3>
+                <div class="players-container">
+                    <div *ngFor="let player of preferencesList" class="player-short" (click)="openPlayer(player)">
+                        <p id="player-position" class="basic-text">{{positionMap[player.position]}}</p>
+                        <p id="player-name" class="basic-text"><b>{{player.name}}</b> ({{player.nationality}})</p>
+                        <p id="player-team" class="basic-text">{{player.nbaTeam}}</p>
+                        <!-- <p id="player-nationality" class="basic-text">{{player.nationality}}</p> -->
+                        <p id="player-points" class="basic-text">{{player.fantasyPoints}}</p>
+                        <!-- <button id="player-remove" (click)="removePlayer(player)">
+                            <img src="../../../../../assets/remove.png" alt="Icon">
+                          </button> -->
+                          <button id="player-add" (click)="addPlayer(player, $event)" mat-icon-button>
+                            <mat-icon>add_circle</mat-icon>
+                          </button>
+                    </div>
                 </div>
             </div>
         </div>

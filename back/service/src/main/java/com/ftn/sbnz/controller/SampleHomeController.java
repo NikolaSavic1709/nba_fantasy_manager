@@ -2,10 +2,12 @@ package com.ftn.sbnz.controller;
 
 import com.ftn.sbnz.model.dto.InjuryDTO;
 import com.ftn.sbnz.model.dto.NewInjuryDTO;
+import com.ftn.sbnz.model.dto.RecommendationListDTO;
 import com.ftn.sbnz.model.models.*;
-import com.ftn.sbnz.model.models.stats.CategoryScores;
+import com.ftn.sbnz.model.models.user.Manager;
 import com.ftn.sbnz.model.repository.players.IInjuryRepository;
 import com.ftn.sbnz.model.repository.players.IPlayerRepository;
+import com.ftn.sbnz.model.repository.users.IManagerRepository;
 import com.ftn.sbnz.utils.KieSessionProvider;
 import com.ftn.sbnz.utils.TokenUtils;
 import org.kie.api.KieServices;
@@ -34,58 +36,124 @@ public class SampleHomeController {
 	private final KieSessionProvider kieSessionProvider;
 	private final IPlayerRepository playerRepository;
 	private final IInjuryRepository injuryRepository;
+	private final IManagerRepository managerRepository;
 
 	@Autowired
-    public SampleHomeController(KieContainer kieContainer, TokenUtils tokenUtils, KieSessionProvider kieSessionProvider, IPlayerRepository playerRepository, IInjuryRepository injuryRepository) {
+    public SampleHomeController(KieContainer kieContainer, TokenUtils tokenUtils, KieSessionProvider kieSessionProvider, IPlayerRepository playerRepository, IInjuryRepository injuryRepository, IManagerRepository managerRepository) {
         this.kieContainer = kieContainer;
 		this.tokenUtils = tokenUtils;
 		this.kieSessionProvider = kieSessionProvider;
         this.playerRepository = playerRepository;
 		this.injuryRepository = injuryRepository;
+		this.managerRepository = managerRepository;
 	}
 
     @PostMapping("/injury")
 	public ResponseEntity<?> injury(@RequestBody NewInjuryDTO newInjuryDTO) {
+		Long playerId = newInjuryDTO.getPlayerId();
+		Collection<?> players = kieSessionProvider.getKieSession().getObjects(new ObjectFilter() {
+			@Override
+			public boolean accept(Object object) {
+				return object instanceof Player;
+			}
+		});
+		Player player = null;
+		if (players.isEmpty()) {
+			Optional<Player> playerOptional = playerRepository.findById(playerId);
+			if (playerOptional.isPresent()) {
+				player = playerOptional.get();
+				kieSessionProvider.getKieSession().insert(player);
 
-		Optional<Player> p = playerRepository.findById(newInjuryDTO.getPlayerId()); //Lebron 1, Curry 5
-		if(p.isPresent()){
-			Injury i = new Injury();
-			i.setDescription(newInjuryDTO.getDescription());
-			i.setName(newInjuryDTO.getName());
-			i.setRecovered(false);
-			i.setTimestamp(new Date());
-			i.setPlayer(p.get());
-			injuryRepository.save(i);
-			this.kieSessionProvider.getKieSession().insert(i);
-			this.kieSessionProvider.getKieSession().fireAllRules();
-			return ResponseEntity.ok(new InjuryDTO(i));
+			}
+		} else {
+			Player foundPlayer = null;
+			for (Object player1 : players) {
+				if (Objects.equals(((Player) player1).getId(), playerId))
+					foundPlayer = (Player) player1;
+
+			}
+			if (foundPlayer == null) {
+				Optional<Player> playerOptional = playerRepository.findById(playerId);
+				if (playerOptional.isPresent()) {
+					player = playerOptional.get();
+					kieSessionProvider.getKieSession().insert(player);
+				}
+			}else {
+					player = foundPlayer;
+					FactHandle factHandle = kieSessionProvider.getKieSession().getFactHandle(player);
+
+					if (factHandle != null) {
+						kieSessionProvider.getKieSession().update(factHandle, player);
+					} else {
+						kieSessionProvider.getKieSession().insert(player);
+					}
+			}
+
 		}
-		else
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Player not found");
-
+		Injury i = new Injury();
+		i.setDescription(newInjuryDTO.getDescription());
+		i.setName(newInjuryDTO.getName());
+		i.setRecovered(false);
+		i.setTimestamp(new Date());
+		i.setPlayer(player);
+		injuryRepository.save(i);
+		this.kieSessionProvider.getKieSession().insert(i);
+		this.kieSessionProvider.getKieSession().fireAllRules();
+		return ResponseEntity.ok(new InjuryDTO(i));
 	}
 
 	@PutMapping("/recovery/{id}")
 	public ResponseEntity<?> recovery(@PathVariable("id") int id, @RequestHeader("Authorization") String authHeader) {
+		Collection<?> injuries = kieSessionProvider.getKieSession().getObjects(new ObjectFilter() {
+			@Override
+			public boolean accept(Object object) {
+				return object instanceof Injury;
+			}
+		});
+		Injury injury=null;
+		if (injuries.isEmpty()) {
+			Optional<Injury> injuryOptional = injuryRepository.findById(id);
+			if (injuryOptional.isPresent()) {
+				injury = injuryOptional.get();
+				injury.setRecovered(true);
+				injuryRepository.save(injury);
+				kieSessionProvider.getKieSession().insert(injury);
 
-		Optional<Injury> i= injuryRepository.findById(id);
-		if(i.isPresent()){
-			i.get().setRecovered(true);
-			injuryRepository.save(i.get());
+			}
+		} else {
+			Injury foundInjury=null;
+			for (Object injury1 : injuries) {
+				if(Objects.equals(((Injury) injury1).getId(), Long.valueOf(id)))
+					foundInjury=(Injury)injury1;
 
-			FactHandle factHandle = kieSessionProvider.getKieSession().getFactHandle(i);
+			}
+			if (foundInjury==null) {
+				Optional<Injury> injuryOptional = injuryRepository.findById(id);
+				if (injuryOptional.isPresent()) {
+					injury = injuryOptional.get();
+					injury.setRecovered(true);
+					injuryRepository.save(injury);
+					kieSessionProvider.getKieSession().insert(injury);
 
-			if (factHandle != null) {
-				kieSessionProvider.getKieSession().update(factHandle, i);
-			} else {
-				kieSessionProvider.getKieSession().insert(i);
+				}
+			}
+			else {
+				injury=foundInjury;
+				injury.setRecovered(true);
+				injuryRepository.save(injury);
+				FactHandle factHandle = kieSessionProvider.getKieSession().getFactHandle(injury);
+
+				if (factHandle != null) {
+					kieSessionProvider.getKieSession().update(factHandle, injury);
+				} else {
+					kieSessionProvider.getKieSession().insert(injury);
+				}
 			}
 
-			kieSessionProvider.getKieSession().fireAllRules();
-			return ResponseEntity.noContent().build();
 		}
-		else
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Injury not found");
+		kieSessionProvider.getKieSession().fireAllRules();
+		return ResponseEntity.noContent().build();
+
 
 	}
 	@GetMapping("/currentInjuries")
@@ -98,6 +166,88 @@ public class SampleHomeController {
 		return ResponseEntity.ok(injuriesResponse);
 	}
 
+
+	@GetMapping (value = "/recommend")
+	public ResponseEntity<?> recommendationList(@RequestHeader("Authorization") String authHeader) {
+
+		String token = authHeader.substring(7);
+		int userId = tokenUtils.getIdFromToken(token);
+
+		Optional<Manager> manager = managerRepository.findById(userId);
+		if (manager.isPresent()) {
+
+			FantasyTeam fantasyTeam=manager.get().getTeam();
+
+			RecommendationList rl = new RecommendationList();
+			PreferencesList pl = new PreferencesList(new HashSet<>(), fantasyTeam);
+			KieServices ks = KieServices.Factory.get();
+
+
+			Collection<?> recommendationLists = kieSessionProvider.getKieSession().getObjects(new ObjectFilter() {
+				@Override
+				public boolean accept(Object object) {
+					return object instanceof RecommendationList;
+				}
+			});
+
+			if (recommendationLists.isEmpty()) {
+				kieSessionProvider.getKieSession().insert(rl);
+
+				kieSessionProvider.getKieSession().fireAllRules();
+			} else {
+				rl = (RecommendationList) recommendationLists.iterator().next();
+
+			}
+
+			Collection<?> preferencesLists = kieSessionProvider.getKieSession().getObjects(new ObjectFilter() {
+				@Override
+				public boolean accept(Object object) {
+					return object instanceof PreferencesList;
+				}
+			});
+
+			if (preferencesLists.isEmpty()) {
+				kieSessionProvider.getKieSession().insert(pl);
+
+				kieSessionProvider.getKieSession().fireAllRules();
+			} else {
+//				PreferencesList pl1 = (PreferencesList) preferencesLists.iterator().next();
+				for(Object pl1: preferencesLists)
+
+					if(Objects.equals(((PreferencesList) pl1).getTeam().getId(), pl.getTeam().getId()))
+						pl=(PreferencesList) pl1;
+			}
+
+
+			return ResponseEntity.ok(new RecommendationListDTO(rl, pl, fantasyTeam));
+		}
+		else
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Manager not found");
+
+	}
+
+	@RequestMapping("/style")
+	public String style() {
+		Player p = playerRepository.findByName("Jayson Tatum").orElse(null);
+
+		for (Object obj : this.kieSessionProvider.getKieSession().getObjects()) {
+			if (obj instanceof Player) {
+				p = (Player) obj;
+				if (p.getName().equals("LeBron James")) {
+					break;
+				}
+			}
+		}
+		FactHandle handle = this.kieSessionProvider.getKieSession().getFactHandle(p);
+
+		p.setStatus(PlayerStatus.OUT);
+		this.kieSessionProvider.getKieSession().update(handle,p);
+		this.kieSessionProvider.getKieSession().fireAllRules();
+		return "style";
+	}
+
+	
+}
 //	@RequestMapping(value = "/filter", method = RequestMethod.GET, produces = "application/json")
 //	public Filter filter(@RequestParam(required = true) Integer minPrice, @RequestParam(required = true) Integer maxPrice,
 //						 @RequestParam(required = true) String team, @RequestParam(required = true) Integer position) {
@@ -127,62 +277,3 @@ public class SampleHomeController {
 //		kieSessionProvider.getKieSession().fireAllRules();
 //		return filter;
 //	}
-
-	@RequestMapping(value = "/recommend", method = RequestMethod.GET, produces = "application/json")
-	public RecommendationList recommendationList() {
-
-
-		CategoryScores categoryScores = new CategoryScores();
-		categoryScores.setBonusMargin(-10);
-		categoryScores.setPointScore(1);
-		categoryScores.setAssistScore(2);
-		categoryScores.setBlockScore(3);
-		categoryScores.setReboundScore(1);
-		categoryScores.setStealScore(3);
-		categoryScores.setTurnoverScore(-1);
-
-
-		RecommendationList rl = new RecommendationList();
-		KieServices ks = KieServices.Factory.get();
-		//kieSessionProvider.getKieSession().getAgenda().getAgendaGroup("recommendation-group").setFocus();
-		Collection<?> recommendationLists = kieSessionProvider.getKieSession().getObjects(new ObjectFilter() {
-			@Override
-			public boolean accept(Object object) {
-				return object instanceof RecommendationList;
-			}
-		});
-
-		if (recommendationLists.isEmpty()) {
-			kieSessionProvider.getKieSession().insert(categoryScores);
-			kieSessionProvider.getKieSession().insert(rl);
-
-			kieSessionProvider.getKieSession().fireAllRules();
-		} else {
-			rl = (RecommendationList) recommendationLists.iterator().next();
-
-		}
-		return rl;
-	}
-
-	@RequestMapping("/style")
-	public String style() {
-		Player p = playerRepository.findByName("Jayson Tatum").orElse(null);
-
-		for (Object obj : this.kieSessionProvider.getKieSession().getObjects()) {
-			if (obj instanceof Player) {
-				p = (Player) obj;
-				if (p.getName().equals("LeBron James")) {
-					break;
-				}
-			}
-		}
-		FactHandle handle = this.kieSessionProvider.getKieSession().getFactHandle(p);
-
-		p.setStatus(PlayerStatus.OUT);
-		this.kieSessionProvider.getKieSession().update(handle,p);
-		this.kieSessionProvider.getKieSession().fireAllRules();
-		return "style";
-	}
-
-	
-}

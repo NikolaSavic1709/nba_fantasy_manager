@@ -5,10 +5,14 @@ import com.ftn.sbnz.model.models.injuries.FoundInjuryHistoryData;
 import com.ftn.sbnz.model.models.Player;
 import com.ftn.sbnz.model.models.PlayerStatus;
 import com.ftn.sbnz.model.repository.players.IPlayerRepository;
+import com.ftn.sbnz.model.repository.IFantasyTeamRepository;
+import com.ftn.sbnz.model.repository.players.IInjuryRepository;
 import java.util.Date;
 import java.util.List;
 
 global IPlayerRepository playerRepository;
+global IInjuryRepository injuryRepository;
+global IFantasyTeamRepository fantasyTeamRepository;
 
 //query isInjuryExist(List<String> descriptionPart, int currentInd)
 //    InjuryHistoryData(description==String.join(" ", descriptionPart))
@@ -32,6 +36,7 @@ salience 3
     then
         System.out.println("calc_injury_estimated_time_backward");
         modify($i){setEstimatedRecoveryTimeInDays(0)};
+//        injuryRepository.save($i);
         insert(new FoundInjuryHistoryData(desc, total, count, $i));
 
 
@@ -55,6 +60,7 @@ salience 2
         System.out.println(total);
         System.out.println(count);
         modify($i){setEstimatedRecoveryTimeInDays((int) total/count)};
+        injuryRepository.save($i);
 end
 
 rule "new_injury"
@@ -76,11 +82,13 @@ rule "recovery"
 
     then
         modify($p){setStatus(PlayerStatus.HEALTHY)};
+        playerRepository.save($p);
         Date currentDate = new Date();
         long difference = currentDate.getTime() - startDate.getTime();
         long differenceInDays = difference / (24 * 60 * 60 * 1000);
         modify($i){setRecoveryTimeInDays((int) differenceInDays)};
         modify($i){setRecovered(true)};
+        injuryRepository.save($i);
         System.out.println($i.getRecoveryTimeInDays());
         System.out.println($p.getStatus());
 end
@@ -99,6 +107,7 @@ salience 2
     then
         System.out.println("calc_injury_estimated_time");
         modify($i){setEstimatedRecoveryTimeInDays((int) $avg)};
+        injuryRepository.save($i);
 end
 
 // bounus += igrac_ou - prosek tima - broj dana koji propusta
@@ -120,5 +129,6 @@ no-loop true
         System.out.println($gpAvg);
         System.out.println($estDays);
         modify($p){setTotalBonusPoints(((int)  -$gpAvg) + $bonus + $gp - $estDays )};
+        playerRepository.save($p);
         System.out.println($p.getTotalBonusPoints());
 end

@@ -23,6 +23,11 @@ export class ManagerNavbarComponent {
     this.router.navigate(['/manager']);
   }
 
+  toRecommendation() {
+    this.selectedPage = SelectedPage.PLAYERS;
+    this.router.navigate(['/manager/recommendation']);
+  }
+
   logout() {
     localStorage.removeItem('user');
     this.router.navigate(['/login']);
@@ -37,5 +42,5 @@ export class ManagerNavbarComponent {
 }
 
 enum SelectedPage {
-  STATS, PROFILE
+  STATS, PROFILE, PLAYERS
 }

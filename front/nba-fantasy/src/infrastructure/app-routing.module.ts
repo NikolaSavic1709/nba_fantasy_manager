@@ -6,6 +6,7 @@ import { GameStatsComponent } from 'src/app/modules/admin/components/game-stats/
 import { InjuriesComponent } from 'src/app/modules/admin/components/injuries/injuries.component';
 import { LoginComponent } from 'src/app/modules/auth/components/login/login.component';
 import { ManagerHomeComponent } from 'src/app/modules/manager/components/manager-home/manager-home.component';
+import { RecommendationComponent } from 'src/app/modules/manager/components/recommendation/recommendation.component';
 import { UnregisteredUserHomeComponent } from 'src/app/modules/unregistered-user/components/unregistered-user-home/unregistered-user-home.component';
 
 const routes: Routes = [
@@ -21,6 +22,10 @@ const routes: Routes = [
   {
     path: 'manager',
     component: ManagerHomeComponent
+  },
+  {
+    path: 'manager/recommendation',
+    component: RecommendationComponent
   },
   {
     path: 'administrator',

@@ -26,7 +26,6 @@ export class AuthInterceptor implements HttpInterceptor {
           'Authorization': `Bearer ${decodedItem}`,
         },
       });
-
       return next.handle(req);
     } else {
       console.log("else");

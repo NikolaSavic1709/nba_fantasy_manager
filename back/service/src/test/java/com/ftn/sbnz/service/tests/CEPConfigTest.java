@@ -229,7 +229,7 @@ public class CEPConfigTest {
         ksession.insert(new PlayerAdditionEvent(clock.getCurrentTime(),player4,fTeam1));
 
         ruleCount= ksession.fireAllRules();
-        assertThat(ruleCount,equalTo(1));
+        assertThat(ruleCount,equalTo(2));
 
         clock.advanceTime(1, TimeUnit.DAYS);
 
@@ -240,7 +240,7 @@ public class CEPConfigTest {
         ksession.insert(new PlayerAdditionEvent(clock.getCurrentTime(),player3,fTeam1));
 
         ruleCount= ksession.fireAllRules();
-        assertThat(ruleCount,equalTo(3));
+        assertThat(ruleCount,equalTo(4));
 
         ksession.dispose();
     }

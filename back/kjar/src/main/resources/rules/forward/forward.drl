@@ -12,8 +12,9 @@ import java.util.List
 import java.util.Collections
 import java.util.stream.Collectors
 import java.util.Comparator;
+import com.ftn.sbnz.model.repository.players.IPlayerRepository;
 
-
+global IPlayerRepository playerRepository;
 
 
 rule "Remove from recommendation list when under bonus margin"
@@ -125,6 +126,7 @@ no-loop
         int scaledPoints = (int) (coefficient * $total);
         int updatedTotal = $oldPoints + scaledPoints;
         modify($p){setTotalFantasyPoints(updatedTotal)};
+        playerRepository.save($p);
         Collections.sort($r.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
 end
 

@@ -146,6 +146,8 @@ public class ServiceApplication  {
 	private void setGlobals(){
 		KieSession kieSession= this.kieSessionProvider.getKieSession();
 		kieSession.setGlobal("playerRepository", playerRepository);
+		kieSession.setGlobal("injuryRepository", injuryRepository);
+		kieSession.setGlobal("fantasyTeamRepository", fantasyTeamRepository);
 	}
 
 	private void readData(){
@@ -217,6 +219,10 @@ public class ServiceApplication  {
 
 		for (InjuryHistoryData injury: injuryHistoryData){
 			kieSession.insert(injury);
+		}
+		for(FantasyTeam fantasyTeam1: fantasyTeamRepository.findAll())
+		{
+			kieSession.insert(fantasyTeam1);
 		}
 		kieSession.fireAllRules();
 		System.out.println("gotovo");

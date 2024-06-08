@@ -7,10 +7,14 @@
     align-items: center;
     justify-content: space-around;
 }
-#header{
-    width: 90%;
-    background-color: rgb(202, 202, 202);
-    height: 150px;
+#footer{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0%;
+    align-items: center;
+    justify-content: space-around;
 }
 .container {
     flex: 1;
@@ -304,4 +308,11 @@ h3, h4{
   #threePointPercentage-label {
     grid-row: 17;
     grid-column: 2/4;
+  }
+  .transparent{
+    margin: 0 10px;
+    border: 1px solid rgba($color: #000000, $alpha: 0.0);
+
+    border-radius: 10px;
+    background-color: rgb(255, 255, 255) !important;
   }

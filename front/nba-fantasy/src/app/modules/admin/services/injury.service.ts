@@ -23,7 +23,7 @@ export class InjuryService {
     return this.http.get<PlayerBasicInfo[]>(environment.apiHost + 'playersBasic');
   }
   public setRecovery(id: number): Observable<void> {
-    return this.http.put<void>(environment.apiHost + 'recovery', null);
+    return this.http.put<void>(environment.apiHost + 'recovery/'+id, null);
   }
   public addInjury(newInjury: NewInjury):Observable<Injury>{
     return this.http.post<Injury>(environment.apiHost + 'injury', newInjury);
