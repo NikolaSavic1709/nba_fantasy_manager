@@ -27,10 +27,12 @@ public class InjuryService {
         this.kieSessionProvider = kieSessionProvider;
     }
 
+    //getFrequentInjuriesAndAverageRecovery
+    //getFrequentInjuryDescriptionAndAverageRecovery
     public List<InjuryStatsDTO> getMostFrequentInjuryByThreshold(int threshold) {
         KieSession kieSession = kieSessionProvider.getKieSession();
         List<InjuryStatsDTO> result = new ArrayList<>();
-        QueryResults queryResults = kieSession.getQueryResults("getFrequentInjuriesAndAverageRecovery", threshold);
+        QueryResults queryResults = kieSession.getQueryResults("getFrequentInjuryDescriptionAndAverageRecovery", threshold);
         for (QueryResultsRow row : queryResults) {
             String injury = (String) row.get("$injuryName");
             Long occurrence = (Long) row.get("$occurrence");

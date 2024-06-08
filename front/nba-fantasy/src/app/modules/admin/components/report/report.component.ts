@@ -7,6 +7,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TeamSelection } from '../../model/teamSelection';
+import { InjuryStats } from '../../model/injury';
 
 const POSITION_MAP: { [key: number]: string } = {
   1: 'PG',
@@ -37,6 +38,12 @@ export class ReportComponent implements AfterViewInit{
   @ViewChild('paginator2') paginator2!: MatPaginator;
   @ViewChild(MatSort) sort2!: MatSort;
 
+  displayedColumns3: string[] = ['injuryName', 'occurrence', 'averageRecoveryTime'];
+  dataSource3: MatTableDataSource<InjuryStats>;
+  injuryStats: InjuryStats[];
+  @ViewChild('paginator3') paginator3!: MatPaginator;
+  @ViewChild(MatSort) sort3!: MatSort;
+
 
   constructor(
     private reportService: ReportService
@@ -46,6 +53,9 @@ export class ReportComponent implements AfterViewInit{
 
     this.teamsSelection = [];
     this.dataSource2 = new MatTableDataSource();
+
+    this.injuryStats = [];
+    this.dataSource3 = new MatTableDataSource();
   }
 
   ngAfterViewInit() {
@@ -53,6 +63,8 @@ export class ReportComponent implements AfterViewInit{
     this.dataSource.sort = this.sort;
     this.dataSource2.paginator = this.paginator2;
     this.dataSource2.sort = this.sort2;
+    this.dataSource3.paginator = this.paginator3;
+    this.dataSource3.sort = this.sort3;
   }
 
   // REPORT 1
@@ -233,6 +245,36 @@ export class ReportComponent implements AfterViewInit{
     });
 
   }
+
+    // REPORT 6
+
+    injuryThresholdForm = new FormGroup({
+      threshold3: new FormControl('', [Validators.min(0), Validators.max(100), Validators.required]),
+    });
+  
+    report6Error = false;
+  
+  
+    injuryThreshold() {
+      const threshold = Number(this.injuryThresholdForm.value.threshold3);
+  
+      if (this.injuryThresholdForm.valid) {
+        this.reportService.getMostFrequentInjuriesByThreshold(threshold).subscribe({
+          next: (response) => {
+            this.injuryStats = response;
+            console.log(response);
+            this.dataSource3 = new MatTableDataSource(this.injuryStats);
+            this.dataSource3.paginator = this.paginator3;
+            this.dataSource3.sort = this.sort3;
+          },
+          error: (error) => {
+            if (error instanceof HttpErrorResponse) {
+              this.report6Error = true;
+            }
+          },
+        });
+      }
+    }
 
 
 

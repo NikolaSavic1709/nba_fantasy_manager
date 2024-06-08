@@ -154,6 +154,7 @@ public class ServiceApplication  {
 		String injuriesBackwardCsvFile="../data/injuries-backward.csv";
 		String teamsCsvFile="../data/teams.csv";
 		String injuriesCsvFile = "../data/injuries.csv";
+		//String injuriesCsvFile = "../data/Injury_History.csv";
 		SimpleDateFormat injuriesDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		String playersCsvFile="../data/nba2k-full.csv";
 		SimpleDateFormat playersDateFormat = new SimpleDateFormat("MM/dd/yyyy");

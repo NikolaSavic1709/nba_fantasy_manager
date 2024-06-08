@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Player } from '../model/player';
 import { environment } from 'src/environments/environment';
 import { TeamSelection } from '../model/teamSelection';
+import { InjuryStats } from '../model/injury';
 
 @Injectable({
   providedIn: 'root'
@@ -39,5 +40,10 @@ export class ReportService {
 
   getTeamsWithSelections(): Observable<TeamSelection[]> {
     return this.http.get<TeamSelection[]>(environment.apiHost + 'selections/teams-with-selected-players');
+  }
+
+  getMostFrequentInjuriesByThreshold(threshold:number): Observable<InjuryStats[]> {
+    const url = `${environment.apiHost}injury/threshold?threshold=${threshold.toString()}`;
+    return this.http.get<InjuryStats[]>(url);
   }
 }
