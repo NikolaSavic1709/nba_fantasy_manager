@@ -79,6 +79,7 @@ salience 3
         modify($r){setPlayers(new ArrayList<>($list))};
         Collections.sort($r.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
         modify($r){setFormed(true)};
+        System.out.println("rec list");
 end
 
 
@@ -106,6 +107,7 @@ salience 2
         modify($r){setPlayers(updatedList)};
         modify($r){setFormed(false)};
         modify($removedList){setPlayers(removedPlayers)};
+        System.out.println("remove injured");
 end
 
 rule "Update totalFantasyPoints"
@@ -128,7 +130,9 @@ no-loop
         modify($p){setTotalFantasyPoints(updatedTotal)};
         playerRepository.save($p);
         Collections.sort($r.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
+//        System.out.println("update total fp");
 end
+
 
 
 //rule "injury_history"
