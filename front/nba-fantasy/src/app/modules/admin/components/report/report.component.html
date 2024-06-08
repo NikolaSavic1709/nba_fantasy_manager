@@ -1,0 +1,328 @@
+<div class="content"></div>
+<mat-card>
+    <mat-card-content>
+
+        <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+            <mat-tab label="Most Selected Players by Threshold">
+
+                <h1>Most selected players by threshold</h1>
+
+                <form [formGroup]="selectThresholdForm" (ngSubmit)="selectThreshold()" id="selectThreshold"
+                    class="forma">
+
+                    <mat-form-field class="field" appearance="outline">
+                        <mat-label>Threshold</mat-label>
+                        <input matInput type="number" placeholder="Enter threshold" name="threshold1"
+                            formControlName="threshold1">
+                        <mat-error
+                            *ngIf="selectThresholdForm.get('threshold1')?.invalid && selectThresholdForm.get('threshold1')?.touched">
+                            <span
+                                *ngIf="selectThresholdForm.get('threshold1')?.errors?.['min'] || selectThresholdForm.get('threshold1')?.errors?.['max']"
+                                class="input-error">
+                                Must be in range [0, 100]
+                            </span>
+                            <span *ngIf="selectThresholdForm.get('minPrice')?.errors?.['required']"
+                                class="input-error">Field is
+                                required</span>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <button mat-fab extended color="primary" type="submit" class="btn"
+                        [disabled]="!selectThresholdForm.valid">
+                        <mat-icon>file_copy</mat-icon>
+                        Get Report
+                    </button>
+
+                    <mat-error *ngIf="report1Error" class="signup-error-container">
+                        <span class="signup-error">Report error</span>
+                    </mat-error>
+                </form>
+
+            </mat-tab>
+
+            <mat-tab label="Most Selected Players by NBA Team">
+
+                <h1>Most selected players by NBA Team</h1>
+
+                <form [formGroup]="selectTeamForm" (ngSubmit)="selectTeam()" id="selectTeam" class="forma">
+
+                    <mat-form-field class="field" appearance="outline">
+                        <mat-label>NBA Team</mat-label>
+                        <mat-select name="team1" formControlName="team1">
+                            <mat-option *ngFor="let team of nbaTeams" [value]="team">{{ team }}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="selectTeamForm.get('team1')?.invalid && selectTeamForm.get('team1')?.touched">
+                            <span *ngIf="selectTeamForm.get('team1')?.errors?.['required']" class="input-error">Field is
+                                required</span>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <button mat-fab extended color="primary" type="submit" class="btn"
+                        [disabled]="!selectTeamForm.valid">
+                        <mat-icon>file_copy</mat-icon>
+                        Get Report
+                    </button>
+
+                    <mat-error *ngIf="report2Error" class="signup-error-container">
+                        <span class="signup-error">Report error</span>
+                    </mat-error>
+                </form>
+
+
+            </mat-tab>
+
+            <mat-tab label="Most Dropped Players by Threshold">
+
+                <h1>Most dropped players by threshold</h1>
+
+                <form [formGroup]="droppedThresholdForm" (ngSubmit)="droppedThreshold()" id="droppedThreshold"
+                    class="forma">
+
+                    <mat-form-field class="field" appearance="outline">
+                        <mat-label>Threshold</mat-label>
+                        <input matInput type="number" placeholder="Enter threshold" name="threshold2"
+                            formControlName="threshold2">
+                        <mat-error
+                            *ngIf="droppedThresholdForm.get('threshold2')?.invalid && droppedThresholdForm.get('threshold2')?.touched">
+                            <span
+                                *ngIf="droppedThresholdForm.get('threshold2')?.errors?.['min'] || droppedThresholdForm.get('threshold2')?.errors?.['max']"
+                                class="input-error">
+                                Must be in range [0, 100]
+                            </span>
+                            <span *ngIf="droppedThresholdForm.get('minPrice')?.errors?.['required']"
+                                class="input-error">Field is
+                                required</span>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <button mat-fab extended color="primary" type="submit" class="btn"
+                        [disabled]="!droppedThresholdForm.valid">
+                        <mat-icon>file_copy</mat-icon>
+                        Get Report
+                    </button>
+
+                    <mat-error *ngIf="report3Error" class="signup-error-container">
+                        <span class="signup-error">Report error</span>
+                    </mat-error>
+                </form>
+
+            </mat-tab>
+
+            <mat-tab label="Most Dropped Players by NBA Team">
+
+                <h1>Most dropped players by NBA Team</h1>
+
+                <form [formGroup]="droppedTeamForm" (ngSubmit)="droppedTeam()" id="droppedTeam" class="forma">
+
+                    <mat-form-field class="field" appearance="outline">
+                        <mat-label>NBA Team</mat-label>
+                        <mat-select name="team2" formControlName="team2">
+                            <mat-option *ngFor="let team of nbaTeams" [value]="team">{{ team }}</mat-option>
+                        </mat-select>
+                        <mat-error
+                            *ngIf="droppedTeamForm.get('team2')?.invalid && droppedTeamForm.get('team2')?.touched">
+                            <span *ngIf="droppedTeamForm.get('team2')?.errors?.['required']" class="input-error">Field
+                                is required</span>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <button mat-fab extended color="primary" type="submit" class="btn"
+                        [disabled]="!droppedTeamForm.valid">
+                        <mat-icon>file_copy</mat-icon>
+                        Get Report
+                    </button>
+
+                    <mat-error *ngIf="report4Error" class="signup-error-container">
+                        <span class="signup-error">Report error</span>
+                    </mat-error>
+                </form>
+
+
+            </mat-tab>
+        </mat-tab-group>
+
+
+
+
+        <mat-form-field appearance="outline" class="search-filter">
+            <mat-label>Search Filter</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="..." #input>
+        </mat-form-field>
+
+        <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource" matSort>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+                </ng-container>
+
+                <!-- Position Column -->
+                <ng-container matColumnDef="position">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Position </th>
+                    <td mat-cell *matCellDef="let row"> {{ getPositionLabel(row.position) }} </td>
+                </ng-container>
+
+
+                <!-- NBA Team Column -->
+                <ng-container matColumnDef="nbaTeam">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> NBA Team </th>
+                    <td mat-cell *matCellDef="let row"> {{row.nbaTeam}} </td>
+                </ng-container>
+
+                <!-- Times Selected Column -->
+                <ng-container matColumnDef="timesSelected">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Times Selected </th>
+                    <td mat-cell *matCellDef="let row"> {{row.fantasyStatisticalColumns.timesSelected}} </td>
+                </ng-container>
+
+                <!-- Times Dropped Column -->
+                <ng-container matColumnDef="timesDropped">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Times Dropped </th>
+                    <td mat-cell *matCellDef="let row"> {{row.fantasyStatisticalColumns.timesDropped}} </td>
+                </ng-container>
+
+                <!-- Fantasy Points Column -->
+                <ng-container matColumnDef="fantasyPoints">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Fantasy Points </th>
+                    <td mat-cell *matCellDef="let row"> {{row.totalFantasyPoints}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="5">No data matching the filter "{{input.value}}"</td>
+                </tr>
+            </table>
+
+            <mat-paginator #paginator1 [pageSizeOptions]="[10, 25, 100]"
+                aria-label="Select page of players"></mat-paginator>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+
+
+
+
+<mat-card>
+    <mat-card-content>
+        <h1>NBA Teams with most selections</h1>
+        <button mat-fab extended color="primary" class="btn btn-report" (click)="getTeamSelections()">
+            <mat-icon>file_copy</mat-icon>
+            Get Report
+        </button>
+
+        <mat-error *ngIf="report5Error" class="signup-error-container">
+            <span class="signup-error">Report error</span>
+        </mat-error>
+
+
+        <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource2" matSort>
+
+                <!-- Team Column -->
+                <ng-container matColumnDef="team">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> NBA Team name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.team}} </td>
+                </ng-container>
+
+                <!-- Selections Column -->
+                <ng-container matColumnDef="timesSelected">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Number of Selections </th>
+                    <td mat-cell *matCellDef="let row"> {{ row.timesSelected }} </td>
+                </ng-container>
+
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="5">No data matching the filter "{{input.value}}"</td>
+                </tr>
+            </table>
+
+            <mat-paginator #paginator2 [pageSizeOptions]="[10, 25, 100]"
+                aria-label="Select page of teams"></mat-paginator>
+        </div>
+
+    </mat-card-content>
+</mat-card>
+
+
+<mat-card>
+    <mat-card-content>
+        <h1>Most frequent injuries with average recovery time</h1>
+        <form [formGroup]="injuryThresholdForm" (ngSubmit)="injuryThreshold()" id="injuryThreshold" class="forma">
+
+            <mat-form-field class="field" appearance="outline">
+                <mat-label>Threshold</mat-label>
+                <input matInput type="number" placeholder="Enter threshold" name="threshold3"
+                    formControlName="threshold3">
+                <mat-error
+                    *ngIf="injuryThresholdForm.get('threshold3')?.invalid && injuryThresholdForm.get('threshold3')?.touched">
+                    <span
+                        *ngIf="injuryThresholdForm.get('threshold3')?.errors?.['min'] || injuryThresholdForm.get('threshold3')?.errors?.['max']"
+                        class="input-error">
+                        Must be in range [0, 100]
+                    </span>
+                    <span *ngIf="injuryThresholdForm.get('minPrice')?.errors?.['required']" class="input-error">Field
+                        is
+                        required</span>
+                </mat-error>
+            </mat-form-field>
+
+            <button mat-fab extended color="primary" type="submit" class="btn" [disabled]="!injuryThresholdForm.valid">
+                <mat-icon>file_copy</mat-icon>
+                Get Report
+            </button>
+
+            <mat-error *ngIf="report6Error" class="signup-error-container">
+                <span class="signup-error">Report error</span>
+            </mat-error>
+        </form>
+
+
+        <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource3" matSort>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="injuryName">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Injury name </th>
+                    <td mat-cell *matCellDef="let row"> {{row.injuryName}} </td>
+                </ng-container>
+
+                <!-- Occurrence Column -->
+                <ng-container matColumnDef="occurrence">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Occurrence </th>
+                    <td mat-cell *matCellDef="let row"> {{ row.occurrence }} </td>
+                </ng-container>
+
+
+                <!-- Average Recovery Time Column -->
+                <ng-container matColumnDef="averageRecoveryTime">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Average Recovery Time </th>
+                    <td mat-cell *matCellDef="let row"> {{row.averageRecoveryTime | number : '1.2-2'}} days </td>
+                </ng-container>
+
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="5">No data matching the filter "{{input.value}}"</td>
+                </tr>
+            </table>
+
+            <mat-paginator #paginator3 [pageSizeOptions]="[10, 25, 100]"
+                aria-label="Select page of injuries"></mat-paginator>
+        </div>
+
+
+    </mat-card-content>
+</mat-card>

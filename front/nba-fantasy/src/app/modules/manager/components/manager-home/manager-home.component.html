@@ -1,0 +1,102 @@
+<div id="content">
+    <div id="containers">
+        <div class="container" id="left">
+            <h3>My Team: {{teamName}}</h3>
+            <div class="players-container">
+                <div *ngFor="let player of teamPlayers" class="player-short" (click)="openPlayer(player)">
+                    <p id="player-position" class="basic-text">{{positionMap[player.position]}}</p>
+                    <mat-icon id="injury-icon" *ngIf="player.status==='OUT'">healing</mat-icon>
+                
+                    <p id="player-name" class="basic-text"><b>{{player.name}}</b> ({{player.nationality}})</p>
+                    <p id="player-team" class="basic-text">{{player.nbaTeam}}</p>
+                    <!-- <p id="player-nationality" class="basic-text">{{player.nationality}}</p> -->
+                    <p id="player-points" class="basic-text">{{player.fantasyPoints}}</p>
+                    <!-- <button id="player-remove" (click)="removePlayer(player)">
+                        <img src="../../../../../assets/remove.png" alt="Icon">
+                      </button> -->
+                      <button id="player-remove" (click)="removePlayer(player, $event)" mat-icon-button>
+                        <mat-icon>do_not_disturb_on</mat-icon>
+                      </button>
+                </div>
+            </div>
+        </div>
+        <div class="container" id="center">
+            <h3 id="empty" *ngIf="selectedPlayer===null">Choose player</h3>
+            <div id="details" *ngIf="selectedPlayer!==null">
+                <h3 id="player-name-label">{{selectedPlayer.name}}</h3>
+                <mat-icon id="injury-icon-details" *ngIf="selectedPlayer.status==='OUT'">healing</mat-icon>
+                <mat-icon id="healthy-icon-details" *ngIf="selectedPlayer.status==='HEALTHY'">check_circle</mat-icon>
+                <p id="injury-status"><b>{{selectedPlayer.status}}</b></p>
+                <p id="team-label"><span class="label">Team:</span> <span class="label-value">{{selectedPlayer.nbaTeam}}</span></p>
+                <p id="position-label"><span class="label">Position:</span> <span class="label-value">{{transformPos(selectedPlayer.position)}}</span></p>
+                <p id="fantasy-points-label"><span class="label">Fantasy Points:</span> <span class="label-value">{{selectedPlayer.fantasyPoints}}</span></p>
+                <p id="bonus-points-label"><span class="label">Bonus Points:</span> <span class="label-value">{{selectedPlayer.bonusPoints}}</span></p>
+                <p id="nationality-label"><span class="label">Nationality:</span> <span class="label-value">{{selectedPlayer.nationality}}</span></p>
+                <p id="birthday-label"><span class="label">Birthday:</span> <span class="label-value">{{convertToDate(selectedPlayer.birthday)}}</span></p>
+                <p id="price-label"><span class="label">Price:</span> <span class="label-value">{{selectedPlayer.price}}</span></p>
+                <hr id="details-hr">
+                <h4 id="player-stats-label">Player Stats</h4>
+
+                <p id="ppg-label" class="stats"><span class="stats-label">PPG:</span> <span class="stats-label-value">{{selectedPlayer.ppg}}</span></p>
+                <p id="rpg-label" class="stats"><span class="stats-label">RPG:</span> <span class="stats-label-value">{{selectedPlayer.rpg}}</span></p>
+                <p id="apg-label" class="stats"><span class="stats-label">APG:</span> <span class="stats-label-value">{{selectedPlayer.apg}}</span></p>
+                <p id="gp-label" class="stats"><span class="stats-label">GP:</span> <span class="stats-label-value">{{selectedPlayer.gp}}</span></p>
+                <p id="mpg-label" class="stats"><span class="stats-label">MPG:</span> <span class="stats-label-value">{{selectedPlayer.mpg}}</span></p>
+                <p id="spg-label" class="stats"><span class="stats-label">SPG:</span> <span class="stats-label-value">{{selectedPlayer.spg}}</span></p>
+                <p id="tpg-label" class="stats"><span class="stats-label">TPG:</span> <span class="stats-label-value">{{selectedPlayer.tpg}}</span></p>
+                <p id="bpg-label" class="stats"><span class="stats-label">BPG:</span> <span class="stats-label-value">{{selectedPlayer.bpg}}</span></p>
+                <p id="pfpg-label" class="stats"><span class="stats-label">PFPG:</span> <span class="stats-label-value">{{selectedPlayer.pfpg}}</span></p>
+                <p id="fgPercentage-label" class="stats"><span class="stats-label">FG%:</span> <span class="stats-label-value">{{(selectedPlayer.fgPercentage*100) | number:'1.1-2' }}%</span></p>
+                <p id="twoPointPercentage-label" class="stats"><span class="stats-label">2P%:</span> <span class="stats-label-value">{{(selectedPlayer.twoPointPercentage * 100) | number:'1.1-2' }}%</span></p>
+                <p id="threePointPercentage-label" class="stats"><span class="stats-label">3P%:</span> <span class="stats-label-value">{{(selectedPlayer.threePointPercentage*100) | number:'1.1-2' }}%</span></p>
+
+            </div>
+        </div>
+        <div class="container" id="right">
+            <h3>Recommendation List</h3>
+            <div class="players-container">
+                <div *ngFor="let player of recommendationList" class="player-short" (click)="openPlayer(player)">
+                    <p id="player-position" class="basic-text">{{positionMap[player.position]}}</p>
+                    <p id="player-name" class="basic-text"><b>{{player.name}}</b> ({{player.nationality}})</p>
+                    <p id="player-team" class="basic-text">{{player.nbaTeam}}</p>
+                    <!-- <p id="player-nationality" class="basic-text">{{player.nationality}}</p> -->
+                    <p id="player-points" class="basic-text">{{player.fantasyPoints}}</p>
+                    <!-- <button id="player-remove" (click)="removePlayer(player)">
+                        <img src="../../../../../assets/remove.png" alt="Icon">
+                      </button> -->
+                      <button id="player-add" (click)="addPlayer(player, $event)" mat-icon-button>
+                        <mat-icon>add_circle</mat-icon>
+                      </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="containers">
+            <div class="transparent container" id="left">
+
+            </div>
+            <div class="transparent container" id="center">
+
+            </div>
+            <div class="container" id="right">
+                <h3>Preferences List</h3>
+                <div class="players-container">
+                    <div *ngFor="let player of preferencesList" class="player-short" (click)="openPlayer(player)">
+                        <p id="player-position" class="basic-text">{{positionMap[player.position]}}</p>
+                        <p id="player-name" class="basic-text"><b>{{player.name}}</b> ({{player.nationality}})</p>
+                        <p id="player-team" class="basic-text">{{player.nbaTeam}}</p>
+                        <!-- <p id="player-nationality" class="basic-text">{{player.nationality}}</p> -->
+                        <p id="player-points" class="basic-text">{{player.fantasyPoints}}</p>
+                        <!-- <button id="player-remove" (click)="removePlayer(player)">
+                            <img src="../../../../../assets/remove.png" alt="Icon">
+                          </button> -->
+                          <button id="player-add" (click)="addPlayer(player, $event)" mat-icon-button>
+                            <mat-icon>add_circle</mat-icon>
+                          </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

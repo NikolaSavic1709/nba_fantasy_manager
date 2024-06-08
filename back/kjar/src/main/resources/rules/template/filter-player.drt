@@ -1,0 +1,35 @@
+template header
+maxPrice
+minPrice
+team
+position
+id
+
+package template;
+
+import com.ftn.sbnz.model.models.Player;
+import com.ftn.sbnz.model.models.PlayerStatus;
+import com.ftn.sbnz.model.models.NBATeam;
+import com.ftn.sbnz.model.models.StartFilter;
+import com.ftn.sbnz.model.models.FilteredList;
+
+template "filter-player-rules"
+
+rule "Filter Players_@{row.rowNumber}"
+no-loop true
+when
+    $f : StartFilter(number == @{id})
+    $filteredList: FilteredList(players!=null)
+    $player: Player(
+        status == PlayerStatus.HEALTHY,
+        price <= @{maxPrice},
+        price >= @{minPrice},
+        nbaTeam.name == "@{team}",
+        position.contains(@{position})
+    )
+then
+    modify($filteredList) {getPlayers().add($player)};
+    //System.out.println("Filtered Player: " + $player.getName() + "@{id}");
+end
+
+end template

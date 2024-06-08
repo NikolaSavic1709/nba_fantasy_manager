@@ -1,0 +1,24 @@
+<div id="admin">
+    <div id="admin-mid-div"></div>
+    <button mat-raised-button id="home-button" (click)="toHome()"
+            [ngClass]="selectedPage===enumSP.HOME ? 'navbar-button selected-button': 'navbar-button'">Home
+    </button>
+    <button mat-raised-button id="game-stats-button" (click)="toGameStats()"
+    [ngClass]="selectedPage===enumSP.GAME_STATS ? 'navbar-button selected-button': 'navbar-button'">Game stats
+        </button>
+
+        <button mat-raised-button id="injuries-button" (click)="toInjuries()"
+    [ngClass]="selectedPage===enumSP.INJURIES ? 'navbar-button selected-button': 'navbar-button'">Injuries
+        </button>
+
+        <button mat-raised-button id="category-scores-button" (click)="toCategoryScores()"
+                [ngClass]="selectedPage===enumSP.CATEGORY_SCORES ? 'navbar-button selected-button': 'navbar-button'">Category Scores
+        </button>
+        
+    <button mat-raised-button id="players-button" (click)="toReports()"
+            [ngClass]="selectedPage===enumSP.REPORTS ? 'navbar-button selected-button': 'navbar-button'">Reports
+    
+    </button>
+    <div id="admin-right-div"></div>
+    <button mat-raised-button class="navbar-button" id="sign-out-button" (click)="logout()">Sign out</button>
+  </div>

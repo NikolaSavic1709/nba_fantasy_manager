@@ -1,0 +1,31 @@
+package backward;
+import com.ftn.sbnz.model.models.Player;
+import com.ftn.sbnz.model.models.PlayerStatus;
+import com.ftn.sbnz.model.models.Filter;
+import com.ftn.sbnz.model.models.NBATeam;
+
+//rule "filter"
+//    when
+//        $filter: Filter()
+//        $p: Player(
+//            status == PlayerStatus.HEALTHY,
+//            price <= $filter.getMaxPrice(),
+//            price >= $filter.getMinPrice(),
+//            nbaTeam.name == $filter.getTeam(),
+//            position.contains($filter.getPosition())
+//        )
+//    then
+//        System.out.println("Filtered Player: " + $p.getName());
+//end
+
+//rule "filter2"
+//    when
+//        $filter: Filter()
+//        $p: Player(
+//            status == PlayerStatus.HEALTHY,
+//            price <= $filter.getMaxPrice(),
+//            price >= $filter.getMinPrice()
+//        )
+//    then
+//        System.out.println("Filtered Player2: " + $p.getName());
+//end

@@ -1,0 +1,49 @@
+<div id="background">
+    <div id="container">
+  
+      <h1>Login</h1>
+  
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+  
+        <mat-form-field appearance="outline" id="email">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" placeholder="name@example.com" name="email" formControlName="email" required>
+          <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            <span *ngIf="loginForm.get('email')?.errors?.['email']" class="input-error">Email must be in correct
+              format</span>
+            <span *ngIf="loginForm.get('email')?.errors?.['required']" class="input-error">Email is required</span>
+          </mat-error>
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline" id="password">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hide ? 'password' : 'text'" name="password" formControlName="password">
+          <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
+            [attr.aria-pressed]="hide">
+            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <span *ngIf="loginForm.get('password')?.errors?.['minlength']" class="input-error">Password must contain
+              atleast 6 characters</span>
+            <span *ngIf="loginForm.get('password')?.errors?.['required']" class="input-error">Password is required</span>
+          </mat-error>
+        </mat-form-field>
+  
+  
+  
+        <button [disabled]="!loginForm.valid" type="submit" id="loginbtn">LOGIN</button>
+  
+        <mat-error *ngIf="hasError">
+          <span class="login-error">{{error}}</span>
+        </mat-error>
+  
+        <p id="forgotPass" (click)="toForgot()">Forgot password</p>
+  
+        <div id="toSignup">
+          <p>Don't have an account?</p>
+          <p id="signup" (click)="toSignup()">Sign up</p>
+        </div>
+      </form>
+  
+    </div>
+  </div>

@@ -1,0 +1,151 @@
+package forward;
+import com.ftn.sbnz.model.models.injuries.Injury;
+import com.ftn.sbnz.model.models.Player;
+import com.ftn.sbnz.model.models.PlayerStatus;
+import java.util.Date;
+
+import com.ftn.sbnz.model.models.stats.CategoryScores;
+import com.ftn.sbnz.model.models.RecommendationList
+import com.ftn.sbnz.model.models.RemovedList
+import java.util.ArrayList
+import java.util.List
+import java.util.Collections
+import java.util.stream.Collectors
+import java.util.Comparator;
+import com.ftn.sbnz.model.repository.players.IPlayerRepository;
+
+global IPlayerRepository playerRepository;
+
+
+rule "Remove from recommendation list when under bonus margin"
+//agenda-group "injury-group"
+    when
+        CategoryScores($bm: bonusMargin)
+        $p: Player(totalBonusPoints<$bm)
+        $rl: RecommendationList(players contains $p, $players: players)
+    then
+        System.out.println("Remove from recommendation list when under bonus margin");
+        $players.remove($p);
+//        $rl.setPlayers($players);
+        update($rl);
+
+end
+
+
+
+//rule "Update Player Scores"
+//salience 100
+////agenda-group "recommendation-group"
+//when
+//    $categoryScores : CategoryScores($pointScore : pointScore,
+//                                      $reboundScore : reboundScore,
+//                                      $assistScore : assistScore,
+//                                      $stealScore : stealScore,
+//                                      $turnoverScore : turnoverScore,
+//                                      $blockScore : blockScore)
+//
+//    $player : Player(
+//        $gamesPlayed : statisticalColumns.gp,
+//        $ppg : statisticalColumns.ppg,
+//        $rpg : statisticalColumns.rpg,
+//        $apg : statisticalColumns.apg,
+//        $spg : statisticalColumns.spg,
+//        $tpg : statisticalColumns.tpg,
+//        $bpg : statisticalColumns.bpg
+//    )
+//
+//    $newTotalFantasyPoints : Integer() from
+//            new Integer(
+//                (int) ($ppg * $gamesPlayed * $pointScore) +
+//                (int) ($rpg * $gamesPlayed * $reboundScore) +
+//                (int) ($apg * $gamesPlayed * $assistScore) +
+//                (int) ($spg * $gamesPlayed * $stealScore) +
+//                (int) ($tpg * $gamesPlayed * $turnoverScore) +
+//                (int) ($bpg * $gamesPlayed * $blockScore)
+//            )
+//then
+//    $player.setTotalFantasyPoints($newTotalFantasyPoints);
+//end
+
+rule "Recommendation list"
+//agenda-group "recommendation-group"
+salience 3
+no-loop
+    when
+        $r: RecommendationList()
+        $list: List() from collect(Player())
+    then
+        modify($r){setPlayers(new ArrayList<>($list))};
+        Collections.sort($r.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
+        modify($r){setFormed(true)};
+        System.out.println("rec list");
+end
+
+
+rule "Remove injured players from recommendation list"
+salience 2
+    when
+        $r: RecommendationList(formed == true, $players: players)
+        $removedList: RemovedList(players == null)
+
+        $injuredPlayers: List(size>0) from collect(
+            Player(status == PlayerStatus.OUT)
+             from $players
+        )
+    then
+        List<Player> updatedList = new ArrayList<>($r.getPlayers());
+        List<Player> removedPlayers = new ArrayList<>();
+
+        for (Object o : $injuredPlayers) {
+            Player player = (Player) o;
+            updatedList.remove(player);
+            removedPlayers.add(player);
+
+        }
+
+        modify($r){setPlayers(updatedList)};
+        modify($r){setFormed(false)};
+        modify($removedList){setPlayers(removedPlayers)};
+        System.out.println("remove injured");
+end
+
+rule "Update totalFantasyPoints"
+salience 1
+no-loop
+    when
+        $p : Player($team: nbaTeam, $oldPoints: totalFantasyPoints)
+        $r: RecommendationList(formed == false, $players: players, $p memberOf players)
+        $removedList: RemovedList(players != null, $removedPlayers: players)
+
+        accumulate(
+            Player(nbaTeam == $team, $points: totalFantasyPoints) from $removedPlayers,
+            $avg : average($points),
+            $total: sum($points)
+        )
+    then
+        double coefficient = 0.1;
+        int scaledPoints = (int) (coefficient * $total);
+        int updatedTotal = $oldPoints + scaledPoints;
+        modify($p){setTotalFantasyPoints(updatedTotal)};
+        playerRepository.save($p);
+        Collections.sort($r.getPlayers(), Comparator.comparing(Player::getTotalFantasyPoints).reversed());
+//        System.out.println("update total fp");
+end
+
+
+
+//rule "injury_history"
+//    when
+//        $i: Injury(recoveryTimeInDays != null)
+//    then
+//        System.out.println($i.getRecoveryTimeInDays());
+//end
+
+
+
+//rule "players"
+//    when
+//        $p: Player()
+//    then
+//        System.out.println($p.getName());
+//end

@@ -1,0 +1,76 @@
+.navbar-button {
+    box-sizing: border-box;
+  
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Nunito';
+    letter-spacing: 0.3px;
+  
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    padding: 8px;
+  
+    width: 94px;
+    height: 35px;
+    min-width: 94px;
+  }
+  
+  #login-button, #sign-up-button, #sign-out-button {
+    border-radius: 8px;
+    margin: 10px;
+    color: white;
+    background-color: rgba(38, 50, 56, 0.5) !important;
+  }
+  
+  #login-button:hover, #sign-up-button:hover, #sign-out-button:hover {
+    color: rgba(38, 50, 56, 0.5) !important;
+    background-color: white !important;
+  }
+  
+  #pre-div {
+    box-sizing: content-box;
+    width: 10%;
+  }
+  
+  #mid-div {
+    box-sizing: content-box;
+    width: 1000px;
+  }
+  
+  #unregisteredUser {
+    width: 100%;
+    box-sizing: content-box;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 0px;
+  }
+  
+  @media (max-width: 1500px) {
+    #mid-div {
+      width: 600px;
+    }
+  
+  }
+  
+  @media (max-width: 1000px) {
+    #mid-div {
+      width: 200px;
+    }
+  
+  }
+  
+  @media (max-width: 580px) {
+    #mid-div {
+      width: 5%;
+    }
+  
+    .navbar-button {
+      box-sizing: border-box;
+      font-size: 14px;
+      width: 75px;
+      min-width: 75px;
+  
+    }
+  }
+  

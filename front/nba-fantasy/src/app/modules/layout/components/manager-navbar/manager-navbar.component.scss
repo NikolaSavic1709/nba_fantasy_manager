@@ -1,0 +1,123 @@
+.navbar-button{
+    box-sizing: border-box;
+
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Nunito';
+    letter-spacing: 0.3px;
+
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    padding: 8px;
+
+    width: 110px;
+    height: 35px;
+    min-width: 110px;
+    color: white !important;
+    background-color: rgba(38, 50, 56, 0.5) !important;
+
+}
+
+#sign-out-button
+{
+    border-radius: 8px;
+    margin: 10px;
+    color: white;
+    background-color: rgba(38, 50, 56, 0.5);
+}
+#stats-button, #profile-button, #players-button
+{
+    border-radius: 0;
+    margin: 10px 0;
+}
+
+#stats-button {
+  padding-inline: 3.5em;
+  border-radius: 8px 0 0 8px;
+}
+
+.selected-button{
+
+    color: rgba(38, 50, 56, 0.5) !important;
+    background-color: white !important;
+}
+#profile-button{
+    border-radius: 0 8px 8px 0;
+}
+
+.selected-button {
+  color: rgba(38, 50, 56, 0.5) !important;
+  background-color: white !important;
+}
+
+
+#sign-out-button:hover {
+  color: rgba(38, 50, 56, 0.5);
+  background-color: white;
+}
+
+#manager-left-div {
+  box-sizing: content-box;
+  width: 200px;
+}
+
+#manager-mid-div {
+  box-sizing: content-box;
+  width: 700px;
+}
+
+#manager-right-div {
+  box-sizing: content-box;
+  width: 100px;
+}
+
+#manager {
+  box-sizing: content-box;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 0px;
+}
+
+@media (max-width: 1500px) {
+
+  #manager-left-div {
+    width: 50px;
+  }
+
+  #manager-mid-div {
+    width: 100px;
+  }
+
+  #manager-right-div {
+    width: 50px;
+  }
+}
+
+@media (max-width: 1100px) {
+  #currentRideBtn {
+    width: 150px;
+    font-size: 14px;
+  }
+
+  #manager-left-div {
+    width: 0;
+  }
+
+  #manager-mid-div {
+    width: 50px;
+  }
+
+
+}
+
+@media (max-width: 580px) {
+  .navbar-button {
+    box-sizing: border-box;
+    font-size: 14px;
+    width: 75px;
+    min-width: 75px;
+
+  }
+}

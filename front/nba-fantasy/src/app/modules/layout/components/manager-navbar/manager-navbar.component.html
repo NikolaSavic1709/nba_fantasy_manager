@@ -1,0 +1,17 @@
+<div id="manager">
+    <div id="manager-left-div"></div>
+    <!-- <button mat-raised-button id="currentRideBtn" (click)="toCurrentRide()">CURRENT RIDE</button> -->
+    <div id="manager-mid-div"></div>
+    
+    <button mat-raised-button id="stats-button" (click)="toStats()"
+            [ngClass]="selectedPage===enumSP.STATS ? 'navbar-button selected-button': 'navbar-button'">Statistics
+    </button>
+    <button mat-raised-button id="players-button" (click)="toRecommendation()"
+            [ngClass]="selectedPage===enumSP.PLAYERS ? 'navbar-button selected-button': 'navbar-button'">Players
+    </button>
+    <button mat-raised-button id="profile-button" (click)="toProfile()"
+            [ngClass]="selectedPage===enumSP.PROFILE ? 'navbar-button selected-button': 'navbar-button'">Profile
+    </button>
+    <div id="manager-right-div"></div>
+    <button mat-raised-button class="navbar-button" id="sign-out-button" (click)="logout()">Sign out</button>
+  </div>
